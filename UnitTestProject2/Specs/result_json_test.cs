@@ -17,10 +17,11 @@ namespace Tailor.Tests
         {
             options = new Tailor.Options
             {
-                AppDir = GetTemporaryDirectory(),
-                OutputDroplet = GetTemporaryDirectory(),
+                AppDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+                OutputDroplet = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".tgz"),
                 OutputMetadata = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json")
             };
+            Directory.CreateDirectory(options.AppDir);
 
             Tailor.Program.Run(options);
         }
@@ -28,7 +29,7 @@ namespace Tailor.Tests
         void after_each()
         {
             Directory.Delete(options.AppDir, true);
-            Directory.Delete(options.OutputDroplet, true);
+            File.Delete(options.OutputDroplet);
             File.Delete(options.OutputMetadata);
         }
 
@@ -42,14 +43,6 @@ namespace Tailor.Tests
                 ((string)obj.SelectToken("$.execution_metadata")).should_be("{\"start_command\":\"the start command\"}");
                 ((string)obj.SelectToken("$.detected_start_command.web")).should_be("the start command");
             };
-        }
-
-
-        public string GetTemporaryDirectory()
-        {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
         }
     }
 }

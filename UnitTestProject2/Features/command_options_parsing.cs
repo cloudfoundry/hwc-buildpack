@@ -12,19 +12,20 @@ namespace Tailor.Tests
 
         void before_each()
         {
-            appDir = GetTemporaryDirectory();
-            outputDroplet = GetTemporaryDirectory();
-            outputMetadata = GetTemporaryDirectory();
+            appDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(appDir);
+            outputDroplet = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".tgz");
+            outputMetadata = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json");
 
-            process = Helpers.StartTailor(appDir, outputDroplet, outputMetadata); 
+            process = Helpers.StartTailor(appDir, outputDroplet, outputMetadata);
+            process.WaitForExit();
         }
 
         void after_each()
         {
-            process.WaitForExit();
             Directory.Delete(appDir, true);
-            Directory.Delete(outputDroplet, true);
-            Directory.Delete(outputMetadata, true);
+            if(File.Exists(outputDroplet)) File.Delete(outputDroplet);
+            if (File.Exists(outputMetadata)) File.Delete(outputMetadata);
         }
 
         void describe_command_option_parsing()
@@ -34,14 +35,6 @@ namespace Tailor.Tests
                 var stdout = process.StandardOutput.ReadToEnd();
                 stdout.should_contain("OutputMetadata: " + outputMetadata);
             };
-        }
-
-
-        public string GetTemporaryDirectory()
-        {
-            string tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-            Directory.CreateDirectory(tempDirectory);
-            return tempDirectory;
         }
     }
 }
