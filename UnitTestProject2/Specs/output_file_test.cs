@@ -5,11 +5,12 @@ using System.Text;
 using NSpec;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
+using SharpCompress.Reader;
+using SharpCompress.Common;
 
 namespace TailorTest
 {
-    class the_contents_of_the_output_file : nspec
+    class the_contents_of_the_output_droplet : nspec
     {
         Tailor.Options options;
 
@@ -36,32 +37,73 @@ namespace TailorTest
             File.Delete(options.OutputMetadata);
         }
 
-        void given_files_in_the_app_dir()
+        void specify_output_droplet_is_a_file()
         {
+            File.Exists(options.OutputDroplet).should_be_true();
+        }
+
+        void given_files_in_the_input_app_dir()
+        {
+            string tgzExtractedDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
             before = () =>
             {
                 File.WriteAllText(Path.Combine(options.AppDir, "a_file.txt"), "Some exciting text");
                 File.WriteAllText(Path.Combine(options.AppDir, "another_file.txt"), "Some different text");
+                Directory.CreateDirectory(tgzExtractedDir);
             };
 
-            it["OutputDroplet is a zipfile"] = () =>
+            act = () =>
             {
-                File.Exists(options.OutputDroplet).should_be_true();
-                using (var archive = ZipFile.OpenRead(options.OutputDroplet))
+                using (Stream stream = File.OpenRead(options.OutputDroplet))
                 {
-                    archive.Entries.Count.should_be(2);
+                    var reader = ReaderFactory.Open(stream);
+                    while (reader.MoveToNextEntry())
+                    {
+                        if (!reader.Entry.IsDirectory)
+                        {
+                            Console.WriteLine(reader.Entry.Key);
+                            reader.WriteEntryToDirectory(tgzExtractedDir, ExtractOptions.ExtractFullPath | ExtractOptions.Overwrite);
+                        }
+                    }
                 }
             };
 
-
-            it["OutputDroplet contains both files"] = () =>
+            after = () =>
             {
-                using (var archive = ZipFile.OpenRead(options.OutputDroplet))
+                Directory.Delete(tgzExtractedDir, true);
+            };
+
+            it["is a a tar gz with app.zip inside"] = () =>
+            {
+                File.Exists(Path.Combine(tgzExtractedDir, "app.zip")).should_be_true();
+            };
+
+            describe["app.zip inside OutputDroplet"] = () =>
+            {
+                var zipPath = "";
+                before = () =>
                 {
-                    var expected = new string[2] { "another_file.txt", "a_file.txt" };
-                    var actual = archive.Entries.Select(entry => entry.Name).ToArray();
-                    actual.should_be(expected);
-                }
+                    zipPath = Path.Combine(tgzExtractedDir, "app.zip");
+                };
+
+                it["is a zipfile"] = () =>
+                {
+                    using (var archive = ZipFile.OpenRead(zipPath))
+                    {
+                        archive.Entries.Count.should_be(2);
+                    }
+                };
+
+                it["contains both files"] = () =>
+                {
+                    using (var archive = ZipFile.OpenRead(zipPath))
+                    {
+                        var expected = new string[2] { "another_file.txt", "a_file.txt" };
+                        var actual = archive.Entries.Select(entry => entry.Name).ToArray();
+                        actual.should_be(expected);
+                    }
+                };
             };
         }
 
