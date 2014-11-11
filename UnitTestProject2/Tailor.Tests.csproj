@@ -70,6 +70,8 @@
     <Compile Include="Features\command_options_parsing.cs" />
     <Compile Include="Specs\output_file_test.cs" />
     <Compile Include="Specs\result_json_test.cs" />
+    <Compile Include="Specs\TarGZFileTest.cs" />
+    <Compile Include="Specs\TempDirectoryTest.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
