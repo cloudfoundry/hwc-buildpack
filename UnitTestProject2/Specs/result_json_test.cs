@@ -11,7 +11,6 @@ namespace Tailor.Tests
     class TheResultJsonSpec : nspec
     {
         Tailor.Options options; 
-        Process process;
 
         void before_each()
         {

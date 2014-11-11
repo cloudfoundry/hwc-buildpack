@@ -3,19 +3,71 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NSpec;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
 
 namespace TailorTest
 {
-    class describe_the_contents_of_the_output_tgz : nspec
+    class the_contents_of_the_output_file : nspec
     {
-        void given_true_is_true()
+        Tailor.Options options;
+
+        void before_each()
         {
-            it["true is true"] = () => true.should_be_true();
+            options = new Tailor.Options
+            {
+                AppDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+                OutputDroplet = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".tgz"),
+                OutputMetadata = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json")
+            };
+            Directory.CreateDirectory(options.AppDir);
+        }
+
+        void act_each()
+        {
+            Tailor.Program.Run(options);
+        }
+
+        void after_each()
+        {
+            Directory.Delete(options.AppDir, true);
+            File.Delete(options.OutputDroplet);
+            File.Delete(options.OutputMetadata);
+        }
+
+        void given_files_in_the_app_dir()
+        {
+            before = () =>
+            {
+                File.WriteAllText(Path.Combine(options.AppDir, "a_file.txt"), "Some exciting text");
+                File.WriteAllText(Path.Combine(options.AppDir, "another_file.txt"), "Some different text");
+            };
+
+            it["OutputDroplet is a zipfile"] = () =>
+            {
+                File.Exists(options.OutputDroplet).should_be_true();
+                using (var archive = ZipFile.OpenRead(options.OutputDroplet))
+                {
+                    archive.Entries.Count.should_be(2);
+                }
+            };
+
+
+            it["OutputDroplet contains both files"] = () =>
+            {
+                using (var archive = ZipFile.OpenRead(options.OutputDroplet))
+                {
+                    var expected = new string[2] { "another_file.txt", "a_file.txt" };
+                    var actual = archive.Entries.Select(entry => entry.Name).ToArray();
+                    actual.should_be(expected);
+                }
+            };
         }
 
         /****
          * 
-        		Describe("the contents of the output tgz", func() { 
+        		w("the contents of the output tgz", func() { 
 118 			var files []string 
 119 
  

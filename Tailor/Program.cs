@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace Tailor
         {
             // Values are available here
             Console.WriteLine("OutputMetadata: {0}", options.OutputMetadata);
+
+            ZipFile.CreateFromDirectory(options.AppDir, options.OutputDroplet);
 
             JObject execution_metadata = new JObject();
             execution_metadata["start_command"] = "the start command";
