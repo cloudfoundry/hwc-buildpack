@@ -10,13 +10,13 @@ namespace Tailor
 {
     public class Options
     {
-        [Option('a', "appDir", DefaultValue = "app", HelpText = "Directory app is placed in")]
+        [Option('a', "appDir", Required = true, HelpText = "Directory app is placed in")]
         public string AppDir { get; set; }
 
-        [Option('d', "outputDroplet", DefaultValue = "app", HelpText = "the output droplet")]
+        [Option('d', "outputDroplet", Required = true, HelpText = "the output droplet")]
         public string OutputDroplet { get; set; }
 
-        [Option('m', "outputMetadata", DefaultValue = "app", HelpText = "Directory to the output metadata json file")]
+        [Option('m', "outputMetadata", Required = true, HelpText = "Directory to the output metadata json file")]
         public string OutputMetadata { get; set; }
 
         [HelpOption]
