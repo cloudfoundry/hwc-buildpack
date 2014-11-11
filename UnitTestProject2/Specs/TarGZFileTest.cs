@@ -63,13 +63,8 @@ namespace Tailor.Tests
         static string GetString(IArchiveEntry entry)
         {
             byte[] bytes = new byte[entry.Size];
-            char[] chars = new char[entry.Size];
             entry.OpenEntryStream().Read(bytes, 0, bytes.Length);
-            for (var i = 0; i < entry.Size; i++)
-            {
-                chars[i] = (char)bytes[i];
-            }
-            return new string(chars);
+            return System.Text.Encoding.Default.GetString(bytes);
         }
     }
 }
