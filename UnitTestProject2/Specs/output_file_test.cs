@@ -44,12 +44,13 @@ namespace TailorTest
 
         void given_files_in_the_input_app_dir()
         {
-            string tgzExtractedDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string tgzExtractedDir = null;
 
             before = () =>
             {
                 File.WriteAllText(Path.Combine(options.AppDir, "a_file.txt"), "Some exciting text");
                 File.WriteAllText(Path.Combine(options.AppDir, "another_file.txt"), "Some different text");
+                tgzExtractedDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
                 Directory.CreateDirectory(tgzExtractedDir);
             };
 
@@ -79,9 +80,9 @@ namespace TailorTest
                 File.Exists(Path.Combine(tgzExtractedDir, "app.zip")).should_be_true();
             };
 
-            describe["app.zip inside OutputDroplet"] = () =>
+            describe["app.zip inside OutputDroplet"] = () => 
             {
-                var zipPath = "";
+                string zipPath = null;
                 before = () =>
                 {
                     zipPath = Path.Combine(tgzExtractedDir, "app.zip");

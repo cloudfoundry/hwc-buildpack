@@ -26,6 +26,11 @@ namespace Tailor
             }
             
             // Result.JSON
+            GenerateOutputMetadata(options.OutputMetadata);
+        }
+
+        private static void GenerateOutputMetadata(string fileName)
+        {
             JObject execution_metadata = new JObject();
             execution_metadata["start_command"] = "the start command";
             JObject detected_start_command = new JObject();
@@ -34,7 +39,7 @@ namespace Tailor
             JObject obj = new JObject();
             obj["execution_metadata"] = execution_metadata.ToString(Formatting.None);
             obj["detected_start_command"] = detected_start_command;
-            System.IO.File.WriteAllText(options.OutputMetadata, obj.ToString());
+            System.IO.File.WriteAllText(fileName, obj.ToString());
         }
 
         static void Main(string[] args)

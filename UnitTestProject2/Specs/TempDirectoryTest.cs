@@ -28,7 +28,7 @@ namespace Tailor.Tests
                 using (var tmp = new TempDirectory())
                 {
                     var path = tmp.Combine("fred.txt");
-                    path.should_be(tmp.PathString() + @"\fred.txt");
+                    path.should_be(Path.Combine(tmp.PathString(), "fred.txt"));
                 }
             };
         }
