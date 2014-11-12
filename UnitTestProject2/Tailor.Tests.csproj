@@ -65,7 +65,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Helpers.cs" />
     <Compile Include="DebuggerShim.cs" />
     <Compile Include="Features\command_options_parsing.cs" />
     <Compile Include="Specs\output_file_test.cs" />

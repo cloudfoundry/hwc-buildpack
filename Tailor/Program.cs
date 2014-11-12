@@ -16,9 +16,6 @@ namespace Tailor
     {
         public static void Run(Options options)
         {
-            // Values are available here
-            Console.WriteLine("OutputMetadata: {0}", options.OutputMetadata);
-
             using (var tmpPath = new TempDirectory())
             {
                 ZipFile.CreateFromDirectory(options.AppDir, tmpPath.Combine("app.zip"));
