@@ -44,7 +44,7 @@ namespace Tailor.Tests
         {
             var process = new Process();
             process.StartInfo.FileName = @"..\..\..\Tailor\bin\Debug\Tailor.exe";
-            process.StartInfo.Arguments = "--appDir=\"" + appDir + "\" --outputDroplet=\"" + outputDroplet + "\" --outputMetadata=\"" + outputMetadata + "\"";
+            process.StartInfo.Arguments = "-appDir=\"" + appDir + "\" -outputDroplet=\"" + outputDroplet + "\" -outputMetadata=\"" + outputMetadata + "\"";
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.Start();

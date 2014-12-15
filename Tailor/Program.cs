@@ -41,6 +41,7 @@ namespace Tailor
 
         static void Main(string[] args)
         {
+            SanitizeArgs(args);
             var options = new Options();
             if (!CommandLine.Parser.Default.ParseArguments(args, options))
             {
@@ -48,6 +49,17 @@ namespace Tailor
             }
 
             Run(options);
+        }
+
+        private static void SanitizeArgs(string[] args)
+        {
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i].StartsWith("-") && !args[i].StartsWith("--"))
+                {
+                    args[i] = "-" + args[i];
+                }
+            }
         }
     }
 }
