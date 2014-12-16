@@ -15,14 +15,14 @@ namespace Tailor
 {
     public class Program
     {
-        public static void Run(Options options, string containerDir)
+        public static void Run(Options options)
         {
-            var appPath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), containerDir + options.AppDir);
-            var outputDropletPath = containerDir + options.OutputDroplet;
+            var appPath = System.IO.Directory.GetCurrentDirectory() + options.AppDir;
+            var outputDropletPath = System.IO.Directory.GetCurrentDirectory() + options.OutputDroplet;
             TarGZFile.CreateFromDirectory(appPath, outputDropletPath);
 
             // Result.JSON
-   //         GenerateOutputMetadata(options.OutputMetadata);
+            GenerateOutputMetadata(options.OutputMetadata);
         }
 
         private static void GenerateOutputMetadata(string fileName)
@@ -35,7 +35,7 @@ namespace Tailor
             JObject obj = new JObject();
             obj["execution_metadata"] = execution_metadata.ToString(Formatting.None);
             obj["detected_start_command"] = detected_start_command;
-            System.IO.File.WriteAllText(fileName, obj.ToString());
+            System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + fileName, obj.ToString());
         }
 
         static void Main(string[] args)
@@ -47,12 +47,7 @@ namespace Tailor
                 Environment.Exit(1);
             }
 
-            Run(options, GetContainerDir());
-        }
-
-        private static string GetContainerDir()
-        {
-            return @"..\..";
+            Run(options);
         }
 
         private static void SanitizeArgs(string[] args)

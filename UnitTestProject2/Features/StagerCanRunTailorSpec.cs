@@ -17,7 +17,7 @@ namespace Tailor.Tests.Specs.Features
             {
                 before = () =>
                 {
-                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2", "app.zip");
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2", "tmp", "droplet");
                     File.Delete(filename);
 
                     arguments = new Dictionary<string, string>
@@ -38,12 +38,14 @@ namespace Tailor.Tests.Specs.Features
                 {
                     before = () =>
                     {
+                        var workingDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2");
                         var process = new Process
                         {
                             StartInfo =
                             {
                                 FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tailor", "bin", "debug", "Tailor.exe"),
-                                Arguments = arguments
+                                Arguments = arguments,
+                                WorkingDirectory = workingDir
                             }
                         };
 
@@ -51,11 +53,18 @@ namespace Tailor.Tests.Specs.Features
                         process.WaitForExit();
                     };
 
-                    it["Creates a droplet"] = () => { File.Exists("./tmp/droplet").should_be_true(); };
+                    it["Creates a droplet"] = () =>
+                    {
+
+                        var fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2", "tmp", "droplet");
+                        File.Exists(fileName).should_be_true();
+                    };
                 };
 
                 after = () =>
                 {
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2", "tmp", "droplet");
+                    File.Delete(filename);
                 };
             };
         }
