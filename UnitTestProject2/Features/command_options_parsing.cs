@@ -1,50 +1,76 @@
 ﻿using System;
-using NSpec;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using NSpec;
 
 namespace Tailor.Tests
 {
-    class CommandOptionParsingSpec : nspec
+    internal class CommandOptionParsingSpec : nspec
     {
-        string appDir, outputDroplet, outputMetadata;
-        StreamReader stdout;
+        private string appDir, outputDroplet, outputMetadata;
+        private StreamReader stdout;
 
-        void before_each()
+        private void before_each()
         {
             appDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(appDir);
             outputDroplet = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".tgz");
             outputMetadata = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json");
-
-            stdout = StartTailor(appDir, outputDroplet, outputMetadata);
+            string buildArtifactsCacheDir = @"/tmp/cache";
+            string buildpackOrder = @"buildpackGuid1,buildpackGuid2";
+            string buildpacksDir = @"/tmp/buildpacks";
+            string outputBuildArtifactsCache = @"/tmp/output-cache";
+            string skipCertVerify = "false";
+            stdout = StartTailor(
+                appDir: appDir,
+                buildArtifactsCacheDir: buildArtifactsCacheDir,
+                buildpackOrder: buildpackOrder,
+                outputBuildArtifactsCache: outputBuildArtifactsCache,
+                buildpacksDir: buildpacksDir,
+                outputDroplet: outputDroplet,
+                outputMetadata: outputMetadata,
+                skipCertVerify: skipCertVerify);
         }
 
-        void after_each()
+        private void after_each()
         {
             Directory.Delete(appDir, true);
-            if(File.Exists(outputDroplet)) File.Delete(outputDroplet);
+            if (File.Exists(outputDroplet)) File.Delete(outputDroplet);
             if (File.Exists(outputMetadata)) File.Delete(outputMetadata);
         }
 
-        void describe_command_option_parsing()
+        private void describe_command_option_parsing()
         {
-            it["uses outputDroplet"] = () =>
-            {
-                File.Exists(outputDroplet).should_be_true();
-            };
+            it["uses outputDroplet"] = () => { File.Exists(outputDroplet).should_be_true(); };
 
-            it["uses outputMetadata"] = () =>
-            {
-                File.Exists(outputMetadata).should_be_true();
-            };
+            it["uses outputMetadata"] = () => { File.Exists(outputMetadata).should_be_true(); };
         }
 
-        public static StreamReader StartTailor(string appDir, string outputDroplet, string outputMetadata)
+        public static StreamReader StartTailor(
+            string appDir,
+            string buildArtifactsCacheDir,
+            string buildpackOrder,
+            string outputBuildArtifactsCache,
+            string buildpacksDir,
+            string outputDroplet,
+            string outputMetadata,
+            string skipCertVerify)
         {
             var process = new Process();
             process.StartInfo.FileName = @"..\..\..\Tailor\bin\Debug\Tailor.exe";
-            process.StartInfo.Arguments = "-appDir=\"" + appDir + "\" -outputDroplet=\"" + outputDroplet + "\" -outputMetadata=\"" + outputMetadata + "\"";
+            process.StartInfo.Arguments =
+                String.Format(
+                    @"-appDir={0} -buildArtifactsCacheDir={1} -buildpackOrder={2} -buildpacksDir={3} -outputBuildArtifactsCache={4} -outputDroplet={5} -outputMetadata={6} -skipCertVerify={7}",
+                    appDir,
+                    buildArtifactsCacheDir,
+                    buildpackOrder,
+                    buildpacksDir,
+                    outputBuildArtifactsCache,
+                    outputDroplet,
+                    outputMetadata,
+                    skipCertVerify
+                    );
+
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.RedirectStandardOutput = true;
             process.Start();
@@ -53,6 +79,3 @@ namespace Tailor.Tests
         }
     }
 }
-
-
-
