@@ -67,6 +67,7 @@
   <ItemGroup>
     <Compile Include="DebuggerShim.cs" />
     <Compile Include="Features\command_options_parsing.cs" />
+    <Compile Include="Features\StagerCanRunTailorSpec.cs" />
     <Compile Include="Specs\output_file_test.cs" />
     <Compile Include="Specs\result_json_test.cs" />
     <Compile Include="Specs\TarGZFileTest.cs" />

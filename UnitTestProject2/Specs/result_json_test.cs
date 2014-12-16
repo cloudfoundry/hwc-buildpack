@@ -10,19 +10,22 @@ namespace Tailor.Tests
 {
     class TheResultJsonSpec : nspec
     {
-        Tailor.Options options; 
+        Tailor.Options options;
+        private string containerDir;
 
         void before_each()
         {
             options = new Tailor.Options
             {
-                AppDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+                AppDir = "/app",
                 OutputDroplet = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".tgz"),
                 OutputMetadata = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json")
             };
-            Directory.CreateDirectory(options.AppDir);
 
-            Tailor.Program.Run(options);
+            containerDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(containerDir);
+
+            Tailor.Program.Run(options, containerDir);
         }
 
         void after_each()

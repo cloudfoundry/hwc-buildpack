@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SharpCompress.Common;
 using SharpCompress.Writer;
@@ -16,18 +17,12 @@ namespace Tailor
     {
         public static void Run(Options options, string containerDir)
         {
-            using (var tmpPath = new TempDirectory())
-            {
-                var appPath = containerDir + options.AppDir;
-                var zipPath = tmpPath.Combine("app.zip");
-                var appZipPath = containerDir + tmpPath.PathString();
-                var outputDropletPath = containerDir + options.OutputDroplet;
-                ZipFile.CreateFromDirectory(appPath, zipPath);
-                TarGZFile.CreateFromDirectory(appZipPath, outputDropletPath);
-            }
-            
+            var appPath = Path.Combine(System.IO.Directory.GetCurrentDirectory(), containerDir + options.AppDir);
+            var outputDropletPath = containerDir + options.OutputDroplet;
+            TarGZFile.CreateFromDirectory(appPath, outputDropletPath);
+
             // Result.JSON
-            GenerateOutputMetadata(options.OutputMetadata);
+   //         GenerateOutputMetadata(options.OutputMetadata);
         }
 
         private static void GenerateOutputMetadata(string fileName)
@@ -57,7 +52,7 @@ namespace Tailor
 
         private static string GetContainerDir()
         {
-            return "../..";
+            return @"..\..";
         }
 
         private static void SanitizeArgs(string[] args)

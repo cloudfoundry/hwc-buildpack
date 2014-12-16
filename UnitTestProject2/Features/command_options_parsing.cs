@@ -12,10 +12,11 @@ namespace Tailor.Tests
 
         private void before_each()
         {
-            appDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var containerPath = Path.GetTempPath();
+            appDir = @"/app";
             Directory.CreateDirectory(appDir);
-            outputDroplet = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".tgz");
-            outputMetadata = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json");
+            outputDroplet = @"/tmp/droplet";
+            outputMetadata = @"/tmp/result.json";
             string buildArtifactsCacheDir = @"/tmp/cache";
             string buildpackOrder = @"buildpackGuid1,buildpackGuid2";
             string buildpacksDir = @"/tmp/buildpacks";
@@ -41,9 +42,9 @@ namespace Tailor.Tests
 
         private void describe_command_option_parsing()
         {
-            it["uses outputDroplet"] = () => { File.Exists(outputDroplet).should_be_true(); };
+            it["uses outputDroplet"] = () => { File.Exists("." + outputDroplet).should_be_true(); };
 
-            it["uses outputMetadata"] = () => { File.Exists(outputMetadata).should_be_true(); };
+            it["uses outputMetadata"] = () => { File.Exists("." + outputMetadata).should_be_true(); };
         }
 
         public static StreamReader StartTailor(

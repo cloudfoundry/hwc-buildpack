@@ -13,12 +13,14 @@ namespace TailorTest
     class the_contents_of_the_output_droplet : nspec
     {
         Tailor.Options options;
+        private string containerDir;
 
         void before_each()
         {
+            containerDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             options = new Tailor.Options
-            {
-                AppDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName()),
+            {      
+                AppDir = "/app",
                 OutputDroplet = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".tgz"),
                 OutputMetadata = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".json")
             };
@@ -27,12 +29,12 @@ namespace TailorTest
 
         void act_each()
         {
-            Tailor.Program.Run(options);
+            Tailor.Program.Run(options, containerDir);
         }
 
         void after_each()
         {
-            Directory.Delete(options.AppDir, true);
+            Directory.Delete(containerDir, true);
             File.Delete(options.OutputDroplet);
             File.Delete(options.OutputMetadata);
         }
