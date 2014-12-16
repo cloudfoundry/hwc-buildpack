@@ -14,12 +14,16 @@ namespace Tailor
 {
     public class Program
     {
-        public static void Run(Options options)
+        public static void Run(Options options, string containerDir)
         {
             using (var tmpPath = new TempDirectory())
             {
-                ZipFile.CreateFromDirectory(options.AppDir, tmpPath.Combine("app.zip"));
-                TarGZFile.CreateFromDirectory(tmpPath.PathString(), options.OutputDroplet);
+                var appPath = containerDir + options.AppDir;
+                var zipPath = tmpPath.Combine("app.zip");
+                var appZipPath = containerDir + tmpPath.PathString();
+                var outputDropletPath = containerDir + options.OutputDroplet;
+                ZipFile.CreateFromDirectory(appPath, zipPath);
+                TarGZFile.CreateFromDirectory(appZipPath, outputDropletPath);
             }
             
             // Result.JSON
@@ -48,7 +52,12 @@ namespace Tailor
                 Environment.Exit(1);
             }
 
-            Run(options);
+            Run(options, GetContainerDir());
+        }
+
+        private static string GetContainerDir()
+        {
+            return "../..";
         }
 
         private static void SanitizeArgs(string[] args)
