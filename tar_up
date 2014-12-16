@@ -1,0 +1,5 @@
+set -e
+cd Tailor/bin/Debug
+tar -cvzf ../windows-circus.tgz *
+mv ../windows-circus.tgz ../../..
+cd ../../..
