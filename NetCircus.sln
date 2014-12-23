@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailor", "Tailor\Tailor.csproj", "{68F6A408-B0F2-4BB4-A0A4-278694FAB63D}"
 EndProject
@@ -26,6 +26,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MkDir", "MkDir\MkDir.csproj", "{CD844BAD-7BA1-49AC-9553-49EB9F7DC17D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateFile", "GenerateFile\GenerateFile.csproj", "{31398E61-A04D-4138-8BD3-E892E22DF053}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spy", "Spy\Spy.csproj", "{3726B016-605C-4ACA-A282-052CA1AD9AAD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{31398E61-A04D-4138-8BD3-E892E22DF053}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31398E61-A04D-4138-8BD3-E892E22DF053}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31398E61-A04D-4138-8BD3-E892E22DF053}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3726B016-605C-4ACA-A282-052CA1AD9AAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3726B016-605C-4ACA-A282-052CA1AD9AAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3726B016-605C-4ACA-A282-052CA1AD9AAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3726B016-605C-4ACA-A282-052CA1AD9AAD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
