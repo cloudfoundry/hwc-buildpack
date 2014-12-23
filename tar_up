@@ -1,5 +1,8 @@
 set -e
-cd Tailor/bin/Debug
+mkdir -p circus/tent
+cp Tailor/bin/Debug/* circus/tent
+cp Soldier/bin/Debug/* circus/tent
+cd circus/tent
 tar -cvzf ../windows-circus.tgz *
-mv ../windows-circus.tgz ../../..
-cd ../../..
+mv ../windows-circus.tgz ../..
+cd ../..
