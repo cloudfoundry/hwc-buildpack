@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,16 +19,16 @@ namespace Soldier
             var containerRootPath = System.IO.Directory.GetCurrentDirectory();
             var containerID = new DirectoryInfo(containerRootPath).Name;
             //HARDCODE LOCATION OF ZIPFILE
-            var zipFileLocation = containerRootPath + "\\app\\webdeploy\\Nora.zip";
+            var zipFileLocation = "Nora.zip";
 
             //CRAZY MSDEPLOY COMMAND LINE.  THIS SHOULD BE MADE BETTERER.
-            var deployCommand = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\" -verb:sync -source:package="+zipFileLocation+" -dest:auto -setParam:name='IIS Web Application Name',value=\"" + containerID + "\" -presync:runCommand='\"C:\\Windows\\System32\\inetsrv\\appcmd set site " + containerID + " /bindings:http/*:8080:'";
+            var deployCommand = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\"";         
+            var deployCommandArgs = "-verb:sync -source:package="+zipFileLocation+" -dest:auto -setParam:name='IIS Web Application Name',value=\"" + containerID + "\" -presync:runCommand='\"C:\\Windows\\System32\\inetsrv\\appcmd set site " + containerID + " /bindings:http/*:8080:'";
 
             ProcessStartInfo startInfo;
-            
-            startInfo = new ProcessStartInfo(deployCommand);
-            
-            startInfo.WorkingDirectory = containerRootPath;
+            startInfo = new ProcessStartInfo(deployCommand, deployCommandArgs);
+            startInfo.WorkingDirectory = containerRootPath + "\\webdeploy";
+            startInfo.UseShellExecute = true;
             var process = new Process {StartInfo = startInfo};
             process.Start();
             process.WaitForExit();
