@@ -8,6 +8,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Soldier
@@ -33,7 +34,9 @@ namespace Soldier
             process.Start();
             process.WaitForExit();
 
-            File.Copy(Path.Combine(containerRootPath, "tmp", "circus", "Web.config"), containerRootPath);
+            var stockWebConfig = Path.Combine(containerRootPath, "tmp", "circus", "Web.config");
+            var webConfigDestination = Path.Combine(containerRootPath, "Web.config");
+            File.Copy(stockWebConfig, webConfigDestination);
             ServerManager serverManager = ServerManager.OpenRemote("localhost");
             Site site = serverManager.Sites[containerID];
             site.Start();
