@@ -33,6 +33,7 @@ namespace Soldier
             process.Start();
             process.WaitForExit();
 
+            File.Copy(Path.Combine(containerRootPath, "tmp", "circus", "Web.config"), containerRootPath);
             ServerManager serverManager = ServerManager.OpenRemote("localhost");
             Site site = serverManager.Sites[containerID];
             site.Start();
