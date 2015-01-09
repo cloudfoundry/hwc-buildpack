@@ -17,7 +17,7 @@ namespace Tailor.Tests.Specs.Features
             {
                 before = () =>
                 {
-                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2", "tmp", "droplet");
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tailor.Tests", "tmp", "droplet");
                     File.Delete(filename);
 
                     arguments = new Dictionary<string, string>
@@ -38,7 +38,7 @@ namespace Tailor.Tests.Specs.Features
                 {
                     before = () =>
                     {
-                        var workingDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2");
+                        var workingDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tailor.Tests");
                         var process = new Process
                         {
                             StartInfo =
@@ -56,14 +56,20 @@ namespace Tailor.Tests.Specs.Features
                     it["Creates a droplet"] = () =>
                     {
 
-                        var fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2", "tmp", "droplet");
+                        var fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tailor.Tests", "tmp", "droplet");
                         File.Exists(fileName).should_be_true();
+                    };
+
+                    it["Creates the result.json"] = () =>
+                    {
+                        var resultFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tailor.Tests", "tmp", "result.json");
+                        File.Exists(resultFile).should_be_true();
                     };
                 };
 
                 after = () =>
                 {
-                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "UnitTestProject2", "tmp", "droplet");
+                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tailor.Tests", "tmp", "droplet");
                     File.Delete(filename);
                 };
             };
