@@ -29,14 +29,10 @@ namespace Soldier
             ProcessStartInfo startInfo;
             startInfo = new ProcessStartInfo(deployCommand, deployCommandArgs);
             startInfo.WorkingDirectory = containerRootPath + "\\webdeploy";
-            startInfo.UseShellExecute = true;
             var process = new Process {StartInfo = startInfo};
             process.Start();
             process.WaitForExit();
 
-            var stockWebConfig = Path.Combine(containerRootPath, "tmp", "circus", "Web.config");
-            var webConfigDestination = Path.Combine(containerRootPath, "Web.config");
-            File.Copy(stockWebConfig, webConfigDestination);
             ServerManager serverManager = ServerManager.OpenRemote("localhost");
             Site site = serverManager.Sites[containerID];
             site.Start();
