@@ -19,8 +19,9 @@ namespace Soldier
         {
             var containerRootPath = System.IO.Directory.GetCurrentDirectory();
             var containerID = new DirectoryInfo(containerRootPath).Name;
-            //HARDCODE LOCATION OF ZIPFILE
-            var zipFileLocation = "Nora.zip";
+            var webDeployPath = Path.Combine(containerRootPath, "webdeploy");
+            var zipFileLocation =
+                Directory.GetFiles(webDeployPath, "*.zip", SearchOption.TopDirectoryOnly).SingleOrDefault();
 
             //CRAZY MSDEPLOY COMMAND LINE.  THIS SHOULD BE MADE BETTERER.
             var deployCommand = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\"";         
@@ -28,7 +29,7 @@ namespace Soldier
 
             ProcessStartInfo startInfo;
             startInfo = new ProcessStartInfo(deployCommand, deployCommandArgs);
-            startInfo.WorkingDirectory = containerRootPath + "\\webdeploy";
+            startInfo.WorkingDirectory = webDeployPath;
             var process = new Process {StartInfo = startInfo};
             process.Start();
             process.WaitForExit();
