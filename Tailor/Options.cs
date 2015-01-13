@@ -10,8 +10,8 @@ namespace Tailor
 {
     public class Options
     {
-        [Option('a', "appDir", Required = true, HelpText = "")]
-        public string AppDir { get; set; }
+        [Option('a', "buildDir", Required = true, HelpText = "")]
+        public string BuildDir { get; set; }
 
         [Option('b', "buildArtifactsCacheDir", Required = false, HelpText = "")]
         public string BuildArtifactsCacheDir { get; set; }

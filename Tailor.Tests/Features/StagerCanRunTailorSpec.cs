@@ -22,7 +22,7 @@ namespace Tailor.Tests.Specs.Features
 
                     arguments = new Dictionary<string, string>
                     {
-                        {"-appDir", "/app"},
+                        {"-buildDir", "/app"},
                         {"-outputDroplet", "/tmp/droplet"},
                         {"-outputMetadata", "/tmp/result.json"},
                         {"-buildArtifactsCacheDir", "/tmp/cache"},

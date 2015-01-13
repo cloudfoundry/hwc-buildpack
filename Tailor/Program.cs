@@ -17,7 +17,7 @@ namespace Tailor
     {
         public static void Run(Options options)
         {
-            var appPath = System.IO.Directory.GetCurrentDirectory() + options.AppDir;
+            var appPath = System.IO.Directory.GetCurrentDirectory() + options.BuildDir;
             var outputDropletPath = System.IO.Directory.GetCurrentDirectory() + options.OutputDroplet;
             TarGZFile.CreateFromDirectory(appPath, outputDropletPath);
 
