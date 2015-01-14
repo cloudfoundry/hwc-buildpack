@@ -40,6 +40,7 @@ namespace Soldier
             ServerManager serverManager = ServerManager.OpenRemote("localhost");
             Site site = serverManager.Sites[containerID];
             site.Start();
+            Thread.Sleep(20000);
         }
     }
 }
