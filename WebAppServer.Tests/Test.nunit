@@ -1,0 +1,6 @@
+<NUnitProject>
+    <Settings activeconfig="Default" />
+    <Config name="Default" configfile="WebAppServer.Tests.dll.config" binpathtype="Auto">
+        <assembly path="WebAppServer.Tests.dll" />
+    </Config>
+</NUnitProject>
