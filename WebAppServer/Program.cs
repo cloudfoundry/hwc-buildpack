@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Threading;
 
 namespace WebAppServer
@@ -9,32 +7,9 @@ namespace WebAppServer
     {
         private static readonly Logger log = new Logger();
         private static readonly ManualResetEvent exitLatch = new ManualResetEvent(false);
-        private static readonly FileSystemWatcher fileSystemWatcher;
-
-        static Program()
-        {
-            string workingDirectory =  Directory.GetCurrentDirectory();
-            fileSystemWatcher = new FileSystemWatcher(workingDirectory);
-            fileSystemWatcher.Created += fileSystemWatcher_Created;
-            fileSystemWatcher.EnableRaisingEvents = true;
-        }
-
-        private static void fileSystemWatcher_Created(object sender, FileSystemEventArgs e)
-        {
-            if (e.ChangeType == WatcherChangeTypes.Created)
-            {
-                string lcName = e.Name.ToLowerInvariant().Trim();
-                if (lcName == "iishost_stop")
-                {
-                    exitLatch.Set();
-                }
-            }
-        }
 
         private static void Main(string[] args)
         {
-            Debugger.Launch();
-
             Console.CancelKeyPress += (s, e) =>
             {
                 e.Cancel = true;
@@ -67,11 +42,6 @@ namespace WebAppServer
                     exitLatch.WaitOne();
                     Console.WriteLine("Server shutting down, please wait...");
                     webServer.Stop();
-                }
-
-                if (File.Exists("iishost_stop"))
-                {
-                    File.Delete("iishost_stop");
                 }
             }
             catch (Exception ex)
