@@ -4,9 +4,15 @@ using System.Runtime.InteropServices;
 
 namespace WebAppServer
 {
+    public interface IWebServer : IDisposable
+    {
+        void Start();
+        void Stop();
+    }
+
     // Ref: http://msdn.microsoft.com/en-us/library/ms689327%28v=vs.90%29.aspx
     // May require: // netsh http add urlacl url=http://*:PORT/ user=DOMAIN\user
-    internal class WebServer : IDisposable
+    public class WebServer : IWebServer
     {
         private readonly ConfigSettings configSettings;
 
@@ -37,14 +43,16 @@ namespace WebAppServer
         }
 
         #region Hostable WebCore
-        internal static class HostableWebCore
+        public static class HostableWebCore
         {
+            public const uint ERROR_ACCESS_DENIED = 0x80070005;
+
             const string HWCPath = @"%windir%\system32\inetsrv\hwebcore.dll";
 
             private static bool _isActivated;
 
-            private delegate int FnWebCoreShutdown(bool immediate);
-            private delegate int FnWebCoreActivate(
+            private delegate uint FnWebCoreShutdown(bool immediate);
+            private delegate uint FnWebCoreActivate(
                 [In, MarshalAs(UnmanagedType.LPWStr)]string appHostConfig,
                 [In, MarshalAs(UnmanagedType.LPWStr)]string rootWebConfig,
                 [In, MarshalAs(UnmanagedType.LPWStr)]string instanceName);
@@ -86,10 +94,13 @@ namespace WebAppServer
             /// <param name="instanceName">Name for this instance</param>
             public static void Activate(string appHostConfig, string rootWebConfig, string instanceName)
             {
-                int result = WebCoreActivate(appHostConfig, rootWebConfig, instanceName);
+                uint result = WebCoreActivate(appHostConfig, rootWebConfig, instanceName);
                 if (result != 0)
                 {
-                    throw new WebCoreActivationException(result);
+                    if (result == ERROR_ACCESS_DENIED)
+                        throw new WebCorePortException();
+
+                    throw new WebCoreActivationException((int)result);
                 }
 
                 _isActivated = true;

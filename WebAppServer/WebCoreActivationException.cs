@@ -33,4 +33,11 @@ namespace WebAppServer
             HResult = result;
         }
     }
+
+    public class WebCorePortException : WebCoreActivationException
+    {
+        public WebCorePortException() : base(unchecked((int)WebServer.HostableWebCore.ERROR_ACCESS_DENIED))
+        {
+        }
+    }
 }

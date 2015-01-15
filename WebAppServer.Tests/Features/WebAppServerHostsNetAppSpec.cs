@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Security.Principal;
+using System.Threading;
 
 namespace WebAppServer.Tests
 {
@@ -15,10 +17,12 @@ namespace WebAppServer.Tests
             {
                 describe["When I pass it to WebAppServer"] = () =>
                 {
-                    const int port = 3300;
+                    int port = 3300;
                     Process process = null;
 
-                    before = () =>
+                    before = () => port = 3300;
+                    
+                    act = () =>
                     {
                         var workingDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WebAppServer.Tests");
                         var webRoot = Path.Combine(workingDir, "Fixtures", "Nora");
@@ -31,11 +35,12 @@ namespace WebAppServer.Tests
                                 Arguments = String.Format("{0} \"{1}\"", port, webRoot),
                                 WorkingDirectory = workingDir,
                                 RedirectStandardInput = true,
+                                RedirectStandardError = true,
                                 UseShellExecute = false
                             }
                         };
 
-                        process.Start();
+                        process.Start();                    
                     };
 
                     it["runs it on the specified port"] = () =>
@@ -47,8 +52,20 @@ namespace WebAppServer.Tests
 
                     after = () =>
                     {
-                        process.Kill();
-                        process.WaitForExit();
+                        if (!process.HasExited)
+                        {
+                            process.Kill();
+                            process.WaitForExit();
+                        }
+
+                        if (process.ExitCode == 1)
+                        {
+                            throw new Exception(
+                                String.Format(
+                                    "WebAppServer failed to start. Check that the current user has access to the port (eg. run 'netsh http add urlacl url=http://*:{0}/ user={1}' as an Administrator).",
+                                    port, 
+                                    WindowsIdentity.GetCurrent().Name));
+                        }
                     };
                 };
             };

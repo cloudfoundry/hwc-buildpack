@@ -6,17 +6,22 @@ using System.Threading.Tasks;
 
 namespace WebAppServer
 {
-    class Logger
+    public class Logger
     {
-        public void Info(string messageFormat, params object[] args)
+        public virtual void Info(string messageFormat, params object[] args)
         {
             Console.Out.WriteLine(DateTimeOffset.UtcNow.ToString("u") + "|INFO|" + messageFormat, args);
         }
 
-        public void ErrorException(string message, Exception exception)
+        public virtual void Error(string messageFormat, params object[] args)
         {
-            Console.Error.WriteLine(DateTimeOffset.UtcNow.ToString("u") + "|ERROR|" + message);
-            Console.Error.WriteLine(DateTimeOffset.UtcNow.ToString("u") + "|ERROR|" + exception.ToString());
+            Console.Error.WriteLine(DateTimeOffset.UtcNow.ToString("u") + "|ERROR|" + messageFormat, args);
+        }
+
+        public virtual void ErrorException(string message, Exception exception)
+        {
+            Error(message);
+            Error(exception.ToString());
         }
     }
 }

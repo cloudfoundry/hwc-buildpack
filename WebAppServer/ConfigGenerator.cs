@@ -8,13 +8,13 @@ using WebAppServer.Properties;
 
 namespace WebAppServer
 {
-    internal class ConfigSettings
+    public class ConfigSettings
     {
         public string RootWebConfigPath { get; set; }
         public string AppConfigPath { get; set; }
     }
 
-    internal class ConfigGenerator : IDisposable
+    public class ConfigGenerator : IDisposable
     {
         private readonly string configPath;
         private readonly string webRootPath;
