@@ -15,6 +15,18 @@ namespace Soldier
 {
     class Program
     {
+        static void WaitForSiteToStop(string containerId)
+        {
+            Site site;
+            do
+            {
+                Thread.Sleep(500);
+                var serverManager = ServerManager.OpenRemote("localhost");
+                site = serverManager.Sites[containerId];
+            } while (site != null && (site.State == ObjectState.Starting || site.State == ObjectState.Started));
+        }
+
+
         static void Main(string[] args)
         {
             var containerRootPath = System.IO.Directory.GetCurrentDirectory();
@@ -40,7 +52,8 @@ namespace Soldier
             ServerManager serverManager = ServerManager.OpenRemote("localhost");
             Site site = serverManager.Sites[containerID];
             site.Start();
-            Thread.Sleep(20000);
+
+            WaitForSiteToStop(containerID);
         }
     }
 }
