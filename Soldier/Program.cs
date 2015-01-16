@@ -1,4 +1,5 @@
 ﻿using Microsoft.Web.Administration;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,50 +11,55 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Soldier
 {
+    public class ExecutionMetadata
+    {
+        [JsonProperty("detected_start_command")]
+        public string DetectedStartCommand { get; set; }
+
+        [JsonProperty("start_command_args")]
+        public string[] StartCommandArgs { get; set; }
+    }
+
     class Program
     {
-        static void WaitForSiteToStop(string containerId)
+        static int Main(string[] args)
         {
-            Site site;
-            do
+            if (args.Length < 3)
             {
-                Thread.Sleep(500);
-                var serverManager = ServerManager.OpenRemote("localhost");
-                site = serverManager.Sites[containerId];
-            } while (site != null && (site.State == ObjectState.Starting || site.State == ObjectState.Started));
-        }
+                Console.Error.WriteLine("Soldier was run with insufficient arguments. The arguments were: {0}",
+                    String.Join(" ", args));
+                return 1;
+            }
 
+            ExecutionMetadata executionMetadata = null;
 
-        static void Main(string[] args)
-        {
-            var containerRootPath = System.IO.Directory.GetCurrentDirectory();
-            var containerID = new DirectoryInfo(containerRootPath).Name;
-            var webDeployPath = Path.Combine(containerRootPath, "webdeploy");
-            var zipFileLocation =
-                Directory.GetFiles(webDeployPath, "*.zip", SearchOption.TopDirectoryOnly).SingleOrDefault();
+            try
+            {
+                executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(args[2]);
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(
+                    "Soldier was run with invalid JSON for the metadata argument. The JSON was: {0}", args[2]);
+                return 1;
+            }
 
-            //CRAZY MSDEPLOY COMMAND LINE.  THIS SHOULD BE MADE BETTERER.
-            var deployCommand = "\"C:\\Program Files\\IIS\\Microsoft Web Deploy V3\\msdeploy.exe\"";         
-            var deployCommandArgs = "-verb:sync -source:package="+zipFileLocation+" -dest:auto -setParam:name='IIS Web Application Name',value=\"" + containerID + "\" -presync:runCommand='\"C:\\Windows\\System32\\inetsrv\\appcmd set site " + containerID + " /bindings:http/*:8080:'";
+            var startInfo = new ProcessStartInfo
+            {
+                UseShellExecute = false,
+                FileName = executionMetadata.DetectedStartCommand,
+                Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs),
+            };
 
-            ProcessStartInfo startInfo;
-            startInfo = new ProcessStartInfo(deployCommand, deployCommandArgs);
-            startInfo.WorkingDirectory = webDeployPath;
-            var process = new Process {StartInfo = startInfo};
-            process.Start();
+            var process = Process.Start(startInfo);
+
             process.WaitForExit();
 
-            var stockWebConfig = Path.Combine(containerRootPath, "tmp", "circus", "Web.config");
-            var webConfigDestination = Path.Combine(containerRootPath, "Web.config");
-            File.Copy(stockWebConfig, webConfigDestination);
-            ServerManager serverManager = ServerManager.OpenRemote("localhost");
-            Site site = serverManager.Sites[containerID];
-            site.Start();
-
-            WaitForSiteToStop(containerID);
+            return process.ExitCode;
         }
     }
 }
