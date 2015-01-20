@@ -48,7 +48,8 @@ namespace Tailor
             JObject execution_metadata = new JObject();
             execution_metadata["start_command"] = "tmp/Circus/WebAppServer.exe";
             execution_metadata["start_command_args"] = new JArray()
-            { new JValue("8080"), new JValue("/app"), };
+            { new JValue("8080"), new JValue("/"), };
+
             JObject detected_start_command = new JObject();
             detected_start_command["web"] = "the start command";
 
