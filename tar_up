@@ -3,6 +3,7 @@ mkdir -p circus/tent
 cp Tailor/bin/Debug/* circus/tent
 cp Soldier/bin/Debug/* circus/tent
 cp Spy/bin/Debug/* circus/tent
+cp WebAppServer/bin/Debug/* circus/tent
 cp Web.config circus/tent
 cd circus/tent
 tar -cvzf ../windows-circus.tgz *

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using NSpec;
 
 namespace Tailor.Tests.Specs.Features
@@ -64,6 +65,11 @@ namespace Tailor.Tests.Specs.Features
                     {
                         var resultFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Tailor.Tests", "tmp", "result.json");
                         File.Exists(resultFile).should_be_true();
+
+                        JObject result = JObject.Parse(File.ReadAllText(resultFile));
+                        var execution_metadata = JObject.Parse(result["execution_metadata"].Value<string>());
+                        execution_metadata["detected_start_command"].Value<string>().should_be("tmp/Circus/WebAppServer.exe");
+                        execution_metadata["start_command_args"].Values<string>().should_be(new [] {"8080", "app/"});
                     };
                 };
 
