@@ -17,7 +17,7 @@ namespace Soldier
 {
     public class ExecutionMetadata
     {
-        [JsonProperty("detected_start_command")]
+        [JsonProperty("start_command")]
         public string DetectedStartCommand { get; set; }
 
         [JsonProperty("start_command_args")]

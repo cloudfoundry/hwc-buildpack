@@ -32,7 +32,7 @@ namespace Soldier.Tests.Features
                             {
                                 "/app",
                                 "",
-                                "{\"detected_start_command\":\"Fixtures\\CivetCat.bat\", \"start_command_args\":[\"bean1\", \"bean\\2\"]}"
+                                "{\"start_command\":\"Fixtures\\CivetCat.bat\", \"start_command_args\":[\"bean1\", \"bean\\2\"]}"
                             }
                         ),
                         RedirectStandardOutput = true,
@@ -48,7 +48,7 @@ namespace Soldier.Tests.Features
                             {
                                "/app",
                                "",
-                               "{\"detected_start_command\":\"Fixtures\\Explosions.bat\", \"start_command_args\":[\"boom\"]}"
+                               "{\"start_command\":\"Fixtures\\Explosions.bat\", \"start_command_args\":[\"boom\"]}"
                             }
                         ),
                         RedirectStandardOutput = true,
