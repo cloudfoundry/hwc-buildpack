@@ -46,12 +46,15 @@ namespace Tailor
         private static void GenerateOutputMetadata(string fileName)
         {
             JObject execution_metadata = new JObject();
-            execution_metadata["detected_start_command"] = "tmp/Circus/WebAppServer.exe";
+            execution_metadata["start_command"] = "tmp/Circus/WebAppServer.exe";
             execution_metadata["start_command_args"] = new JArray()
             { new JValue("8080"), new JValue("/app"), };
+            JObject detected_start_command = new JObject();
+            detected_start_command["web"] = "the start command";
 
             JObject obj = new JObject();
             obj["execution_metadata"] = execution_metadata.ToString(Formatting.None);
+            obj["detected_start_command"] = detected_start_command;
             System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + fileName, obj.ToString());
         }
 
