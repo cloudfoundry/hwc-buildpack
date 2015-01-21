@@ -48,6 +48,7 @@ namespace WebAppServer.Tests
                         var client = new HttpClient();
                         var response = client.GetAsync("http://localhost:" + port).GetAwaiter().GetResult();
                         response.StatusCode.should_be(HttpStatusCode.OK);
+                        response.Content.ReadAsStringAsync().Result.should_be("\"hello i am nora\"");
                     };
 
                     after = () =>
