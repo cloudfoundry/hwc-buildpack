@@ -15,7 +15,7 @@ namespace WebAppServer
         public void Parse(string[] args)
         {
             Port = UInt32.Parse(args[0]);
-            WebRoot = Path.Combine(Directory.GetCurrentDirectory(), args[1]);
+            WebRoot = Path.GetFullPath(args[1]);
         }
     }
 }

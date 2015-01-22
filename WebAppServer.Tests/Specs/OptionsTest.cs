@@ -21,7 +21,7 @@ namespace WebAppServer.Tests.Specs
                 before = () =>
                 {
                     port = "9999";
-                    path = "";
+                    path = ".";
                     options = new Options();
                 };
 
@@ -48,16 +48,16 @@ namespace WebAppServer.Tests.Specs
                     };
                 };
 
-                context["when a relative path is passed in "] = () =>
+                context["when '.' is passed in "] = () =>
                 {
                     before = () =>
                     {
-                        path = @"app/myapp";
+                        path = @".";
                     };
 
                     it["appends a relative directory to the current directoy"] = () =>
                     {
-                        options.WebRoot.should_be(Path.Combine(Directory.GetCurrentDirectory(), "app/myapp"));
+                        options.WebRoot.should_be(Directory.GetCurrentDirectory());
                     };
                 };
             };
