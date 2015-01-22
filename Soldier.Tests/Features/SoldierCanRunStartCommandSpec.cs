@@ -19,6 +19,12 @@ namespace Soldier.Tests.Features
             ProcessStartInfo explodingStartInfo = null;
             Process process = null;
 
+            before = () =>
+            {
+                var workingDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Soldier.Tests", "bin", "Debug");
+                Directory.SetCurrentDirectory(workingDirectory);
+            };
+
             describe["Given that a start command is provided to the Soldier"] = () =>
             {
                 before = () =>
@@ -27,6 +33,7 @@ namespace Soldier.Tests.Features
                     {
                         UseShellExecute = false,
                         FileName = "Soldier.exe",
+
                         Arguments = ArgumentEscaper.Escape(
                             new[]
                             {
