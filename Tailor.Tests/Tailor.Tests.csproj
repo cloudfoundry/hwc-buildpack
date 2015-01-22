@@ -69,7 +69,6 @@
     <Compile Include="Features\StagerCanRunTailorSpec.cs" />
     <Compile Include="Specs\TarGZFileTest.cs" />
     <Compile Include="Specs\TempDirectoryTest.cs" />
-    <Compile Include="Startup.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
