@@ -1,1 +1,1 @@
-tar cvzf windows-circus.tgz -n -C Tailor/bin/Debug . -C ../../../Soldier/bin/Debug . -C ../../../Spy/bin/Debug . -C ../../../WebAppServer/bin/Debug . -C ../../../ Web.config
+tar cvzf windows-circus.tgz -n -C Tailor/bin/Debug . -C ../../../Soldier/bin/Debug . -C ../../../Spy/bin/Debug . -C ../../../WebAppServer/bin/Debug .
