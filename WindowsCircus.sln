@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailor", "Tailor\Tailor.csproj", "{68F6A408-B0F2-4BB4-A0A4-278694FAB63D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Builder", "Builder\Builder.csproj", "{68F6A408-B0F2-4BB4-A0A4-278694FAB63D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08426B53-B9F2-420A-9147-641DFBFE04BE}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,16 +13,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{08426B
 		.nuget\packages.config = .nuget\packages.config
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soldier.Tests", "Soldier.Tests\Soldier.Tests.csproj", "{273733E4-6283-4E52-9CED-10EFA609EB38}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher.Tests", "Launcher.Tests\Launcher.Tests.csproj", "{273733E4-6283-4E52-9CED-10EFA609EB38}"
 	ProjectSection(ProjectDependencies) = postProject
 		{956F7FAD-B936-4ED7-9685-4D963E4CBDD6} = {956F7FAD-B936-4ED7-9685-4D963E4CBDD6}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Soldier", "Soldier\Soldier.csproj", "{956F7FAD-B936-4ED7-9685-4D963E4CBDD6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher", "Launcher\Launcher.csproj", "{956F7FAD-B936-4ED7-9685-4D963E4CBDD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spy", "Spy\Spy.csproj", "{3726B016-605C-4ACA-A282-052CA1AD9AAD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Healthcheck", "Healthcheck\Healthcheck.csproj", "{3726B016-605C-4ACA-A282-052CA1AD9AAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tailor.Tests", "Tailor.Tests\Tailor.Tests.csproj", "{2FE7925C-AC3E-4103-BF03-2D22F3D88610}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Builder.Tests", "Builder.Tests\Builder.Tests.csproj", "{2FE7925C-AC3E-4103-BF03-2D22F3D88610}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppServer", "WebAppServer\WebAppServer.csproj", "{DC9F6EDC-5779-481C-9424-7C4CD63620B3}"
 EndProject
