@@ -19,8 +19,15 @@ namespace WebAppServer.Tests
                 {
                     int port = 3300;
                     Process process = null;
+                    string proccessName = null;
 
-                    before = () => port = 3300;
+                    before = () =>
+                    {
+                        port = 3300;
+                        proccessName = "WebAppServer.exe";
+
+                        KillOrphanWebAppServer(proccessName);
+                    };
                     
                     act = () =>
                     {
@@ -31,9 +38,9 @@ namespace WebAppServer.Tests
                         {
                             StartInfo =
                             {
-                                FileName = Path.Combine(workingDir, "bin", "debug", "WebAppServer.exe"),
-                                Arguments = String.Format("{0} \"{1}\"", port, webRoot),
-                                WorkingDirectory = workingDir,
+                                FileName = Path.Combine(workingDir, "bin", "debug", proccessName),
+                                Arguments = String.Format("{0} \"{1}\"", port, "."),
+                                WorkingDirectory = webRoot,
                                 RedirectStandardInput = true,
                                 RedirectStandardError = true,
                                 UseShellExecute = false
@@ -48,6 +55,7 @@ namespace WebAppServer.Tests
                         var client = new HttpClient();
                         var response = client.GetAsync("http://localhost:" + port).GetAwaiter().GetResult();
                         response.StatusCode.should_be(HttpStatusCode.OK);
+                        response.Content.ReadAsStringAsync().Result.should_be("\"hello i am nora\"");
                     };
 
                     after = () =>
@@ -70,5 +78,37 @@ namespace WebAppServer.Tests
                 };
             };
         }
+
+        private static void KillOrphanWebAppServer(string proccessName)
+        {
+            const string force = "/f";
+            const string alsoKillChildProcesses = "/t";
+            const string useProcessName = "/im";
+            var killOrphanProcess = new Process
+            {
+                StartInfo =
+                {
+                    FileName = "taskkill.exe",
+                    Arguments =
+                        String.Format("{0} {1} {2} {3}", force, alsoKillChildProcesses, useProcessName,
+                            proccessName),
+                    UseShellExecute = false,
+                    RedirectStandardError = true
+                }
+            };
+
+            killOrphanProcess.Start();
+            var stderr = killOrphanProcess.StandardError.ReadToEnd();
+            if (stderr.Contains("Access is denied"))
+            {
+                throw new Exception(String.Format("Could not remove orphan {0}." +
+                                                  "This is likely because WinowsCircus was previously run as Administrator," +
+                                                  " and is currently running under a non privleged user. To fix:" +
+                                                  " run \"taskkill.exe /f /t /im {0}\" in admin command prompt", proccessName));
+            
+            }
+            killOrphanProcess.WaitForExit();
+        }
     }
 }
+

@@ -13,6 +13,24 @@ using System.Threading.Tasks;
 
 namespace Tailor
 {
+
+    public class ExecutionMetadata
+    {
+        [JsonProperty("detected_start_command")]
+        public string DetectedStartCommand
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty("start_command_args")]
+        public string[] StartCommandArgs
+        {
+            get;
+            set;
+        }
+    }
+
     public class Program
     {
         public static void Run(Options options)
@@ -28,7 +46,10 @@ namespace Tailor
         private static void GenerateOutputMetadata(string fileName)
         {
             JObject execution_metadata = new JObject();
-            execution_metadata["start_command"] = "the start command";
+            execution_metadata["start_command"] = "tmp/Circus/WebAppServer.exe";
+            execution_metadata["start_command_args"] = new JArray()
+            { new JValue("8080"), new JValue("."), };
+
             JObject detected_start_command = new JObject();
             detected_start_command["web"] = "the start command";
 
