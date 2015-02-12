@@ -48,6 +48,8 @@ namespace Launcher
                 return 1;
             }
 
+            Console.Out.WriteLine("Run {0} :: {1}", executionMetadata.DetectedStartCommand, ArgumentEscaper.Escape(executionMetadata.StartCommandArgs));
+
             var startInfo = new ProcessStartInfo
             {
                 UseShellExecute = false,
