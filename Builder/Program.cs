@@ -46,7 +46,7 @@ namespace Builder
         private static void GenerateOutputMetadata(string fileName)
         {
             JObject execution_metadata = new JObject();
-            execution_metadata["start_command"] = "tmp/Circus/WebAppServer.exe";
+            execution_metadata["start_command"] = "tmp/lifecycle/WebAppServer.exe";
             execution_metadata["start_command_args"] = new JArray()
             { new JValue("8080"), new JValue("."), };
 

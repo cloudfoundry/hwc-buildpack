@@ -68,7 +68,7 @@ namespace Builder.Tests.Specs.Features
 
                         JObject result = JObject.Parse(File.ReadAllText(resultFile));
                         var execution_metadata = JObject.Parse(result["execution_metadata"].Value<string>());
-                        execution_metadata["start_command"].Value<string>().should_be("tmp/Circus/WebAppServer.exe");
+                        execution_metadata["start_command"].Value<string>().should_be("tmp/lifecycle/WebAppServer.exe");
                         execution_metadata["start_command_args"].Values<string>().should_be(new [] {"8080", "."});
                     };
 
