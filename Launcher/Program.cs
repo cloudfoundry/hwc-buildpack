@@ -55,6 +55,8 @@ namespace Launcher
                 Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs),
             };
 
+            Console.Out.WriteLine("Run {0} :with: {1}", startInfo.FileName, startInfo.Arguments);
+
             var process = Process.Start(startInfo);
 
             process.WaitForExit();
