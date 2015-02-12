@@ -39,13 +39,14 @@ namespace WebAppServer.Tests
                             StartInfo =
                             {
                                 FileName = Path.Combine(workingDir, "bin", "debug", proccessName),
-                                Arguments = String.Format("{0} \"{1}\"", port, "."),
+                                Arguments = ".",
                                 WorkingDirectory = webRoot,
                                 RedirectStandardInput = true,
                                 RedirectStandardError = true,
                                 UseShellExecute = false
                             }
                         };
+                        process.StartInfo.EnvironmentVariables["PORT"] = port.ToString();
 
                         process.Start();                    
                     };

@@ -21,13 +21,14 @@ namespace WebAppServer.Tests.Specs
                 before = () =>
                 {
                     port = "9999";
+                    Environment.SetEnvironmentVariable("PORT", port);
                     path = ".";
                     options = new Options();
                 };
 
                 act = () =>
                 {
-                    options.Parse(new[] { port, path });
+                    options.Parse(new[] { path });
                 };
 
                 it["parses port as an int"] = () =>

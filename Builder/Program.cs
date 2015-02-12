@@ -47,8 +47,7 @@ namespace Builder
         {
             JObject execution_metadata = new JObject();
             execution_metadata["start_command"] = "tmp/lifecycle/WebAppServer.exe";
-            execution_metadata["start_command_args"] = new JArray()
-            { new JValue("8080"), new JValue("."), };
+            execution_metadata["start_command_args"] = new JArray() { new JValue("."), };
 
             JObject detected_start_command = new JObject();
             detected_start_command["web"] = "the start command";
