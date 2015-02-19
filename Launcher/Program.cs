@@ -1,17 +1,6 @@
-﻿using Microsoft.Web.Administration;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Data;
+﻿using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace Launcher
 {
@@ -24,10 +13,13 @@ namespace Launcher
         public string[] StartCommandArgs { get; set; }
     }
 
-    class Program
+    internal class Program
     {
-        static int Main(string[] args)
+        private static int Main(string[] args)
         {
+            if (Environment.GetEnvironmentVariable("ARGJSON") != null && Environment.GetEnvironmentVariable("ARGJSON").Length >= 2)
+                args = JsonConvert.DeserializeObject<string[]>(Environment.GetEnvironmentVariable("ARGJSON"));
+
             if (args.Length < 3)
             {
                 Console.Error.WriteLine("Launcher was run with insufficient arguments. The arguments were: {0}",
@@ -48,13 +40,14 @@ namespace Launcher
                 return 1;
             }
 
-            Console.Out.WriteLine("Run {0} :: {1}", executionMetadata.DetectedStartCommand, ArgumentEscaper.Escape(executionMetadata.StartCommandArgs));
+            Console.Out.WriteLine("Run {0} :: {1}", executionMetadata.DetectedStartCommand,
+                ArgumentEscaper.Escape(executionMetadata.StartCommandArgs));
 
             var startInfo = new ProcessStartInfo
             {
                 UseShellExecute = false,
                 FileName = executionMetadata.DetectedStartCommand,
-                Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs),
+                Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs)
             };
 
             Console.Out.WriteLine("Run {0} :with: {1}", startInfo.FileName, startInfo.Arguments);
