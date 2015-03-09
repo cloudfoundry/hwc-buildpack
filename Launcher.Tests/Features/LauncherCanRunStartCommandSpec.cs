@@ -22,7 +22,7 @@ namespace Launcher.Tests.Features
 
             before = () =>
             {
-                var workingDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Launcher.Tests", "bin", "Debug");
+                var workingDirectory =  Path.GetFullPath(Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "..").Replace("file:///", ""));
                 Directory.SetCurrentDirectory(workingDirectory);
             };
 

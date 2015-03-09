@@ -31,7 +31,7 @@ namespace WebAppServer.Tests
                     
                     act = () =>
                     {
-                        var workingDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "WebAppServer.Tests");
+                        var workingDir = Path.GetFullPath(Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "..", "..", "..").Replace("file:///", ""));
                         var webRoot = Path.Combine(workingDir, "Fixtures", "Nora");
 
                         process = new Process
