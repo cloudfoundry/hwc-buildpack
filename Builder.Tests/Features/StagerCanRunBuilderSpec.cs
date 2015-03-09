@@ -16,10 +16,13 @@ namespace Builder.Tests.Specs.Features
         {
             context["Given That I am a CC Bridge Stager"] = () =>
             {
+                string workingDir = null;
+
                 before = () =>
                 {
-                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Builder.Tests", "tmp", "droplet");
-                    File.Delete(filename);
+                    workingDir = Path.GetFullPath(Path.Combine(System.Reflection.Assembly.GetExecutingAssembly().CodeBase, "..", "..", "..", "..").Replace("file:///", ""));
+                    var filename = Path.Combine(workingDir, "Builder.Tests", "tmp", "droplet");
+                    if(File.Exists(filename)) File.Delete(filename);
 
                     arguments = new Dictionary<string, string>
                     {
@@ -39,31 +42,31 @@ namespace Builder.Tests.Specs.Features
                 {
                     before = () =>
                     {
-                        var workingDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Builder.Tests");
                         var process = new Process
                         {
                             StartInfo =
                             {
-                                FileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Builder", "bin", "debug", "Builder.exe"),
+                                FileName = Path.Combine(workingDir, "Builder", "bin", "debug", "Builder.exe"),
                                 Arguments = arguments,
-                                WorkingDirectory = workingDir
+                                WorkingDirectory = Path.Combine(workingDir, "Builder.Tests")
                             }
                         };
 
                         process.Start();
                         process.WaitForExit();
+                        process.ExitCode.should_be(0);
                     };
 
                     it["Creates a droplet"] = () =>
                     {
 
-                        var fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Builder.Tests", "tmp", "droplet");
+                        var fileName = Path.Combine(workingDir, "Builder.Tests", "tmp", "droplet");
                         File.Exists(fileName).should_be_true();
                     };
 
                     it["Creates the result.json"] = () =>
                     {
-                        var resultFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Builder.Tests", "tmp", "result.json");
+                        var resultFile = Path.Combine(workingDir, "Builder.Tests", "tmp", "result.json");
                         File.Exists(resultFile).should_be_true();
 
                         JObject result = JObject.Parse(File.ReadAllText(resultFile));
@@ -74,7 +77,7 @@ namespace Builder.Tests.Specs.Features
 
                     it["includes magical json properties required for the diego lifecyle (in cf push) to work"] = () =>
                     {
-                        var resultFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Builder.Tests", "tmp", "result.json");
+                        var resultFile = Path.Combine(workingDir, "Builder.Tests", "tmp", "result.json");
                         File.Exists(resultFile).should_be_true();
 
                         JObject result = JObject.Parse(File.ReadAllText(resultFile));
@@ -86,7 +89,7 @@ namespace Builder.Tests.Specs.Features
 
                 after = () =>
                 {
-                    var filename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Builder.Tests", "tmp", "droplet");
+                    var filename = Path.Combine(workingDir, "Builder.Tests", "tmp", "droplet");
                     File.Delete(filename);
                 };
             };
