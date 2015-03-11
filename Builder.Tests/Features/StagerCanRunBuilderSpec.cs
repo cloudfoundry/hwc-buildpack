@@ -46,7 +46,7 @@ namespace Builder.Tests.Specs.Features
                         {
                             StartInfo =
                             {
-                                FileName = Path.Combine(workingDir, "Builder", "bin", "debug", "Builder.exe"),
+                                FileName = Path.Combine(workingDir, "Builder", "bin", "Builder.exe"),
                                 Arguments = arguments,
                                 WorkingDirectory = Path.Combine(workingDir, "Builder.Tests")
                             }
