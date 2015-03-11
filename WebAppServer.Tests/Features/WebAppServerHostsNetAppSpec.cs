@@ -38,7 +38,7 @@ namespace WebAppServer.Tests
                         {
                             StartInfo =
                             {
-                                FileName = Path.Combine(workingDir, "bin", proccessName),
+                                FileName = Path.Combine(workingDir, "..", "WebAppServer", "bin", proccessName),
                                 Arguments = ".",
                                 WorkingDirectory = webRoot,
                                 RedirectStandardInput = true,
