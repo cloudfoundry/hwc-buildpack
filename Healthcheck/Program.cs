@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,8 +12,30 @@ namespace Healthcheck
     {
         static void Main(string[] args)
         {
-            System.Console.WriteLine("If I was to check a port, it would be: {0}", Environment.GetEnvironmentVariable("PORT"));
-            System.Console.WriteLine("Hi I am dummy Healthcheck, please replace.");
+            // The health check succeeds if the process is listening on any non-local interface
+            foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                IPInterfaceProperties ipProps = netInterface.GetIPProperties();
+                foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
+                {
+                    if (addr.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+                    if (addr.Address.ToString().StartsWith("127.")) continue;
+
+                    try
+                    {
+                        var tcpCLient = new TcpClient(addr.Address.ToString(), Int32.Parse(Environment.GetEnvironmentVariable("PORT")));
+
+                        System.Console.WriteLine("healthcheck passed");
+                        System.Environment.Exit(0);
+                    }
+                    catch (Exception e)
+                    {
+                    }
+                }
+            }
+
+            System.Console.WriteLine("healthcheck failed");
+            System.Environment.Exit(1);
         }
     }
 }
