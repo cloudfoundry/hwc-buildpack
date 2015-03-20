@@ -34,6 +34,9 @@ namespace Builder
         [Option('s', "skipCertVerify", Required = false, HelpText = "")]
         public string SkipCertVerify { get; set; }
 
+        [Option('k', "skipDetect", Required = false, HelpText = "")]
+        public string skipDetect { get; set; }
+
         [HelpOption]
         public string GetUsage()
         {
