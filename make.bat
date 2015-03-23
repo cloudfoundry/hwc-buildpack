@@ -1,19 +1,17 @@
-SET BIN=%CD%\bin
-SET PATH=%BIN%;%PATH%
+SET PATH=%PATH%;%WINDIR%\Microsoft.NET\Framework64\v4.0.30319
 
 :: enable some features
-SET dism=%WINDIR%\SysNative\dism.exe
-%dism% /online /Enable-Feature /FeatureName:IIS-WebServer /All /NoRestart
-%dism% /online /Enable-Feature /FeatureName:IIS-WebSockets /All /NoRestart
-%dism% /online /Enable-Feature /FeatureName:Application-Server-WebServer-Support /FeatureName:AS-NET-Framework /All /NoRestart
-%dism% /online /Enable-Feature /FeatureName:IIS-HostableWebCore /All /NoRestart
+dism /online /Enable-Feature /FeatureName:IIS-WebServer /All /NoRestart || exit /b 1
+dism /online /Enable-Feature /FeatureName:IIS-WebSockets /All /NoRestart || exit /b 1
+dism /online /Enable-Feature /FeatureName:Application-Server-WebServer-Support /FeatureName:AS-NET-Framework /All /NoRestart || exit /b 1
+dism /online /Enable-Feature /FeatureName:IIS-HostableWebCore /All /NoRestart || exit /b 1
  
 del /F /Q windows_app_lifecycle.tgz
 rmdir /S /Q packages
-nuget restore || exit /b 1
+bin\nuget restore || exit /b 1
 
 MSBuild WindowsCircus.sln /t:Rebuild /p:Configuration=Release || exit /b 1
 packages\nspec.0.9.68\tools\NSpecRunner.exe Builder.Tests\bin\Release\BuilderTests.dll || exit /b 1
 packages\nspec.0.9.68\tools\NSpecRunner.exe Launcher.Tests\bin\Release\LauncherTests.dll || exit /b 1
 packages\nspec.0.9.68\tools\NSpecRunner.exe WebAppServer.Tests\bin\Release\WebAppServer.Tests.dll || exit /b 1
-bsdtar -czvf windows_app_lifecycle.tgz --exclude log -C Builder\bin . -C ..\..\Launcher\bin . -C ..\..\Healthcheck\bin . -C ..\..\WebAppServer\bin . || exit /b 1
+bin\bsdtar -czvf windows_app_lifecycle.tgz --exclude log -C Builder\bin . -C ..\..\Launcher\bin . -C ..\..\Healthcheck\bin . -C ..\..\WebAppServer\bin . || exit /b 1
