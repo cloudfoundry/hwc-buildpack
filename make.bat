@@ -1,6 +1,13 @@
 SET BIN=%CD%\bin
 SET PATH=%BIN%;%PATH%
 
+:: enable some features
+SET dism=%WINDIR%\SysNative\dism.exe
+%dism% /online /Enable-Feature /FeatureName:IIS-WebServer /All /NoRestart
+%dism% /online /Enable-Feature /FeatureName:IIS-WebSockets /All /NoRestart
+%dism% /online /Enable-Feature /FeatureName:Application-Server-WebServer-Support /FeatureName:AS-NET-Framework /All /NoRestart
+%dism% /online /Enable-Feature /FeatureName:IIS-HostableWebCore /All /NoRestart
+ 
 del /F /Q windows_app_lifecycle.tgz
 rmdir /S /Q packages
 nuget restore || exit /b 1
