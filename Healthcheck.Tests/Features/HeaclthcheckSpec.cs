@@ -79,7 +79,9 @@ namespace Healthcheck.Tests.Specs
                     tcpListener.Start();
                     tcpListener.AcceptTcpClient();
                 }
-                catch (Exception e) { }
+                catch (Exception) { 
+                    // ignore the exception
+                }
             }));
             listenThread.Start();
             return tcpListener;

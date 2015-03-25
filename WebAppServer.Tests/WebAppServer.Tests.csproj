@@ -83,17 +83,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="nunit-gui-runner">
-      <HintPath>..\packages\NUnit.Runners.2.6.3\tools\lib\nunit-gui-runner.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.core">
-      <HintPath>..\packages\NUnit.Runners.2.6.3\tools\lib\nunit.core.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.core.interfaces">
-      <HintPath>..\packages\NUnit.Runners.2.6.3\tools\lib\nunit.core.interfaces.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\WebAppServer\WebAppServer.csproj">
       <Project>{dc9f6edc-5779-481c-9424-7c4cd63620b3}</Project>
       <Name>WebAppServer</Name>

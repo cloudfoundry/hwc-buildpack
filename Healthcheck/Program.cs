@@ -28,7 +28,7 @@ namespace Healthcheck
                         System.Console.WriteLine("healthcheck passed");
                         System.Environment.Exit(0);
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                     }
                 }

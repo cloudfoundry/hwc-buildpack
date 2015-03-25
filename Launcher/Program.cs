@@ -33,7 +33,7 @@ namespace Launcher
             {
                 executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(args[2]);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Console.Error.WriteLine(
                     "Launcher was run with invalid JSON for the metadata argument. The JSON was: {0}", args[2]);
