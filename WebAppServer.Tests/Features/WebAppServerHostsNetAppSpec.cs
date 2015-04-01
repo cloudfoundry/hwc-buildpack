@@ -103,7 +103,7 @@ namespace WebAppServer.Tests
             if (stderr.Contains("Access is denied"))
             {
                 throw new Exception(String.Format("Could not remove orphan {0}." +
-                                                  "This is likely because WinowsCircus was previously run as Administrator," +
+                                                  "This is likely because WinowsAppLifecycle was previously run as Administrator," +
                                                   " and is currently running under a non privleged user. To fix:" +
                                                   " run \"taskkill.exe /f /t /im {0}\" in admin command prompt", proccessName));
             
