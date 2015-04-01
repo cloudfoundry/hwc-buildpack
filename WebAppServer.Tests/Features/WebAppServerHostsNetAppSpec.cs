@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Principal;
 using System.Threading;
+using System.Linq;
 
 namespace WebAppServer.Tests
 {
@@ -57,6 +58,16 @@ namespace WebAppServer.Tests
                         var response = client.GetAsync("http://localhost:" + port).GetAwaiter().GetResult();
                         response.StatusCode.should_be(HttpStatusCode.OK);
                         response.Content.ReadAsStringAsync().Result.should_be("\"hello i am nora\"");
+                    };
+
+                    it["does not add unexpected custom headers"] = () =>
+                    {
+                        var client = new HttpClient();
+                        var response = client.GetAsync("http://localhost:" + port).GetAwaiter().GetResult();
+                        response.StatusCode.should_be(HttpStatusCode.OK);
+
+                        var CustomHeaders = response.Headers.Where((x) =>x.Key.StartsWith("X-")).Select((x)=>x.Key).ToList();
+                        CustomHeaders.should_be(new string[] { "X-AspNet-Version" });
                     };
 
                     after = () =>
