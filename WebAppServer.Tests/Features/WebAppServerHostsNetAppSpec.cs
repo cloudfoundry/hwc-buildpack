@@ -18,15 +18,12 @@ namespace WebAppServer.Tests
             {
                 describe["When I pass it to WebAppServer"] = () =>
                 {
-                    int port = 3300;
+                    const string proccessName = "WebAppServer.exe";
+                    const int port = 43311;
                     Process process = null;
-                    string proccessName = null;
 
                     before = () =>
                     {
-                        port = 3300;
-                        proccessName = "WebAppServer.exe";
-
                         KillOrphanWebAppServer(proccessName);
                     };
                     
