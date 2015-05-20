@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Net;
 using System.Security.Principal;
 using System.Threading;
 
@@ -16,7 +18,7 @@ namespace WebAppServer
                 log.Info("Starting web server instance...");
                 webServer.Start();
                 Console.WriteLine("Server Started.... press CTRL + C to stop");
-
+                Warmup(webServer);
                 exitLatch.WaitOne();
                 Console.WriteLine("Server shutting down, please wait...");
                 webServer.Stop();
@@ -27,6 +29,21 @@ namespace WebAppServer
             {
                 log.Error("Please allow the user to access the port. eg. 'netsh http add urlacl url=http://*:9999/ user={0}'", WindowsIdentity.GetCurrent().Name);
                 return 1;
+            }
+        }
+
+        private static void Warmup(IWebServer server)
+        {
+            var req = WebRequest.Create("http://localhost:" + server.Port);
+            req.Timeout = 1000;
+            try
+            {
+                req.GetResponse();
+            }
+            catch (WebException ex)
+            {
+                // ignore exceptions. An exception can be thrown if a 404 was returned
+                // which is a possibility if the application doesn't have `~/' endpoint
             }
         }
 

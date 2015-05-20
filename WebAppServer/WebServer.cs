@@ -8,6 +8,7 @@ namespace WebAppServer
     {
         void Start();
         void Stop();
+        uint Port { get; }
     }
 
     // Ref: http://msdn.microsoft.com/en-us/library/ms689327%28v=vs.90%29.aspx
@@ -40,6 +41,11 @@ namespace WebAppServer
             {
                 HostableWebCore.Shutdown(false);
             }
+        }
+
+        public uint Port
+        {
+            get { return configSettings.Port; }
         }
 
         #region Hostable WebCore

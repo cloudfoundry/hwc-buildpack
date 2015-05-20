@@ -12,6 +12,8 @@ namespace WebAppServer
     {
         public string RootWebConfigPath { get; set; }
         public string AppConfigPath { get; set; }
+        public uint Port { get; set; }
+
     }
 
     public class ConfigGenerator : IDisposable
@@ -49,8 +51,10 @@ namespace WebAppServer
         /// <returns></returns>
         public ConfigSettings Create(uint port, string rootWebConfigPath, string runtimeVersion, string pipelineMode, string userName, string password)
         {
+
             var settings = new ConfigSettings
             {
+                Port = port,
                 RootWebConfigPath = Environment.ExpandEnvironmentVariables(rootWebConfigPath),
                 AppConfigPath = Path.Combine(configPath, "applicationHost.config")
             };
