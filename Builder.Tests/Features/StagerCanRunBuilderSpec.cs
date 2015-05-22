@@ -59,7 +59,6 @@ namespace Builder.Tests.Specs.Features
 
                     it["Creates a droplet"] = () =>
                     {
-
                         var fileName = Path.Combine(workingDir, "Builder.Tests", "tmp", "droplet");
                         File.Exists(fileName).should_be_true();
                     };

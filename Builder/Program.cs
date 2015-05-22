@@ -1,23 +1,22 @@
-﻿using System.ComponentModel;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using SharpCompress.Common;
-using SharpCompress.Writer;
+﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Builder
 {
 
     public class ExecutionMetadata
     {
-        [JsonProperty("detected_start_command")]
-        public string DetectedStartCommand
+        public ExecutionMetadata()
+        {
+            StartCommand = "";
+            StartCommandArgs = new string[]{};
+        }
+
+        [JsonProperty("start_command")]
+        public string StartCommand
         {
             get;
             set;
@@ -31,31 +30,74 @@ namespace Builder
         }
     }
 
+    public class DetectedStartCommand
+    {
+        [JsonProperty("web")]
+        public string Web { get; set; }
+    }
+
+    public class OutputMetadata
+    {
+        public ExecutionMetadata ExecutionMetadata { get; set; }
+
+        [JsonProperty("execution_metadata")]
+        public string execution_metadata
+        {
+            get { return JsonConvert.SerializeObject(ExecutionMetadata); }
+        }
+
+        [JsonProperty("detected_start_command")]
+        public DetectedStartCommand DetectedStartCommand { get; set; }
+
+        public OutputMetadata()
+        {
+            ExecutionMetadata = new ExecutionMetadata();
+            DetectedStartCommand = new DetectedStartCommand();
+        }
+
+        public OutputMetadata(IList<string> files) : this()
+        {
+            if (files.Any((x) => Path.GetFileName(x).ToLower() == "web.config"))
+            {
+                ExecutionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
+                ExecutionMetadata.StartCommandArgs = new string[] {"."};
+            }
+            else {
+                var executables = files.Where((x) => x.EndsWith(".exe")).ToList();
+                if (executables.Any())
+                {
+                    if (executables.Count() > 1) throw new Exception("Directory contained more than 1 executable file.");
+                    ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
+                }
+                else
+                {
+                    throw new Exception("No runnable application found.");
+                }
+            }
+            DetectedStartCommand.Web = ExecutionMetadata.StartCommand;
+            if (ExecutionMetadata.StartCommandArgs.Any())
+            {
+                DetectedStartCommand.Web += " " + String.Join(" ", ExecutionMetadata.StartCommandArgs);
+            }
+        }
+    }
+
     public class Program
     {
         public static void Run(Options options)
         {
-            var appPath = System.IO.Directory.GetCurrentDirectory() + options.BuildDir;
-            var outputDropletPath = System.IO.Directory.GetCurrentDirectory() + options.OutputDroplet;
+            var appPath = Directory.GetCurrentDirectory() + options.BuildDir;
+            var outputDropletPath = Directory.GetCurrentDirectory() + options.OutputDroplet;
             TarGZFile.CreateFromDirectory(appPath, outputDropletPath);
 
             // Result.JSON
-            GenerateOutputMetadata(options.OutputMetadata);
+            GenerateOutputMetadata(appPath, options.OutputMetadata);
         }
 
-        private static void GenerateOutputMetadata(string fileName)
+        private static void GenerateOutputMetadata(string appPath, string fileName)
         {
-            JObject execution_metadata = new JObject();
-            execution_metadata["start_command"] = "tmp/lifecycle/WebAppServer.exe";
-            execution_metadata["start_command_args"] = new JArray() { new JValue("."), };
-
-            JObject detected_start_command = new JObject();
-            detected_start_command["web"] = "the start command";
-
-            JObject obj = new JObject();
-            obj["execution_metadata"] = execution_metadata.ToString(Formatting.None);
-            obj["detected_start_command"] = detected_start_command;
-            System.IO.File.WriteAllText(System.IO.Directory.GetCurrentDirectory() + fileName, obj.ToString());
+            var obj = new OutputMetadata(Directory.EnumerateFiles(appPath).ToList());
+            File.WriteAllText(Directory.GetCurrentDirectory() + fileName, JsonConvert.SerializeObject(obj));
         }
 
         static void Main(string[] args)
