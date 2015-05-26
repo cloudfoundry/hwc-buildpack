@@ -62,16 +62,37 @@ namespace Builder
                 ExecutionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
                 ExecutionMetadata.StartCommandArgs = new string[] {"."};
             }
-            else {
-                var executables = files.Where((x) => x.EndsWith(".exe")).ToList();
-                if (executables.Any())
+            else
+            {
+                var procfiles = files.Where((x) => Path.GetFileName(x).ToLower() == "procfile").ToList();
+                if (procfiles.Any())
                 {
-                    if (executables.Count() > 1) throw new Exception("Directory contained more than 1 executable file.");
-                    ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
+                    var file = File.ReadAllLines(procfiles.First());
+                    var webline = file.Where((x) => x.StartsWith("web:"));
+                    if (webline.Any())
+                    {
+                        var contents = webline.First().Substring(4).Trim().Split(new char[] {' '});
+                        ExecutionMetadata.StartCommand = contents[0];
+                        ExecutionMetadata.StartCommandArgs = contents.Skip(1).ToArray();
+                    }
+                    else
+                    {
+                        throw new Exception("Procfile didn't contain a web line");
+                    }
                 }
                 else
                 {
-                    throw new Exception("No runnable application found.");
+                    var executables = files.Where((x) => x.EndsWith(".exe")).ToList();
+                    if (executables.Any())
+                    {
+                        if (executables.Count() > 1)
+                            throw new Exception("Directory contained more than 1 executable file.");
+                        ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
+                    }
+                    else
+                    {
+                        throw new Exception("No runnable application found.");
+                    }
                 }
             }
             DetectedStartCommand.Web = ExecutionMetadata.StartCommand;
