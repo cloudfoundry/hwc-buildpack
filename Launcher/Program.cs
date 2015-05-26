@@ -7,7 +7,7 @@ namespace Launcher
     public class ExecutionMetadata
     {
         [JsonProperty("start_command")]
-        public string DetectedStartCommand { get; set; }
+        public string StartCommand { get; set; }
 
         [JsonProperty("start_command_args")]
         public string[] StartCommandArgs { get; set; }
@@ -40,13 +40,13 @@ namespace Launcher
                 return 1;
             }
 
-            Console.Out.WriteLine("Run {0} :: {1}", executionMetadata.DetectedStartCommand,
+            Console.Out.WriteLine("Run {0} :: {1}", executionMetadata.StartCommand,
                 ArgumentEscaper.Escape(executionMetadata.StartCommandArgs));
 
             var startInfo = new ProcessStartInfo
             {
                 UseShellExecute = false,
-                FileName = executionMetadata.DetectedStartCommand,
+                FileName = executionMetadata.StartCommand,
                 Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs)
             };
 
