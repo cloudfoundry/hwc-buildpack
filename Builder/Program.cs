@@ -12,7 +12,7 @@ namespace Builder
         public ExecutionMetadata()
         {
             StartCommand = "";
-            StartCommandArgs = new string[]{};
+            StartCommandArgs = new string[] { };
         }
 
         [JsonProperty("start_command")]
@@ -57,43 +57,37 @@ namespace Builder
 
         public OutputMetadata(IList<string> files) : this()
         {
-            if (files.Any((x) => Path.GetFileName(x).ToLower() == "web.config"))
+            var procfiles = files.Where(x => Path.GetFileName(x).ToLower() == "procfile").ToList();
+            var executables = files.Where(x => x.EndsWith(".exe")).ToList();
+            if (procfiles.Any())
             {
-                ExecutionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
-                ExecutionMetadata.StartCommandArgs = new string[] {"."};
-            }
-            else
-            {
-                var procfiles = files.Where((x) => Path.GetFileName(x).ToLower() == "procfile").ToList();
-                if (procfiles.Any())
+                var file = File.ReadAllLines(procfiles.First());
+                var webline = file.Where(x => x.StartsWith("web:"));
+                if (webline.Any())
                 {
-                    var file = File.ReadAllLines(procfiles.First());
-                    var webline = file.Where((x) => x.StartsWith("web:"));
-                    if (webline.Any())
-                    {
-                        var contents = webline.First().Substring(4).Trim().Split(new char[] {' '});
-                        ExecutionMetadata.StartCommand = contents[0];
-                        ExecutionMetadata.StartCommandArgs = contents.Skip(1).ToArray();
-                    }
-                    else
-                    {
-                        throw new Exception("Procfile didn't contain a web line");
-                    }
+                    var contents = webline.First().Substring(4).Trim().Split(new[] { ' ' });
+                    ExecutionMetadata.StartCommand = contents[0];
+                    ExecutionMetadata.StartCommandArgs = contents.Skip(1).ToArray();
                 }
                 else
                 {
-                    var executables = files.Where((x) => x.EndsWith(".exe")).ToList();
-                    if (executables.Any())
-                    {
-                        if (executables.Count() > 1)
-                            throw new Exception("Directory contained more than 1 executable file.");
-                        ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
-                    }
-                    else
-                    {
-                        throw new Exception("No runnable application found.");
-                    }
+                    throw new Exception("Procfile didn't contain a web line");
                 }
+            }
+            else if (files.Any(x => Path.GetFileName(x).ToLower() == "web.config"))
+            {
+                ExecutionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
+                ExecutionMetadata.StartCommandArgs = new[] { "." };
+            }
+            else if (executables.Any())
+            {
+                if (executables.Count() > 1)
+                    throw new Exception("Directory contained more than 1 executable file.");
+                ExecutionMetadata.StartCommand = Path.GetFileName(executables.First());
+            }
+            else
+            {
+                throw new Exception("No runnable application found.");
             }
             DetectedStartCommand.Web = ExecutionMetadata.StartCommand;
             if (ExecutionMetadata.StartCommandArgs.Any())

@@ -88,6 +88,18 @@ namespace Builder.Tests
                         obj.ExecutionMetadata.StartCommand.should_be(@"billybob.exe");
                         obj.ExecutionMetadata.StartCommandArgs.should_be(new string[] {"fred", "jane", "jim"});
                     };
+
+                    context["and a web.config also exist"] = () =>
+                    {
+                        before = () => files = new List<string> { "Web.config", filename };
+
+                        it["goes with the Procfile"] = () =>
+                        {
+                            obj.DetectedStartCommand.Web.should_be(@"billybob.exe fred jane jim");
+                            obj.ExecutionMetadata.StartCommand.should_be(@"billybob.exe");
+                            obj.ExecutionMetadata.StartCommandArgs.should_be(new string[] { "fred", "jane", "jim" });
+                        };
+                    };
                 };
 
                 context["without a 'web' line"] = () =>
