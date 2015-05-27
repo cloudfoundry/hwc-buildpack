@@ -70,6 +70,7 @@
   <ItemGroup>
     <Compile Include="DebuggerShim.cs" />
     <Compile Include="Features\StagerCanRunBuilderSpec.cs" />
+    <Compile Include="Specs\OutputMetadataTest.cs" />
     <Compile Include="Specs\StartCommandTest.cs" />
     <Compile Include="Specs\TarGZFileTest.cs" />
     <Compile Include="Specs\TempDirectoryTest.cs" />

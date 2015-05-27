@@ -3,11 +3,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using NSpec;
 using System.IO;
-using System.Diagnostics;
-using System.Linq;
-using Newtonsoft.Json.Linq;
-using Builder;
-using NSpec.Domain;
 
 namespace Builder.Tests
 {
@@ -15,7 +10,7 @@ namespace Builder.Tests
     {
         void describe_()
         {
-            OutputMetadata obj = null;
+            ExecutionMetadata obj = null;
             List<string> files = null;
             Exception exception = null;
             act = () =>
@@ -23,7 +18,7 @@ namespace Builder.Tests
                 exception = null;
                 try
                 {
-                    obj = new OutputMetadata(files);
+                    obj = Program.GenerateExecutionMetadata(files);
                 }
                 catch (Exception e)
                 {
@@ -35,15 +30,10 @@ namespace Builder.Tests
             {
                 before = () => files = new List<string> {@"app\foo", @"app\bar", @"app\Web.Config"};
 
-                it["sets WebAppServer as the start command (CF)"] = () =>
-                {
-                    obj.DetectedStartCommand.Web.should_be("tmp/lifecycle/WebAppServer.exe .");
-                };
-
                 it["sets WebAppServer as the start command (Diego)"] = () =>
                 {
-                    obj.ExecutionMetadata.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
-                    obj.ExecutionMetadata.StartCommandArgs.should_be(new string[] { "." });
+                    obj.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                    obj.StartCommandArgs.should_be(new string[] { "." });
                 };
             };
 
@@ -51,15 +41,10 @@ namespace Builder.Tests
             {
                 before = () => files = new List<string> { @"app\foo", @"app\bar", @"app\jane.exe" };
 
-                it["sets the exe as the start command (CF)"] = () =>
-                {
-                    obj.DetectedStartCommand.Web.should_be(@"jane.exe");
-                };
-
                 it["sets the exe as the start command (Diego)"] = () =>
                 {
-                    obj.ExecutionMetadata.StartCommand.should_be(@"jane.exe");
-                    obj.ExecutionMetadata.StartCommandArgs.should_be_empty();
+                    obj.StartCommand.should_be(@"jane.exe");
+                    obj.StartCommandArgs.should_be_empty();
                 };
             };
 
@@ -78,15 +63,10 @@ namespace Builder.Tests
                     before = () => File.WriteAllLines(filename,
                         new string[] {"worker2: issfdsi.exe", "web: billybob.exe fred jane jim", "worker1: isudf.exe"});
 
-                    it["sets the Procfile as the start command (CF)"] = () =>
-                    {
-                        obj.DetectedStartCommand.Web.should_be(@"billybob.exe fred jane jim");
-                    };
-
                     it["sets the Procfile as the start command (Diego)"] = () =>
                     {
-                        obj.ExecutionMetadata.StartCommand.should_be(@"billybob.exe");
-                        obj.ExecutionMetadata.StartCommandArgs.should_be(new string[] {"fred", "jane", "jim"});
+                        obj.StartCommand.should_be(@"billybob.exe");
+                        obj.StartCommandArgs.should_be(new string[] {"fred", "jane", "jim"});
                     };
 
                     context["and a web.config also exist"] = () =>
@@ -95,9 +75,8 @@ namespace Builder.Tests
 
                         it["goes with the Procfile"] = () =>
                         {
-                            obj.DetectedStartCommand.Web.should_be(@"billybob.exe fred jane jim");
-                            obj.ExecutionMetadata.StartCommand.should_be(@"billybob.exe");
-                            obj.ExecutionMetadata.StartCommandArgs.should_be(new string[] { "fred", "jane", "jim" });
+                            obj.StartCommand.should_be(@"billybob.exe");
+                            obj.StartCommandArgs.should_be(new string[] { "fred", "jane", "jim" });
                         };
                     };
                 };
@@ -156,13 +135,11 @@ namespace Builder.Tests
             context["both web.config and an exe file exist"] = () =>
             {
                 before = () => files = new List<string> { "foo.exe", "Web.config" };
-                act = () => obj = new OutputMetadata(files);
 
                 it["goes with the Web.config"] = () =>
                 {
-                    obj.DetectedStartCommand.Web.should_be("tmp/lifecycle/WebAppServer.exe .");
-                    obj.ExecutionMetadata.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
-                    obj.ExecutionMetadata.StartCommandArgs.should_be(new string[] { "." });
+                    obj.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                    obj.StartCommandArgs.should_be(new string[] { "." });
                 };
             };
         }
