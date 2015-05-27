@@ -67,7 +67,7 @@ namespace Builder
 
             // Result.JSON
             var obj = GenerateOutputMetadata(appPath);
-            File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), options.OutputMetadata), JsonConvert.SerializeObject(obj));
+            File.WriteAllText(Directory.GetCurrentDirectory() + options.OutputMetadata, JsonConvert.SerializeObject(obj));
         }
 
         private static OutputMetadata GenerateOutputMetadata(string appPath)

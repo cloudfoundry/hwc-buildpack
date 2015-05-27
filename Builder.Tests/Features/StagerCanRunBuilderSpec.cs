@@ -88,8 +88,8 @@ namespace Builder.Tests.Specs.Features
 
                 after = () =>
                 {
-                    var filename = Path.Combine(workingDir, "Builder.Tests", "tmp", "droplet");
-                    File.Delete(filename);
+                    File.Delete(Path.Combine(workingDir, "Builder.Tests", "tmp", "droplet"));
+                    File.Delete(Path.Combine(workingDir, "Builder.Tests", "tmp", "result.json"));
                 };
             };
         }
