@@ -73,95 +73,116 @@ namespace Launcher.Tests.Features
                     process.WaitForExit();
                 };
 
-                describe["as command line arguments"] = () =>
-                {
-                    it["runs the start command with the correct arguments"] = () =>
-                    {
-                        var beans = File.ReadAllText("Bean.txt");
-                        beans.should_contain("\"bean1\" \"bean\\\\2\"");
-                    };
 
-                    it["returns the exit code from the start command"] = () =>
-                    {
-                        process.ExitCode.should_be(0);
-
-                        process = Process.Start(explodingStartInfo);
-                        process.WaitForExit();
-                        process.ExitCode.should_be(1);
-                    };
-
-                    it["propagates stdout from the start command"] = () =>
-                    {
-                        var stdout = process.StandardOutput.ReadToEnd();
-                        stdout.should_contain("This is STDOUT");
-                    };
-
-                    it["propagates stderr from the start command"] = () =>
-                    {
-                        var stderr = process.StandardError.ReadToEnd();
-                        stderr.should_contain("This is STDERR");
-                    };
-
-                    describe["When the soldier is provided with insufficient arguments"] = () =>
-                    {
-                        before = () =>
-                        {
-                            normalStartInfo.Arguments = "IamNotEnough";
-                        };
-
-                        it["outputs a message onto STDERR"] = () =>
-                        {
-                            var stderr = process.StandardError.ReadToEnd();
-                            stderr.should_contain("Launcher was run with insufficient arguments");
-                        };
-
-                        it["returns an exit code of 1"] = () =>
-                        {
-                            process.ExitCode.should_be(1);
-                        };
-                    };
-
-                    describe["When the soldier is provided with invalid json for the metadata argument"] = () =>
-                    {
-                        before = () =>
-                        {
-                            normalStartInfo.Arguments = "\"/app\" \"\" \"{I am bad JSON\"";
-                        };
-
-                        it["outputs a message onto STDERR"] = () =>
-                        {
-                            var stderr = process.StandardError.ReadToEnd();
-                            stderr.should_contain("Launcher was run with invalid JSON for the metadata argument");
-                        };
-
-                        it["returns an exit code of 1"] = () =>
-                        {
-                            process.ExitCode.should_be(1);
-                        };
-                    };
-                };
-
-                describe["as ENV[ARGJSON]"] = () =>
+                context["when start command is given"] = () =>
                 {
                     before = () =>
                     {
-                        normalStartArguments[2] = "{\"start_command\":\"Fixtures/CivetCat.bat\", \"start_command_args\":[\"bean1\", \"bean\\\\2\"]}";
-                        normalStartInfo.EnvironmentVariables["ARGJSON"] = JsonConvert.SerializeObject(normalStartArguments);
-                        normalStartInfo.Arguments = "args are overrriden";
+                        normalStartArguments[1] = @"Fixtures\Explosions.bat";
+                        normalStartInfo.Arguments = ArgumentEscaper.Escape(normalStartArguments);
                     };
 
-                    it["runs the start command with the correct arguments"] = () =>
+                    it["ignores the execution metadata and runs the start command"] = () =>
                     {
-                        var beans = File.ReadAllText("Bean.txt");
-                        beans.should_contain("\"bean1\" \"bean\\\\2\"");
-                    };
-
-                    it["returns the exit code from the start command"] = () =>
-                    {
-                        process.ExitCode.should_be(0);
+                        var stdout = process.StandardOutput.ReadToEnd();
+                        stdout.should_contain("BOOM!!!");
                     };
                 };
-            };          
+
+                context["when start command is blank"] = () =>
+                {
+                    describe["as command line arguments"] = () =>
+                    {
+                        it["runs the start command with the correct arguments"] = () =>
+                        {
+                            var beans = File.ReadAllText("Bean.txt");
+                            beans.should_contain("\"bean1\" \"bean\\\\2\"");
+                        };
+
+                        it["returns the exit code from the start command"] = () =>
+                        {
+                            process.ExitCode.should_be(0);
+
+                            process = Process.Start(explodingStartInfo);
+                            process.WaitForExit();
+                            process.ExitCode.should_be(1);
+                        };
+
+                        it["propagates stdout from the start command"] = () =>
+                        {
+                            var stdout = process.StandardOutput.ReadToEnd();
+                            stdout.should_contain("This is STDOUT");
+                        };
+
+                        it["propagates stderr from the start command"] = () =>
+                        {
+                            var stderr = process.StandardError.ReadToEnd();
+                            stderr.should_contain("This is STDERR");
+                        };
+
+                        describe["When the soldier is provided with insufficient arguments"] = () =>
+                        {
+                            before = () =>
+                            {
+                                normalStartInfo.Arguments = "IamNotEnough";
+                            };
+
+                            it["outputs a message onto STDERR"] = () =>
+                            {
+                                var stderr = process.StandardError.ReadToEnd();
+                                stderr.should_contain("Launcher was run with insufficient arguments");
+                            };
+
+                            it["returns an exit code of 1"] = () =>
+                            {
+                                process.ExitCode.should_be(1);
+                            };
+                        };
+
+                        describe["When the soldier is provided with invalid json for the metadata argument"] = () =>
+                        {
+                            before = () =>
+                            {
+                                normalStartInfo.Arguments = "\"/app\" \"\" \"{I am bad JSON\"";
+                            };
+
+                            it["outputs a message onto STDERR"] = () =>
+                            {
+                                var stderr = process.StandardError.ReadToEnd();
+                                stderr.should_contain("Launcher was run with invalid JSON for the metadata argument");
+                            };
+
+                            it["returns an exit code of 1"] = () =>
+                            {
+                                process.ExitCode.should_be(1);
+                            };
+                        };
+                    };
+
+                    describe["as ENV[ARGJSON]"] = () =>
+                    {
+                        before = () =>
+                        {
+                            normalStartArguments[2] =
+                                "{\"start_command\":\"Fixtures/CivetCat.bat\", \"start_command_args\":[\"bean1\", \"bean\\\\2\"]}";
+                            normalStartInfo.EnvironmentVariables["ARGJSON"] =
+                                JsonConvert.SerializeObject(normalStartArguments);
+                            normalStartInfo.Arguments = "args are overrriden";
+                        };
+
+                        it["runs the start command with the correct arguments"] = () =>
+                        {
+                            var beans = File.ReadAllText("Bean.txt");
+                            beans.should_contain("\"bean1\" \"bean\\\\2\"");
+                        };
+
+                        it["returns the exit code from the start command"] = () =>
+                        {
+                            process.ExitCode.should_be(0);
+                        };
+                    };
+                };
+            };
         }
     }
 }

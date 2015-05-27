@@ -27,28 +27,31 @@ namespace Launcher
                 return 1;
             }
 
-            ExecutionMetadata executionMetadata = null;
-
-            try
-            {
-                executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(args[2]);
-            }
-            catch (Exception)
-            {
-                Console.Error.WriteLine(
-                    "Launcher was run with invalid JSON for the metadata argument. The JSON was: {0}", args[2]);
-                return 1;
-            }
-
-            Console.Out.WriteLine("Run {0} :: {1}", executionMetadata.StartCommand,
-                ArgumentEscaper.Escape(executionMetadata.StartCommandArgs));
 
             var startInfo = new ProcessStartInfo
             {
                 UseShellExecute = false,
-                FileName = executionMetadata.StartCommand,
-                Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs)
             };
+
+            if (args[1] != "")
+            {
+                startInfo.FileName = args[1];
+            }
+            else
+            {
+                try
+                {
+                    var executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(args[2]);
+                    startInfo.FileName = executionMetadata.StartCommand;
+                    startInfo.Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs);
+                }
+                catch (Exception)
+                {
+                    Console.Error.WriteLine(
+                        "Launcher was run with invalid JSON for the metadata argument. The JSON was: {0}", args[2]);
+                    return 1;
+                }
+            }
 
             Console.Out.WriteLine("Run {0} :with: {1}", startInfo.FileName, startInfo.Arguments);
 
