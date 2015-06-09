@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
+
 
 namespace Healthcheck
 {
@@ -13,29 +9,33 @@ namespace Healthcheck
         static void Main(string[] args)
         {
             // The health check succeeds if the process is listening on any non-local interface
-            foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
-                IPInterfaceProperties ipProps = netInterface.GetIPProperties();
-                foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
+                try
                 {
-                    if (addr.Address.AddressFamily != AddressFamily.InterNetwork) continue;
-                    if (addr.Address.ToString().StartsWith("127.")) continue;
+                    var client = new HttpClient();
+                    var port = Environment.GetEnvironmentVariable("PORT");
+                    if (port == null)
+                        throw new Exception("PORT is not defined");
 
-                    try
+                    var task = client.GetAsync("http://127.0.0.1:" + port);
+                    if (task.Wait(1000))
                     {
-                        var tcpCLient = new TcpClient(addr.Address.ToString(), Int32.Parse(Environment.GetEnvironmentVariable("PORT")));
-
-                        System.Console.WriteLine("healthcheck passed");
-                        System.Environment.Exit(0);
-                    }
-                    catch (Exception)
-                    {
+                        if (task.Result.IsSuccessStatusCode)
+                        {
+                            Console.WriteLine("healthcheck passed");
+                            Environment.Exit(0);
+                        }
                     }
                 }
-            }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
 
-            System.Console.WriteLine("healthcheck failed");
-            System.Environment.Exit(1);
+                Console.WriteLine("healthcheck failed");
+
+                Environment.Exit(1);
+            }
         }
     }
 }
