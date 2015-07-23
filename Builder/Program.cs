@@ -43,7 +43,7 @@ namespace Builder
             }
             else
             {
-                throw new Exception("No runnable application found.");
+                Console.WriteLine("No start command detected");
             }
 
             return executionMetadata;
