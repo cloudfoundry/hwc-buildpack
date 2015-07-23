@@ -19,9 +19,9 @@ namespace Builder.Tests
                 exception = null;
                 try
                 {
-                    obj = Program.GenerateExecutionMetadata(files);
                     stdout = new StringWriter();
                     Console.SetOut(stdout);
+                    obj = Program.GenerateExecutionMetadata(files);
                 }
                 catch (Exception e)
                 {

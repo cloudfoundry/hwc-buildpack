@@ -10,10 +10,6 @@ namespace Healthcheck
     {
         private static void Main(string[] args)
         {
-            // The health check succeeds if the process is listening on any non-local interface
-            {
-                try
-                {
                     var client = new HttpClient();
                     var port = Environment.GetEnvironmentVariable("PORT");
                     if (port == null)
@@ -26,22 +22,26 @@ namespace Healthcheck
                         {
                             if (addr.Address.AddressFamily != AddressFamily.InterNetwork) continue;
                             if (addr.Address.ToString().StartsWith("127.")) continue;
-                            var task = client.GetAsync(String.Format("http://{0}:{1}", addr.Address.ToString(), port));
-                            if (task.Wait(1000))
+                            try
                             {
-                                if (task.Result.IsSuccessStatusCode)
+                                var task =
+                                    client.GetAsync(String.Format("http://{0}:{1}", addr.Address.ToString(), port));
+                                if (task.Wait(1000))
                                 {
-                                    Console.WriteLine("healthcheck passed");
-                                    Environment.Exit(0);
+                                    if (task.Result.IsSuccessStatusCode)
+                                    {
+                                        Console.WriteLine("healthcheck passed");
+                                        Environment.Exit(0);
+                                    }
                                 }
                             }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e.ToString());
+                            }
+                        
                         }
                     }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.ToString());
-                }
 
                 Console.WriteLine("healthcheck failed");
 
