@@ -10,43 +10,41 @@ namespace Healthcheck
     {
         private static void Main(string[] args)
         {
-                    var client = new HttpClient();
-                    var port = Environment.GetEnvironmentVariable("PORT");
-                    if (port == null)
-                        throw new Exception("PORT is not defined");
+            var client = new HttpClient();
+            var port = Environment.GetEnvironmentVariable("PORT");
+            if (port == null)
+                throw new Exception("PORT is not defined");
 
-                    foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
+            foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                IPInterfaceProperties ipProps = netInterface.GetIPProperties();
+                foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
+                {
+                    if (addr.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+                    if (addr.Address.ToString().StartsWith("127.")) continue;
+                    try
                     {
-                        IPInterfaceProperties ipProps = netInterface.GetIPProperties();
-                        foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
+                        var task =
+                            client.GetAsync(String.Format("http://{0}:{1}", addr.Address.ToString(), port));
+                        if (task.Wait(1000))
                         {
-                            if (addr.Address.AddressFamily != AddressFamily.InterNetwork) continue;
-                            if (addr.Address.ToString().StartsWith("127.")) continue;
-                            try
+                            if (task.Result.IsSuccessStatusCode)
                             {
-                                var task =
-                                    client.GetAsync(String.Format("http://{0}:{1}", addr.Address.ToString(), port));
-                                if (task.Wait(1000))
-                                {
-                                    if (task.Result.IsSuccessStatusCode)
-                                    {
-                                        Console.WriteLine("healthcheck passed");
-                                        Environment.Exit(0);
-                                    }
-                                }
+                                Console.WriteLine("healthcheck passed");
+                                Environment.Exit(0);
                             }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e.ToString());
-                            }
-                        
                         }
                     }
-
-                Console.WriteLine("healthcheck failed");
-
-                Environment.Exit(1);
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.ToString());
+                    }
+                }
             }
+
+            Console.WriteLine("healthcheck failed");
+
+            Environment.Exit(1);
         }
     }
 }
