@@ -1,4 +1,5 @@
-﻿using NSpec;
+﻿using System.Text;
+using NSpec;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -12,7 +13,8 @@ namespace Healthcheck.Tests.Specs
     {
         public void describe_()
         {
-            int port = new Random().Next(10000, 50000);
+            int port = -1;
+            before = () => port = new Random().Next(10000, 50000);
             Process process = null;
 
             act = () =>
@@ -35,9 +37,9 @@ namespace Healthcheck.Tests.Specs
 
             describe["when the address is listening"] = () =>
             {
-                TcpListener tcpListener = null;
-                before = () => tcpListener = startServer(IPAddress.Any, port);
-                after = () => tcpListener.Stop();
+                HttpListener httpListener = null;
+                before = () => httpListener = startServer("*", port);
+                after = () => httpListener.Stop();
 
                 it["exits 0 and logs it succeeded"] = () =>
                 {
@@ -48,9 +50,9 @@ namespace Healthcheck.Tests.Specs
 
             describe["when the address is listening only on localhost"] = () =>
             {
-                TcpListener tcpListener = null;
-                before = () => tcpListener = startServer(IPAddress.Parse("127.0.0.1"), port);
-                after = () => tcpListener.Stop();
+                HttpListener httpListener = null;
+                before = () => httpListener = startServer("127.0.0.1", port);
+                after = () => httpListener.Stop();
 
                 it["exits 1 and logs it failed"] = () =>
                 {
@@ -63,28 +65,37 @@ namespace Healthcheck.Tests.Specs
             {
                 it["exits 1 and logs it failed"] = () =>
                 {
-                    process.StandardOutput.ReadToEnd().should_be("healthcheck failed\r\n");
+                    process.StandardOutput.ReadToEnd().should_contain("healthcheck failed\r\n");
                     process.ExitCode.should_be(1);
                 };
             };
         }
 
-        private TcpListener startServer(IPAddress host, int port)
+        private HttpListener startServer(string host, int port)
         {
-            var tcpListener = new TcpListener(host, port);
+            var listener = new HttpListener();
+            listener.Prefixes.Add(String.Format("http://{0}:{1}/", host, port));
+            listener.Start();
             var listenThread = new Thread(new ThreadStart(() =>
             {
                 try
                 {
-                    tcpListener.Start();
-                    tcpListener.AcceptTcpClient();
+                    for (;;)
+                    {
+                        var httpContext = listener.GetContext();
+                        httpContext.Response.StatusCode = 200;
+                        var resp = UTF8Encoding.UTF8.GetBytes("Hello!");
+                        httpContext.Response.OutputStream.Write(resp, 0, resp.Length);
+                        httpContext.Response.OutputStream.Close();
+                    }
                 }
-                catch (Exception) { 
-                    // ignore the exception
+                catch (Exception e)
+                {
+                    // ignore the exception and exit
                 }
             }));
             listenThread.Start();
-            return tcpListener;
+            return listener;
         }
     }
 }

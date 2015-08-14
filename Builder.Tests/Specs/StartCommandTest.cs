@@ -13,11 +13,14 @@ namespace Builder.Tests
             ExecutionMetadata obj = null;
             List<string> files = null;
             Exception exception = null;
+            StringWriter stdout = null;
             act = () =>
             {
                 exception = null;
                 try
                 {
+                    stdout = new StringWriter();
+                    Console.SetOut(stdout);
                     obj = Program.GenerateExecutionMetadata(files);
                 }
                 catch (Exception e)
@@ -102,10 +105,9 @@ namespace Builder.Tests
                         files = new List<string> { filename };
                     };
 
-                    it["throws an exception"] = () =>
+                    it["prints a message on stdout"] = () =>
                     {
-                        exception.should_not_be_null();
-                        exception.Message.should_be("No runnable application found.");
+                        stdout.ToString().should_contain("No start command detected");
                     };
                 };
             };
@@ -125,10 +127,9 @@ namespace Builder.Tests
             {
                 before = () => files = new List<string> { "foo" };
 
-                it["throws an exception"] = () =>
+                it["prints a message on stdout"] = () =>
                 {
-                    exception.should_not_be_null();
-                    exception.Message.should_be("No runnable application found.");
+                    stdout.ToString().should_contain("No start command detected");
                 };
             };
 

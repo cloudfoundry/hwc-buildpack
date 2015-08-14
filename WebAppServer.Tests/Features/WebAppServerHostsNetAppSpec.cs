@@ -41,12 +41,24 @@ namespace WebAppServer.Tests
                                 WorkingDirectory = webRoot,
                                 RedirectStandardInput = true,
                                 RedirectStandardError = true,
+                                RedirectStandardOutput = true,
                                 UseShellExecute = false
                             }
                         };
                         process.StartInfo.EnvironmentVariables["PORT"] = port.ToString();
 
-                        process.Start();                    
+                        process.Start();
+
+                        // wait for the web app server to start to avoid race conditions
+                        while (!process.HasExited)
+                        {
+                            var readLine = process.StandardOutput.ReadLine();
+                            readLine.should_not_be_null();
+                            if (readLine.Contains("Server Started"))
+                            {
+                                break;
+                            }
+                        }
                     };
 
                     it["runs it on the specified port"] = () =>
