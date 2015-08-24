@@ -14,8 +14,9 @@ namespace Healthcheck.Tests.Specs
         public void describe_()
         {
             int port = -1;
-            before = () => port = new Random().Next(10000, 50000);
+            before = () => port = GetFreeTcpPort();
             Process process = null;
+            string processOutputData = null;
 
             act = () =>
             {
@@ -30,8 +31,12 @@ namespace Healthcheck.Tests.Specs
                         UseShellExecute = false
                     }
                 };
+
                 process.StartInfo.EnvironmentVariables["PORT"] = port.ToString();
+
                 process.Start();
+                processOutputData = process.StandardOutput.ReadToEnd();
+
                 process.WaitForExit();
             };
 
@@ -43,7 +48,7 @@ namespace Healthcheck.Tests.Specs
 
                 it["exits 0 and logs it succeeded"] = () =>
                 {
-                    process.StandardOutput.ReadToEnd().should_be("healthcheck passed\r\n");
+                    processOutputData.should_be("healthcheck passed\r\n");
                     process.ExitCode.should_be(0);
                 };
             };
@@ -56,7 +61,7 @@ namespace Healthcheck.Tests.Specs
 
                 it["exits 1 and logs it failed"] = () =>
                 {
-                    process.StandardOutput.ReadToEnd().should_be("healthcheck failed\r\n");
+                    processOutputData.should_contain("healthcheck failed\r\n");
                     process.ExitCode.should_be(1);
                 };
             };
@@ -65,10 +70,21 @@ namespace Healthcheck.Tests.Specs
             {
                 it["exits 1 and logs it failed"] = () =>
                 {
-                    process.StandardOutput.ReadToEnd().should_contain("healthcheck failed\r\n");
+                    processOutputData.should_contain("healthcheck failed\r\n");
                     process.ExitCode.should_be(1);
                 };
             };
+        }
+
+        private int GetFreeTcpPort()
+        {
+            var tcpl = new TcpListener(IPAddress.Any, 0);
+            tcpl.Start();
+
+            var freePort = (tcpl.LocalEndpoint as IPEndPoint).Port;
+            tcpl.Stop();
+
+            return freePort;
         }
 
         private HttpListener startServer(string host, int port)
