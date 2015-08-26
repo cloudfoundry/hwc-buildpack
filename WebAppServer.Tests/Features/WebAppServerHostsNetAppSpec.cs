@@ -77,7 +77,7 @@ namespace WebAppServer.Tests
                 it["runs it on the specified port"] = () =>
                 {
                     var client = new HttpClient();
-                    var response = client.GetAsync("http://localhost:" + port + "/hi.asp").GetAwaiter().GetResult();
+                    var response = client.GetAsync("http://localhost:" + port).GetAwaiter().GetResult();
                     response.StatusCode.should_be(HttpStatusCode.OK);
                     response.Content.ReadAsStringAsync().Result.should_be("Hello World!");
                 };
