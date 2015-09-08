@@ -53,6 +53,11 @@ namespace Launcher
                 }
             }
 
+            if (String.IsNullOrWhiteSpace(startInfo.FileName))
+            {
+                Console.Error.WriteLine("Could not determine a start command. Use the -c flag to 'cf push' to specify a custom start command.");
+                return 1;
+            }
             Console.Out.WriteLine("Run {0} :with: {1}", startInfo.FileName, startInfo.Arguments);
 
             var process = Process.Start(startInfo);

@@ -57,6 +57,7 @@
     <Compile Include="Features\LauncherCanRunStartCommandSpec.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Specs\ArgumentEscaperSpec.cs" />
+    <Compile Include="Specs\IntegrationSpec.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Fixtures\CivetCat.bat">
