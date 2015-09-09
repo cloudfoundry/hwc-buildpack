@@ -13,14 +13,14 @@ namespace Builder.Tests
             ExecutionMetadata obj = null;
             List<string> files = null;
             Exception exception = null;
-            StringWriter stdout = null;
+            StringWriter stderr = null;
             act = () =>
             {
                 exception = null;
                 try
                 {
-                    stdout = new StringWriter();
-                    Console.SetOut(stdout);
+                    stderr = new StringWriter();
+                    Console.SetError(stderr);
                     obj = Program.GenerateExecutionMetadata(files);
                 }
                 catch (Exception e)
@@ -107,7 +107,7 @@ namespace Builder.Tests
 
                     it["prints a message on stdout"] = () =>
                     {
-                        stdout.ToString().should_contain("No start command detected");
+                        stderr.ToString().should_contain("No start command detected");
                     };
                 };
             };
@@ -129,7 +129,7 @@ namespace Builder.Tests
 
                 it["prints a message on stdout"] = () =>
                 {
-                    stdout.ToString().should_contain("No start command detected");
+                    stderr.ToString().should_contain("No start command detected");
                 };
             };
 
