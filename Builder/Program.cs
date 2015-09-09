@@ -43,7 +43,7 @@ namespace Builder
             }
             else
             {
-                Console.WriteLine("No start command detected");
+                Console.Error.WriteLine("No start command detected");
             }
 
             return executionMetadata;
