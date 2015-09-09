@@ -33,6 +33,15 @@ namespace Healthcheck
                                 Console.WriteLine("healthcheck passed");
                                 Environment.Exit(0);
                             }
+                            else
+                            {
+                                Console.Error.WriteLine("Got error response: " +
+                                                  task.Result.Content.ReadAsStringAsync().Result);
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("waiting for process to start up");
                         }
                     }
                     catch (Exception e)

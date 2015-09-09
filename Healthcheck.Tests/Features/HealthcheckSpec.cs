@@ -17,6 +17,7 @@ namespace Healthcheck.Tests.Specs
             before = () => port = GetFreeTcpPort();
             Process process = null;
             string processOutputData = null;
+            string processErrorData = null;
 
             act = () =>
             {
@@ -28,6 +29,7 @@ namespace Healthcheck.Tests.Specs
                         FileName = Path.Combine(workingDir, "Healthcheck.exe"),
                         WorkingDirectory = workingDir,
                         RedirectStandardOutput = true,
+                        RedirectStandardError = true,
                         UseShellExecute = false
                     }
                 };
@@ -36,8 +38,23 @@ namespace Healthcheck.Tests.Specs
 
                 process.Start();
                 processOutputData = process.StandardOutput.ReadToEnd();
-
+                processErrorData = process.StandardError.ReadToEnd();
                 process.WaitForExit();
+            };
+
+            describe["when the server is returning non success status code"] = () =>
+            {
+                HttpListener httpListener = null;
+                var stacktrace = "BOOOOOOM";
+                before = () => httpListener = startServer("*", port, 500, stacktrace);
+                after = () => httpListener.Stop();
+
+                it["exits 1 and logs the stack trace"] = () =>
+                {
+                    processOutputData.should_contain("healthcheck failed\r\n");
+                    processErrorData.should_contain(stacktrace);
+                    process.ExitCode.should_be(1);
+                };
             };
 
             describe["when the address is listening"] = () =>
@@ -87,7 +104,7 @@ namespace Healthcheck.Tests.Specs
             return freePort;
         }
 
-        private HttpListener startServer(string host, int port)
+        private HttpListener startServer(string host, int port, int statusCode = 200, string content = "Hello!")
         {
             var listener = new HttpListener();
             listener.Prefixes.Add(String.Format("http://{0}:{1}/", host, port));
@@ -99,8 +116,8 @@ namespace Healthcheck.Tests.Specs
                     for (;;)
                     {
                         var httpContext = listener.GetContext();
-                        httpContext.Response.StatusCode = 200;
-                        var resp = UTF8Encoding.UTF8.GetBytes("Hello!");
+                        httpContext.Response.StatusCode = statusCode;
+                        var resp = UTF8Encoding.UTF8.GetBytes(content);
                         httpContext.Response.OutputStream.Write(resp, 0, resp.Length);
                         httpContext.Response.OutputStream.Close();
                     }
