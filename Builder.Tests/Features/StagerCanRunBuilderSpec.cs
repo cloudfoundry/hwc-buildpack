@@ -91,23 +91,12 @@ namespace Builder.Tests.Specs.Features
                     var resultFile = Path.Combine(tmpDir, "result.json");
                     File.Exists(resultFile).should_be_true();
 
-                    JObject result = JObject.Parse(File.ReadAllText(resultFile));
-                    var execution_metadata = JObject.Parse(result["execution_metadata"].Value<string>());
-                    execution_metadata["start_command"].Value<string>().should_be("tmp/lifecycle/WebAppServer.exe");
-                    execution_metadata["start_command_args"].Values<string>().should_be(new[] { "." });
+                    var result = JObject.Parse(File.ReadAllText(resultFile));
+                    var executionMetadata = result["execution_metadata"].Value<JObject>();
+                    var processTypes = executionMetadata["process_types"].Value<JObject>();
+                    var webStartCommand = processTypes["web"].Value<string>();
+                    webStartCommand.should_be("tmp/lifecycle/WebAppServer.exe .");
                 };
-
-                it["includes magical json properties required for the diego lifecyle (in cf push) to work"] = () =>
-                {
-                    var resultFile = Path.Combine(tmpDir, "result.json");
-                    File.Exists(resultFile).should_be_true();
-
-                    JObject result = JObject.Parse(File.ReadAllText(resultFile));
-                    result["detected_start_command"].should_not_be_null();
-                    result["detected_start_command"]["web"].should_not_be_null();
-
-                };
-
             };
 
             context["not a nora"] = () =>

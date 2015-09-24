@@ -8,54 +8,36 @@ namespace Builder
 {
     public class OutputMetadata
     {
-        public ExecutionMetadata ExecutionMetadata { get; set; }
+        [JsonProperty("buildpack_key")]
+        public string BuildpackKey
+        {
+            get { return ""; }
+        }
+
+        [JsonProperty("detected_buildpack")]
+        public string DetectedBuildpack
+        {
+            get { return "windows"; }
+        }
 
         [JsonProperty("execution_metadata")]
-        public string execution_metadata
-        {
-            get { return JsonConvert.SerializeObject(ExecutionMetadata); }
-        }
-
-        [JsonProperty("detected_start_command")]
-        public DetectedStartCommand DetectedStartCommand {
-            get
-            {
-                return new DetectedStartCommand()
-                {
-                    Web =
-                        (ExecutionMetadata.StartCommand + " " + String.Join(" ", ExecutionMetadata.StartCommandArgs))
-                            .Trim(),
-                };
-            }
-        }
-    }
-
-    public class DetectedStartCommand
-    {
-        [JsonProperty("web")]
-        public string Web { get; set; }
+        public ExecutionMetadata ExecutionMetadata { get; set; }
     }
 
     public class ExecutionMetadata
     {
-        public ExecutionMetadata()
-        {
-            StartCommand = "";
-            StartCommandArgs = new string[] { };
-        }
+        [JsonProperty("process_types")]
+        public ProcessTypes ProcessTypes { get; set; }
+    }
 
-        [JsonProperty("start_command")]
-        public string StartCommand
+    public class ProcessTypes
+    {
+        public string StartCommand { get; set; }
+        public string[] StartCommandArgs { get; set; }
+        [JsonProperty("web")]
+        public string Web
         {
-            get;
-            set;
-        }
-
-        [JsonProperty("start_command_args")]
-        public string[] StartCommandArgs
-        {
-            get;
-            set;
+            get { return (StartCommand + " " + String.Join(" ", StartCommandArgs)).Trim(); }
         }
     }
 }

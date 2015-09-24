@@ -12,7 +12,7 @@ namespace Builder
     {
         public static ExecutionMetadata GenerateExecutionMetadata(IList<string> files)
         {
-            var executionMetadata = new ExecutionMetadata();
+            var processTypes = new ProcessTypes();
             var procfiles = files.Where(x => Path.GetFileName(x).ToLower() == "procfile").ToList();
             var executables = files.Where(x => x.EndsWith(".exe")).ToList();
             if (procfiles.Any())
@@ -22,8 +22,8 @@ namespace Builder
                 if (webline.Any())
                 {
                     var contents = webline.First().Substring(4).Trim().Split(new[] { ' ' });
-                    executionMetadata.StartCommand = contents[0];
-                    executionMetadata.StartCommandArgs = contents.Skip(1).ToArray();
+                    processTypes.StartCommand = contents[0];
+                    processTypes.StartCommandArgs = contents.Skip(1).ToArray();
                 }
                 else
                 {
@@ -32,21 +32,25 @@ namespace Builder
             }
             else if (files.Any(x => Path.GetFileName(x).ToLower() == "web.config"))
             {
-                executionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
-                executionMetadata.StartCommandArgs = new[] { "." };
+                processTypes.StartCommand = "tmp/lifecycle/WebAppServer.exe";
+                processTypes.StartCommandArgs = new[] { "." };
             }
             else if (executables.Any())
             {
                 if (executables.Count() > 1)
                     throw new Exception("Directory contained more than 1 executable file.");
-                executionMetadata.StartCommand = Path.GetFileName(executables.First());
+                processTypes.StartCommand = Path.GetFileName(executables.First());
+                processTypes.StartCommandArgs = new string[] { };
             }
             else
             {
                 Console.Error.WriteLine("No start command detected");
             }
 
-            return executionMetadata;
+            return new ExecutionMetadata()
+            {
+                ProcessTypes = processTypes
+            };
         }
 
         static void Main(string[] args)
