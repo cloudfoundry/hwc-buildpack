@@ -73,6 +73,21 @@ namespace Builder.Tests.Specs.Features
                 Directory.Delete(workingDirectory, true);
             };
 
+            context["given no procfile, executable or Web.conf exists"] = () =>
+            {
+                string resultFile = null;
+
+                before = () =>
+                {
+                    resultFile = Path.Combine(tmpDir, "result.json");
+                };
+
+                it["Creates the result.json"] = () =>
+                {
+                    File.Exists(resultFile).should_be_true();
+                };
+            };
+
             context["given i have an app similar to nora"] = () =>
             {
                 string resultFile = null;
@@ -107,7 +122,7 @@ namespace Builder.Tests.Specs.Features
                     {
                         var processTypes = result["process_types"].Value<JObject>();
                         var webStartCommand = processTypes["web"].Value<string>();
-                        webStartCommand.should_be("tmp/lifecycle/WebAppServer.exe .");
+                        webStartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
                     };
 
                     it["includes execution metadata"] = () =>
@@ -115,7 +130,7 @@ namespace Builder.Tests.Specs.Features
                         var executionMetadataJson = result["execution_metadata"].Value<string>();
                         var executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(executionMetadataJson);
                         executionMetadata.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
-                        executionMetadata.StartCommandArgs.should_be(new string[] { "." });
+                        executionMetadata.StartCommandArgs.should_be(new string[] { });
                     };
 
                     it["doesn't have any other process types"] = () =>

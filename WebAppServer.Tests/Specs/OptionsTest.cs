@@ -22,13 +22,12 @@ namespace WebAppServer.Tests.Specs
                 {
                     port = "9999";
                     Environment.SetEnvironmentVariable("PORT", port);
-                    path = ".";
                     options = new Options();
                 };
 
                 act = () =>
                 {
-                    options.Parse(new[] { path });
+                    options.Parse(new string[] { });
                 };
 
                 it["parses port as an int"] = () =>
@@ -36,30 +35,10 @@ namespace WebAppServer.Tests.Specs
                     options.Port.should_be(9999U);
                 };
 
-                context["when a full path is passed in"] = () =>
+
+                it["returns the full path to the current directory"] = () =>
                 {
-                    before = () =>
-                    {
-                        path = @"C:\hi\guid";
-                    };
-
-                    it["uses a full path directly"] = () =>
-                    {
-                        options.WebRoot.should_be(@"C:\hi\guid");
-                    };
-                };
-
-                context["when '.' is passed in "] = () =>
-                {
-                    before = () =>
-                    {
-                        path = @".";
-                    };
-
-                    it["appends a relative directory to the current directoy"] = () =>
-                    {
-                        options.WebRoot.should_be(Directory.GetCurrentDirectory());
-                    };
+                    options.WebRoot.should_be(Directory.GetCurrentDirectory());
                 };
             };
         }

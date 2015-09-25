@@ -17,7 +17,7 @@ namespace WebAppServer
             Console.Out.WriteLine("PORT == {0}", Environment.GetEnvironmentVariable("PORT"));
 
             Port = uint.Parse(Environment.GetEnvironmentVariable("PORT"));
-            WebRoot = Path.GetFullPath(args[0]);
+            WebRoot = Path.GetFullPath(".");
         }
     }
 }

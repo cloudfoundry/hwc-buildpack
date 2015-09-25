@@ -35,7 +35,7 @@ namespace Builder.Tests
                 it["sets WebAppServer as the start command (Diego)"] = () =>
                 {
                     obj.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
-                    obj.StartCommandArgs.should_be(new string[] { "." });
+                    obj.StartCommandArgs.should_be(new string[] { });
                 };
             };
 
@@ -139,7 +139,7 @@ namespace Builder.Tests
                 it["goes with the Web.config"] = () =>
                 {
                     obj.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
-                    obj.StartCommandArgs.should_be(new string[] { "." });
+                    obj.StartCommandArgs.should_be(new string[] { });
                 };
             };
         }

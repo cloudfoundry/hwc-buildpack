@@ -13,7 +13,11 @@ namespace Builder
     {
         public static ExecutionMetadata GenerateExecutionMetadata(IList<string> files)
         {
-            var executionMetadata = new ExecutionMetadata();
+            var executionMetadata = new ExecutionMetadata()
+            {
+                StartCommand = "",
+                StartCommandArgs = new string[] { },
+            };
             var procfiles = files.Where(x => Path.GetFileName(x).ToLower() == "procfile").ToList();
             var executables = files.Where(x => x.EndsWith(".exe")).ToList();
             if (procfiles.Any())
@@ -34,7 +38,6 @@ namespace Builder
             else if (files.Any(x => Path.GetFileName(x).ToLower() == "web.config"))
             {
                 executionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
-                executionMetadata.StartCommandArgs = new[] { "." };
             }
             else if (executables.Any())
             {

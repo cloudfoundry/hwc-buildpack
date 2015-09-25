@@ -31,21 +31,9 @@ namespace Launcher
 
             var startInfo = new ProcessStartInfo
             {
+                FileName = args[1],
                 UseShellExecute = false,
             };
-
-            try
-            {
-                var executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(args[2]);
-                startInfo.FileName = executionMetadata.StartCommand;
-                startInfo.Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs);
-            }
-            catch (Exception)
-            {
-                Console.Error.WriteLine(
-                    "Launcher was run with invalid JSON for the metadata argument. The JSON was: {0}", args[2]);
-                return 1;
-            }
 
             if (String.IsNullOrWhiteSpace(startInfo.FileName))
             {
