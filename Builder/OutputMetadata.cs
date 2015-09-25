@@ -1,12 +1,50 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using Newtonsoft.Json;
 
 namespace Builder
 {
     public class OutputMetadata
+    {
+        [JsonProperty("lifecycle_type")]
+        public string LifecycleType
+        {
+            get { return "buildpack"; }
+        }
+        [JsonProperty("lifecycle_metadata")]
+        public LifecycleMetadata LifecycleMetadata
+        {
+            get { return new LifecycleMetadata(); }
+        }
+        [JsonProperty("process_types")]
+        public ProcessTypes ProcessTypes {
+            get
+            {
+                return new ProcessTypes()
+                {
+                    Web = (ExecutionMetadata.StartCommand + " " + String.Join(" ", ExecutionMetadata.StartCommandArgs)).Trim(),
+                };
+            }
+        }
+
+        [JsonProperty("execution_metadata")]
+        public string ExecutionMetadataJson
+        {
+            get { return JsonConvert.SerializeObject(ExecutionMetadata); }
+        }
+
+        [JsonIgnore]
+        public ExecutionMetadata ExecutionMetadata;
+    }
+
+    public class ExecutionMetadata
+    {
+        [JsonProperty("start_command")]
+        public string StartCommand { get; set; }
+        [JsonProperty("start_command_args")]
+        public string[] StartCommandArgs { get; set; }
+    }
+
+    public class LifecycleMetadata
     {
         [JsonProperty("buildpack_key")]
         public string BuildpackKey
@@ -19,25 +57,11 @@ namespace Builder
         {
             get { return "windows"; }
         }
-
-        [JsonProperty("execution_metadata")]
-        public ExecutionMetadata ExecutionMetadata { get; set; }
-    }
-
-    public class ExecutionMetadata
-    {
-        [JsonProperty("process_types")]
-        public ProcessTypes ProcessTypes { get; set; }
     }
 
     public class ProcessTypes
     {
-        public string StartCommand { get; set; }
-        public string[] StartCommandArgs { get; set; }
         [JsonProperty("web")]
-        public string Web
-        {
-            get { return (StartCommand + " " + String.Join(" ", StartCommandArgs)).Trim(); }
-        }
+        public string Web { get; set; }
     }
 }

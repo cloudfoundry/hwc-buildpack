@@ -75,9 +75,12 @@ namespace Builder.Tests.Specs.Features
 
             context["given i have an app similar to nora"] = () =>
             {
+                string resultFile = null;
+
                 before = () =>
                 {
                     Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(Path.Combine(currentDirectory, "Builder.Tests", "app"), appDir);
+                    resultFile = Path.Combine(tmpDir, "result.json");
                 };
 
                 it["Creates a droplet"] = () =>
@@ -88,14 +91,46 @@ namespace Builder.Tests.Specs.Features
 
                 it["Creates the result.json"] = () =>
                 {
-                    var resultFile = Path.Combine(tmpDir, "result.json");
                     File.Exists(resultFile).should_be_true();
+                };
 
-                    var result = JObject.Parse(File.ReadAllText(resultFile));
-                    var executionMetadata = result["execution_metadata"].Value<JObject>();
-                    var processTypes = executionMetadata["process_types"].Value<JObject>();
-                    var webStartCommand = processTypes["web"].Value<string>();
-                    webStartCommand.should_be("tmp/lifecycle/WebAppServer.exe .");
+                context["the json file"] = () =>
+                {
+                    JObject result = null;
+
+                    act = () =>
+                    {
+                        result = JObject.Parse(File.ReadAllText(resultFile));
+                    };
+
+                    it["includes the start command for 'web'"] = () =>
+                    {
+                        var processTypes = result["process_types"].Value<JObject>();
+                        var webStartCommand = processTypes["web"].Value<string>();
+                        webStartCommand.should_be("tmp/lifecycle/WebAppServer.exe .");
+                    };
+
+                    it["includes execution metadata"] = () =>
+                    {
+                        var executionMetadataJson = result["execution_metadata"].Value<string>();
+                        var executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(executionMetadataJson);
+                        executionMetadata.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                        executionMetadata.StartCommandArgs.should_be(new string[] { "." });
+                    };
+
+                    it["doesn't have any other process types"] = () =>
+                    {
+                        var processTypes = result["process_types"].Value<JObject>();
+                        processTypes.Count.should_be(1);
+                    };
+
+                    it["includes lifecycle metadata fields"] = () =>
+                    {
+                        result["lifecycle_type"].Value<string>().should_be("buildpack");
+                        var metadata = result["lifecycle_metadata"].Value<JObject>();
+                        metadata["detected_buildpack"].Value<string>().should_be("windows");
+                        metadata["buildpack_key"].Value<string>().should_be("");
+                    };
                 };
             };
 

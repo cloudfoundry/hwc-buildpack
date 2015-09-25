@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using NSpec;
 using System.IO;
 
@@ -35,8 +34,8 @@ namespace Builder.Tests
 
                 it["sets WebAppServer as the start command (Diego)"] = () =>
                 {
-                    obj.ProcessTypes.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
-                    obj.ProcessTypes.StartCommandArgs.should_be(new string[] { "." });
+                    obj.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                    obj.StartCommandArgs.should_be(new string[] { "." });
                 };
             };
 
@@ -46,8 +45,8 @@ namespace Builder.Tests
 
                 it["sets the exe as the start command (Diego)"] = () =>
                 {
-                    obj.ProcessTypes.StartCommand.should_be(@"jane.exe");
-                    obj.ProcessTypes.StartCommandArgs.should_be_empty();
+                    obj.StartCommand.should_be(@"jane.exe");
+                    obj.StartCommandArgs.should_be_empty();
                 };
             };
 
@@ -68,8 +67,8 @@ namespace Builder.Tests
 
                     it["sets the Procfile as the start command (Diego)"] = () =>
                     {
-                        obj.ProcessTypes.StartCommand.should_be(@"billybob.exe");
-                        obj.ProcessTypes.StartCommandArgs.should_be(new string[] {"fred", "jane", "jim"});
+                        obj.StartCommand.should_be(@"billybob.exe");
+                        obj.StartCommandArgs.should_be(new string[] {"fred", "jane", "jim"});
                     };
 
                     context["and a web.config also exist"] = () =>
@@ -78,8 +77,8 @@ namespace Builder.Tests
 
                         it["goes with the Procfile"] = () =>
                         {
-                            obj.ProcessTypes.StartCommand.should_be(@"billybob.exe");
-                            obj.ProcessTypes.StartCommandArgs.should_be(new string[] { "fred", "jane", "jim" });
+                            obj.StartCommand.should_be(@"billybob.exe");
+                            obj.StartCommandArgs.should_be(new string[] { "fred", "jane", "jim" });
                         };
                     };
                 };
@@ -139,8 +138,8 @@ namespace Builder.Tests
 
                 it["goes with the Web.config"] = () =>
                 {
-                    obj.ProcessTypes.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
-                    obj.ProcessTypes.StartCommandArgs.should_be(new string[] { "." });
+                    obj.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                    obj.StartCommandArgs.should_be(new string[] { "." });
                 };
             };
         }

@@ -1,4 +1,5 @@
-﻿using Builder.Models;
+﻿using System.Threading;
+using Builder.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace Builder
     {
         public static ExecutionMetadata GenerateExecutionMetadata(IList<string> files)
         {
-            var processTypes = new ProcessTypes();
+            var executionMetadata = new ExecutionMetadata();
             var procfiles = files.Where(x => Path.GetFileName(x).ToLower() == "procfile").ToList();
             var executables = files.Where(x => x.EndsWith(".exe")).ToList();
             if (procfiles.Any())
@@ -22,8 +23,8 @@ namespace Builder
                 if (webline.Any())
                 {
                     var contents = webline.First().Substring(4).Trim().Split(new[] { ' ' });
-                    processTypes.StartCommand = contents[0];
-                    processTypes.StartCommandArgs = contents.Skip(1).ToArray();
+                    executionMetadata.StartCommand = contents[0];
+                    executionMetadata.StartCommandArgs = contents.Skip(1).ToArray();
                 }
                 else
                 {
@@ -32,25 +33,22 @@ namespace Builder
             }
             else if (files.Any(x => Path.GetFileName(x).ToLower() == "web.config"))
             {
-                processTypes.StartCommand = "tmp/lifecycle/WebAppServer.exe";
-                processTypes.StartCommandArgs = new[] { "." };
+                executionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
+                executionMetadata.StartCommandArgs = new[] { "." };
             }
             else if (executables.Any())
             {
                 if (executables.Count() > 1)
                     throw new Exception("Directory contained more than 1 executable file.");
-                processTypes.StartCommand = Path.GetFileName(executables.First());
-                processTypes.StartCommandArgs = new string[] { };
+                executionMetadata.StartCommand = Path.GetFileName(executables.First());
+                executionMetadata.StartCommandArgs = new string[] { };
             }
             else
             {
                 Console.Error.WriteLine("No start command detected");
             }
 
-            return new ExecutionMetadata()
-            {
-                ProcessTypes = processTypes
-            };
+            return executionMetadata;
         }
 
         static void Main(string[] args)
@@ -151,7 +149,7 @@ namespace Builder
             var executionMetadata = GenerateExecutionMetadata(files);
             return new OutputMetadata()
             {
-                ExecutionMetadata = executionMetadata,
+                ExecutionMetadata=  executionMetadata,
             };
         }
 

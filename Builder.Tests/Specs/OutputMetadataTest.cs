@@ -12,31 +12,31 @@ namespace Builder.Tests
         {
             context["given the start command"] = () =>
             {
-                OutputMetadata metaData = null;
+                OutputMetadata outputMetadata = null;
 
-                before = () => metaData = new OutputMetadata()
+                before = () =>
                 {
-                    ExecutionMetadata = new ExecutionMetadata()
+                    outputMetadata = new OutputMetadata()
                     {
-                        ProcessTypes = new ProcessTypes() {
-                            StartCommand = "foo",
-                            StartCommandArgs = new string[] { },
-                        },
-                    }
+                        ExecutionMetadata = new ExecutionMetadata() {
+                        StartCommand = "foo",
+                        StartCommandArgs = new string[] {},
+                        }
+                    };
                 };
 
                 context["and some arguments"] = () =>
                 {
                     before =
                         () =>
-                            metaData.ExecutionMetadata.ProcessTypes.StartCommandArgs = new string[]
+                            outputMetadata.ExecutionMetadata.StartCommandArgs = new string[]
                             {
                                 "bar", "baz"
                             };
 
                     it["sets the detected start command"] = () =>
                     {
-                        metaData.ExecutionMetadata.ProcessTypes.Web.should_be("foo bar baz");
+                        outputMetadata.ProcessTypes.Web.should_be("foo bar baz");
                     };
                 };
 
@@ -44,7 +44,7 @@ namespace Builder.Tests
                 {
                     it["sets the detected start command"] = () =>
                     {
-                        metaData.ExecutionMetadata.ProcessTypes.Web.should_be("foo");
+                        outputMetadata.ProcessTypes.Web.should_be("foo");
                     };
                 };
             };

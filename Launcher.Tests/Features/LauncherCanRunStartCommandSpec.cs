@@ -82,10 +82,10 @@ namespace Launcher.Tests.Features
                         normalStartInfo.Arguments = ArgumentEscaper.Escape(normalStartArguments);
                     };
 
-                    it["ignores the execution metadata and runs the start command"] = () =>
+                    it["is ignored and execution metadata is used"] = () =>
                     {
-                        var stdout = process.StandardOutput.ReadToEnd();
-                        stdout.should_contain("BOOM!!!");
+                        var beans = File.ReadAllText("Bean.txt");
+                        beans.should_contain("\"bean1\" \"bean\\\\2\"");
                     };
                 };
 

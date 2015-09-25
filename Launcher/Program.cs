@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace Launcher
@@ -33,24 +34,17 @@ namespace Launcher
                 UseShellExecute = false,
             };
 
-            if (args[1] != "")
+            try
             {
-                startInfo.FileName = args[1];
+                var executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(args[2]);
+                startInfo.FileName = executionMetadata.StartCommand;
+                startInfo.Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs);
             }
-            else
+            catch (Exception)
             {
-                try
-                {
-                    var executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(args[2]);
-                    startInfo.FileName = executionMetadata.StartCommand;
-                    startInfo.Arguments = ArgumentEscaper.Escape(executionMetadata.StartCommandArgs);
-                }
-                catch (Exception)
-                {
-                    Console.Error.WriteLine(
-                        "Launcher was run with invalid JSON for the metadata argument. The JSON was: {0}", args[2]);
-                    return 1;
-                }
+                Console.Error.WriteLine(
+                    "Launcher was run with invalid JSON for the metadata argument. The JSON was: {0}", args[2]);
+                return 1;
             }
 
             if (String.IsNullOrWhiteSpace(startInfo.FileName))
