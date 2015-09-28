@@ -50,10 +50,11 @@ namespace Builder.Tests
 
                         var files = ArchiveFactory.Open(ms).Entries.ToArray();
 
-                        files[0].Key.should_be("another_file.txt");
+                        var tmpDirName = Path.GetFileName(tmpDir);
+                        files[0].Key.should_be(tmpDirName + "/another_file.txt");
                         GetString(files[0]).should_be("Some different text");
 
-                        files[1].Key.should_be("a_file.txt");
+                        files[1].Key.should_be(tmpDirName + "/a_file.txt");
                         GetString(files[1]).should_be("Some exciting text");
                     }
                 }

@@ -37,7 +37,7 @@ namespace Builder
             }
             else if (files.Any(x => Path.GetFileName(x).ToLower() == "web.config"))
             {
-                executionMetadata.StartCommand = "tmp/lifecycle/WebAppServer.exe";
+                executionMetadata.StartCommand = @"..\tmp\lifecycle\WebAppServer.exe";
             }
             else if (executables.Any())
             {

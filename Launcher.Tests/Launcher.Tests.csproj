@@ -63,7 +63,7 @@
     <None Include="Fixtures\CivetCat.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Fixtures\Explosions.bat">
+    <None Include="Fixtures\Exit.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
