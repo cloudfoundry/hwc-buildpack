@@ -1,0 +1,25 @@
+version: 0.{build}
+skip_tags: true
+cache: C:\Users\appveyor\AppData\Local\NuGet\Cache
+build_script:
+- git submodule update --init --recursive
+- scripts\make.bat
+test: off
+artifacts:
+- path: output/*
+  name: lifecycle
+deploy:
+- provider: S3
+  access_key_id: AKIAJ3M5ORCAISPRT22Q
+  secret_access_key:
+    secure: lMbaCusTBxZpIbSzoILyHMBkz+sVH7EwgAqI3sAVYAM92OcIzlzq1IzcB8MmnRvZ
+  region: us-east-1
+  bucket: windows-app-lifecycle
+  artifact: lifecycle
+  set_public: true
+  on:
+    branch: master
+branches:
+  only:
+  - master
+  - /appveyor/

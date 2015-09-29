@@ -122,14 +122,14 @@ namespace Builder.Tests.Specs.Features
                     {
                         var processTypes = result["process_types"].Value<JObject>();
                         var webStartCommand = processTypes["web"].Value<string>();
-                        webStartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                        webStartCommand.should_be(@"..\tmp\lifecycle\WebAppServer.exe");
                     };
 
                     it["includes execution metadata"] = () =>
                     {
                         var executionMetadataJson = result["execution_metadata"].Value<string>();
                         var executionMetadata = JsonConvert.DeserializeObject<ExecutionMetadata>(executionMetadataJson);
-                        executionMetadata.StartCommand.should_be("tmp/lifecycle/WebAppServer.exe");
+                        executionMetadata.StartCommand.should_be(@"..\tmp\lifecycle\WebAppServer.exe");
                         executionMetadata.StartCommandArgs.should_be(new string[] { });
                     };
 
