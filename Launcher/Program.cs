@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Newtonsoft.Json;
@@ -43,8 +41,6 @@ namespace Launcher
             }
             Console.Out.WriteLine("Running {0}", executablePath);
 
-            addCFEnvironmentVariables();
-
             var result = CreateProcess(null, executablePath, IntPtr.Zero, IntPtr.Zero, false, 0, IntPtr.Zero, workingDirectory, ref startupInformation, out processInformation);
             if (!result)
             {
@@ -54,22 +50,6 @@ namespace Launcher
             UInt32 exitCode = 0;
             GetExitCodeProcess(processInformation.hProcess, ref exitCode);
             return (int) exitCode;
-        }
-
-        private static void addCFEnvironmentVariables()
-        {
-            var environments = Environment.GetEnvironmentVariables();
-            var iter = environments.GetEnumerator();
-            var dict = new Dictionary<string, string>();
-            while (iter.MoveNext())
-            {
-                var key =  (string)iter.Key;
-                if (key.StartsWith("INSTANCE_"))
-                {
-                    dict["CF_" + key] = (string) iter.Value;
-                }
-            }
-            dict.ToList().ForEach(x => Environment.SetEnvironmentVariable(x.Key, x.Value));
         }
 
         [DllImport("kernel32.dll", SetLastError = true)]

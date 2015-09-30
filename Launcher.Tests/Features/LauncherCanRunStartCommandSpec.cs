@@ -1,15 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using NSpec;
 using System;
-using NSpec.Domain.Extensions;
 
 namespace Launcher.Tests.Features
 {
     internal class LauncherCanRunStartCommandSpec : nspec
     {
-        private Process StartLauncher(Dictionary<string, string> environment, params string[] args)
+        private Process StartLauncher(params string[] args)
         {
             var startInfo = new ProcessStartInfo
             {
@@ -19,10 +17,6 @@ namespace Launcher.Tests.Features
                 RedirectStandardOutput = true,
                 UseShellExecute = false
             };
-            if (environment != null)
-            {
-                environment.Each(x => startInfo.EnvironmentVariables[x.Key] = x.Value);
-            }
             var proc = Process.Start(startInfo);
             proc.should_not_be_null();
             proc.WaitForExit();
@@ -44,13 +38,13 @@ namespace Launcher.Tests.Features
 
                 it["outputs a message onto STDERR"] = () =>
                 {
-                    var launcher = StartLauncher(null);
+                    var launcher = StartLauncher();
                     launcher.StandardError.ReadToEnd().should_contain("Launcher was run with insufficient arguments");
                 };
 
                 it["returns an exit code of 1"] = () =>
                 {
-                    var launcher = StartLauncher(null);
+                    var launcher = StartLauncher();
                     launcher.ExitCode.should_be(1);
                 };
             };
@@ -60,7 +54,7 @@ namespace Launcher.Tests.Features
             {
                 it["runs it"] = () =>
                 {
-                    StartLauncher(null, "Fixtures", "CivetCat.bat bean1 bean2");
+                    StartLauncher("Fixtures", "CivetCat.bat bean1 bean2");
 
                     var beans = File.ReadAllText(@"Fixtures\Bean.txt");
                     beans.should_contain("bean1 bean2");
@@ -68,36 +62,25 @@ namespace Launcher.Tests.Features
 
                 it["returns the exit code from it"] = () =>
                 {
-                    var launcher = StartLauncher(null, "Fixtures", "CivetCat.bat");
+                    var launcher = StartLauncher("Fixtures", @"CivetCat.bat");
                     launcher.ExitCode.should_be(0);
 
-                    launcher = StartLauncher(null, "Fixtures", "Exit.bat 5678");
+                    launcher = StartLauncher("Fixtures", "Exit.bat 5678");
                     launcher.ExitCode.should_be(5678);
                 };
 
                 it["propagates stdout from it"] = () =>
                 {
-                    var launcher = StartLauncher(null, "Fixtures", "CivetCat.bat");
+                    var launcher = StartLauncher("Fixtures", "CivetCat.bat");
                     var stdout = launcher.StandardOutput.ReadToEnd();
                     stdout.should_contain("This is STDOUT");
                 };
 
                 it["propagates stderr from it"] = () =>
                 {
-                    var launcher = StartLauncher(null, "Fixtures", "CivetCat.bat");
+                    var launcher = StartLauncher("Fixtures", "CivetCat.bat");
                     var stderr = launcher.StandardError.ReadToEnd();
                     stderr.should_contain("This is STDERR");
-                };
-
-                it["adds CF_INSTANCE environment variables"] = () =>
-                {
-                    var env = new Dictionary<string, string>
-                    {
-                        {"INSTANCE_ID", "foobar"},
-                    };
-                    var launcher = StartLauncher(env, "Fixtures", "env.bat CF_INSTANCE_ID");
-                    var output = launcher.StandardOutput.ReadToEnd();
-                    output.should_contain("foobar");
                 };
             };
 
@@ -108,7 +91,7 @@ namespace Launcher.Tests.Features
 
                 it["runs it the same if it was passed as an argument"] = () =>
                 {
-                    var launcher = StartLauncher(null, "doesnt", "matter");
+                    var launcher = StartLauncher("doesnt", "matter");
                     var beans = File.ReadAllText(@"Fixtures\Bean.txt");
                     beans.should_contain("boop beep");
                     launcher.ExitCode.should_be(0);
