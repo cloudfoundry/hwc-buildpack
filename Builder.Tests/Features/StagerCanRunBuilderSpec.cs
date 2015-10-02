@@ -98,6 +98,12 @@ namespace Builder.Tests.Specs.Features
                     resultFile = Path.Combine(tmpDir, "result.json");
                 };
 
+                it["Creates an empty output cache dir"] = () =>
+                {
+                    var fileName = Path.Combine(tmpDir, "output-cache");
+                    Directory.Exists(fileName).should_be_true();
+                };
+
                 it["Creates a droplet"] = () =>
                 {
                     var fileName = Path.Combine(tmpDir, "droplet");

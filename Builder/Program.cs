@@ -78,6 +78,11 @@ namespace Builder
             var obj = GenerateOutputMetadata(files);
             File.WriteAllText(Directory.GetCurrentDirectory() + options.OutputMetadata, JsonConvert.SerializeObject(obj));
 
+            // creates an empty output cache directory otherwise, containerizer will throw 
+            // an exception everytime the rep tries to stream out the directory
+            var outputCacheDir = Directory.GetCurrentDirectory() + options.OutputBuildArtifactsCache;
+            Directory.CreateDirectory(outputCacheDir);
+
             // create droplet
             var outputDropletPath = Directory.GetCurrentDirectory() + options.OutputDroplet;
             TarGZFile.CreateFromDirectory(appPath, outputDropletPath);
