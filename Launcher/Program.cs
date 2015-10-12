@@ -31,7 +31,7 @@ namespace Launcher
             PROCESS_INFORMATION processInformation;
             var startupInformation = new STARTUPINFO();
             var workingDirectory = Path.Combine(Directory.GetCurrentDirectory(), args[0]);
-            var executablePath = Path.Combine(workingDirectory, args[1]);
+            var executablePath = workingDirectory + @"\" + args[1];
 
             if (String.IsNullOrWhiteSpace(args[1]))
             {

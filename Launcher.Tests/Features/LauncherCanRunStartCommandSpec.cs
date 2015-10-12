@@ -84,8 +84,9 @@ namespace Launcher.Tests.Features
                 {
                     StartLauncher("Fixtures", "CivetCat.bat bean1 bean2");
 
-                    var beans = File.ReadAllText(@"Fixtures\Bean.txt");
-                    beans.should_contain("bean1 bean2");
+                    var beans = File.ReadAllText(@"Fixtures\Bean.txt").Split('\n');
+                    beans[0].should_contain("bean1");
+                    beans[1].should_contain("bean2");
                 };
 
                 it["returns the exit code from it"] = () =>
@@ -110,11 +111,26 @@ namespace Launcher.Tests.Features
                     var stderr = launcher.StandardError.ReadToEnd();
                     stderr.should_contain("This is STDERR");
                 };
+
+                it["properly splits up arguments"] = () =>
+                {
+                    StartLauncher("Fixtures", "CivetCat.bat bean1 bean2");
+
+                    var beans = File.ReadAllText(@"Fixtures\Bean.txt").Split('\n');
+                    beans[0].should_contain("bean1");
+                    beans[1].should_contain("bean2");
+
+                    StartLauncher("Fixtures", "CivetCat.bat \"bean1 bean2\"");
+
+                    var beans2 = File.ReadAllText(@"Fixtures\Bean.txt").Split('\n');
+                    beans2[0].should_contain("bean1 bean2");
+                };
             };
+
 
             describe["when arguments are passed in as ENV[ARGJSON]"] = () =>
             {
-                before = () => Environment.SetEnvironmentVariable("ARGJSON", "[\"Fixtures\", \"CivetCat.bat boop beep\"]");
+                before = () => Environment.SetEnvironmentVariable("ARGJSON", @"[""Fixtures"", ""CivetCat.bat \""boop beep\""""]");
                 after = () => Environment.SetEnvironmentVariable("ARGJSON", null);
 
                 it["runs it the same if it was passed as an argument"] = () =>
