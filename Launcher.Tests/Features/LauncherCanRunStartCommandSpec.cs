@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using NSpec;
 using System;
@@ -10,24 +9,14 @@ namespace Launcher.Tests.Features
     {
         private Process StartLauncher(params string[] args)
         {
-            return StartLauncher(new Dictionary<string, string>(), args);
-        }
-
-        private Process StartLauncher(Dictionary<string, string> environmentVariables, params string[] args)
-        {
             var startInfo = new ProcessStartInfo
             {
                 Arguments = ArgumentEscaper.Escape(args),
                 FileName = "Launcher.exe",
                 RedirectStandardError = true,
                 RedirectStandardOutput = true,
-                UseShellExecute = false,
+                UseShellExecute = false
             };
-
-            foreach (KeyValuePair<string, string> entry in environmentVariables)
-            {
-                startInfo.EnvironmentVariables[entry.Key] = entry.Value;
-            }
             var proc = Process.Start(startInfo);
             proc.should_not_be_null();
             proc.WaitForExit();
@@ -42,24 +31,7 @@ namespace Launcher.Tests.Features
                 Directory.SetCurrentDirectory(workingDirectory);
             };
 
-            after = () =>
-            {
-                File.Delete(@"Fixtures\Bean.txt");
-                File.Delete(@"Fixtures\EnvVar.txt");
-            };
-
-            it["sets the VCAP_APPLICATION environment variable to the correct value"] = () =>
-            {
-                var envVars = new Dictionary<string, string>()
-                {
-                    {"INSTANCE_GUID", "foo"},
-                    {"PORT", "bar"},
-                    {"INSTANCE_INDEX", "baz"}
-                };
-                StartLauncher(envVars, "Fixtures", "Env.bat");
-                var envVarFile = File.ReadAllText(@"Fixtures\EnvVar.txt");
-                envVarFile.should_contain("{\"instance_id\":\"foo\",\"port\":\"bar\",\"instance_index\":\"baz\"}");
-            };
+            after = () => File.Delete(@"Fixtures\Bean.txt");
 
             describe["when started with insufficient arguments"] = () =>
             {

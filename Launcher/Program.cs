@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace Launcher
@@ -39,13 +40,6 @@ namespace Launcher
                 return 1;
             }
             Console.Out.WriteLine("Running {0}", executablePath);
-
-            var vCapEnvVariable = new Dictionary<String, String>();
-            vCapEnvVariable["instance_id"] = Environment.GetEnvironmentVariable("INSTANCE_GUID");
-            vCapEnvVariable["port"] = Environment.GetEnvironmentVariable("PORT");
-            vCapEnvVariable["instance_index"] = Environment.GetEnvironmentVariable("INSTANCE_INDEX");
-
-            Environment.SetEnvironmentVariable("VCAP_APPLICATION", JsonConvert.SerializeObject(vCapEnvVariable));
 
             var result = CreateProcess(null, executablePath, IntPtr.Zero, IntPtr.Zero, false, 0, IntPtr.Zero, workingDirectory, ref startupInformation, out processInformation);
             if (!result)

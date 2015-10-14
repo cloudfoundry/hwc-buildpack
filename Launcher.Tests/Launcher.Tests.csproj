@@ -60,7 +60,10 @@
     <Compile Include="Specs\IntegrationSpec.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Fixtures\*.bat">
+    <None Include="Fixtures\CivetCat.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Fixtures\Exit.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
