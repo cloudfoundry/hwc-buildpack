@@ -49,8 +49,9 @@
     <Reference Include="NSpecAddin">
       <HintPath>..\packages\nspec4nunit.0.9.66.8\lib\net35\NSpecAddin.dll</HintPath>
     </Reference>
-    <Reference Include="SharpCompress">
-      <HintPath>..\packages\p3-sharpcompress.0.10.5.2\lib\net40\SharpCompress.dll</HintPath>
+    <Reference Include="SharpCompress, Version=0.10.3.0, Culture=neutral, PublicKeyToken=beaf6f427e128133, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\sharpcompress.0.11.1\lib\net40\SharpCompress.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.IO.Compression" />
