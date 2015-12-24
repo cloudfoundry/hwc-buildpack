@@ -29,19 +29,30 @@ namespace Launcher
                 return 1;
             }
 
-            PROCESS_INFORMATION processInformation;
-            var startupInformation = new STARTUPINFO();
-            var workingDirectory = Path.Combine(Directory.GetCurrentDirectory(), args[0]);
-            var executablePath = workingDirectory + @"\" + args[1];
+            var containerRoot = Directory.GetCurrentDirectory();
+            var workingDirectory = Path.Combine(containerRoot, args[0]);
+            var executablePathAndArgs = args[1];
 
-            if (String.IsNullOrWhiteSpace(args[1]))
+            if (String.IsNullOrWhiteSpace(executablePathAndArgs))
             {
                 Console.Error.WriteLine("Could not determine a start command. Use the -c flag to 'cf push' to specify a custom start command.");
                 return 1;
             }
-            Console.Out.WriteLine("Running {0}", executablePath);
+            if (executablePathAndArgs[0] == '/')
+            {
+                executablePathAndArgs = containerRoot + executablePathAndArgs;
+            }
+            Console.Out.WriteLine("Running {0}", executablePathAndArgs);
 
-            var result = CreateProcess(null, executablePath, IntPtr.Zero, IntPtr.Zero, false, 0, IntPtr.Zero, workingDirectory, ref startupInformation, out processInformation);
+            Directory.SetCurrentDirectory(workingDirectory);
+            return StartProcess(executablePathAndArgs);
+        }
+
+        private static int StartProcess(string executablePathAndArgs)
+        {
+            STARTUPINFO startupInformation = new STARTUPINFO();
+            PROCESS_INFORMATION processInformation;
+            var result = CreateProcess(null, executablePathAndArgs, IntPtr.Zero, IntPtr.Zero, false, 0, IntPtr.Zero, null, ref startupInformation, out processInformation);
             if (!result)
             {
                 return Marshal.GetLastWin32Error();

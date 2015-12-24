@@ -97,6 +97,15 @@ namespace Launcher.Tests.Features
                     var beans2 = File.ReadAllText(@"Fixtures\Bean.txt").Split('\n');
                     beans2[0].should_contain("bean1 bean2");
                 };
+
+                it["works with absolute paths with quoted arguments"] = () =>
+                {
+                    StartLauncher("Fixtures", "/Fixtures/CivetCat.bat \"bean1\" \"bean2\"");
+
+                    var beans = File.ReadAllText(@"Fixtures\Bean.txt").Split('\n');
+                    beans[0].should_contain("bean1");
+                    beans[1].should_contain("bean2");
+                };
             };
 
 
