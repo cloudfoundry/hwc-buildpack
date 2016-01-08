@@ -1,5 +1,4 @@
-﻿using System;
-using Builder.Models;
+﻿using Builder.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NSpec;
@@ -98,10 +97,20 @@ namespace Builder.Tests.Specs.Features
                     resultFile = Path.Combine(tmpDir, "result.json");
                 };
 
-                it["Creates an empty output cache dir"] = () =>
+                it["Creates an empty build artifacts cache dir"] = () =>
+                {
+                    var fileName = Path.Combine(tmpDir, "cache");
+                    Directory.Exists(fileName).should_be_true();
+                };
+
+                it["compresses the build artifacts cache dir into the output-cache file"] = () =>
                 {
                     var fileName = Path.Combine(tmpDir, "output-cache");
-                    Directory.Exists(fileName).should_be_true();
+                    File.Exists(fileName).should_be_true();
+                    using(var file = File.OpenRead(fileName))
+                    {
+                        file.Length.should_be_greater_than(0);
+                    }
                 };
 
                 it["Creates a droplet"] = () =>
