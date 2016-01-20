@@ -1,71 +1,93 @@
 ﻿using System;
-using NSpec;
-using System.IO;
 using System.Diagnostics;
 using System.Linq;
-using Newtonsoft.Json.Linq;
-using Builder;
-using SharpCompress.Archive;
+using System.Reflection;
+using Builder.Tests.Properties;
+using NSpec;
+using System.IO;
 
 namespace Builder.Tests
 {
     class TarGZFileTest : nspec
     {
-        string tgzPath, tmpDir;
+        string tgzPath, tmpDir, extractDir;
+        private static string TarArchiverPath(string filename)
+        {
+            var uri = new Uri(Assembly.GetExecutingAssembly().CodeBase);
+            return Path.Combine(Path.GetDirectoryName(uri.LocalPath), filename);
+        }
+
+        void before_all()
+        {
+            File.WriteAllBytes(TarArchiverPath("tar.exe"), Resources.bsdtar);
+            File.WriteAllBytes(TarArchiverPath("zlib1.dll"), Resources.zlib1);
+        }
+
         void before_each() {
             tgzPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             tmpDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tmpDir);
+            File.WriteAllText(Path.Combine(tmpDir, "a_file.txt"), "Some exciting text");
+            Directory.CreateDirectory(Path.Combine(tmpDir, "a dir"));
+            File.WriteAllText(Path.Combine(tmpDir, "a dir", "another_file.txt"), "Some spacey text");
         }
 
         void after_each()
         {
-            if (File.Exists(tgzPath)) File.Delete(tgzPath);
             Directory.Delete(tmpDir, true);
+            if (Directory.Exists(extractDir))
+            {
+                Directory.Delete(extractDir, true);
+            }
+            if (File.Exists(tgzPath))
+            {
+                File.Delete(tgzPath);
+            }
         }
 
-        void describe_CreateFromDirectory()
+        private void describe_CreateFromDirectory()
         {
-            before = () => {
-                File.WriteAllText(Path.Combine(tmpDir, "a_file.txt"), "Some exciting text");
-                File.WriteAllText(Path.Combine(tmpDir,"another_file.txt"), "Some different text");
-                TarGZFile.CreateFromDirectory(tmpDir, tgzPath);
-            };
-
             it["creates the tgz file"] = () =>
             {
+                TarGZFile.CreateFromDirectory(tmpDir, tgzPath);
                 File.Exists(tgzPath).should_be_true();
             };
 
             it["puts the files inside the file"] = () =>
             {
-                using (var archive = ArchiveFactory.Open(tgzPath))
-                {
-                    var tarFile = archive.Entries.First(entry => entry.Key == "Tar.tar");
-                    using (var ms = new MemoryStream())
-                    {
-                        tarFile.OpenEntryStream().CopyTo(ms);
-                        ms.Position = 0;
-                        // now work with ms
+                TarGZFile.CreateFromDirectory(tmpDir, tgzPath);
 
-                        var files = ArchiveFactory.Open(ms).Entries.ToArray();
-
-                        var tmpDirName = Path.GetFileName(tmpDir);
-                        files[0].Key.should_be(tmpDirName + "/another_file.txt");
-                        GetString(files[0]).should_be("Some different text");
-
-                        files[1].Key.should_be(tmpDirName + "/a_file.txt");
-                        GetString(files[1]).should_be("Some exciting text");
-                    }
-                }
+                var process = new Process();
+                var processStartInfo = process.StartInfo;
+                processStartInfo.FileName = TarArchiverPath("tar.exe");
+                processStartInfo.Arguments = "tf " + tgzPath;
+                processStartInfo.RedirectStandardOutput = true;
+                processStartInfo.UseShellExecute = false;
+                process.Start();
+                process.WaitForExit();
+                var fileNames = process.StandardOutput.ReadToEnd();
+                fileNames.should_contain(Path.GetFileName(tmpDir) + "/a_file.txt");
+                fileNames.should_contain(Path.GetFileName(tmpDir) + "/a dir/another_file.txt");
             };
-        }
 
-        static string GetString(IArchiveEntry entry)
-        {
-            byte[] bytes = new byte[entry.Size];
-            entry.OpenEntryStream().Read(bytes, 0, bytes.Length);
-            return System.Text.Encoding.Default.GetString(bytes);
+            it["can deal with Unicode in filenames"] = () =>
+            {
+                File.WriteAllText(Path.Combine(tmpDir, "新闻.txt"), "Chinese news");
+                extractDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+                Directory.CreateDirectory(extractDir);
+
+                TarGZFile.CreateFromDirectory(tmpDir, tgzPath);
+
+                var process = new Process();
+                var processStartInfo = process.StartInfo;
+                processStartInfo.FileName = TarArchiverPath("tar.exe");
+                processStartInfo.Arguments = "xf " + tgzPath + " -C " + extractDir;
+                processStartInfo.UseShellExecute = false;
+                process.Start();
+                process.WaitForExit();
+                var fileNames = Directory.EnumerateFiles(extractDir, "*", SearchOption.AllDirectories).ToList();
+                fileNames.should_contain(Path.Combine(extractDir, Path.GetFileName(tmpDir)) +  @"\新闻.txt");
+            };
         }
     }
 }
