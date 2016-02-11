@@ -37,6 +37,7 @@ namespace Healthcheck.Tests.Specs
 
                 process.StartInfo.EnvironmentVariables["CF_INSTANCE_PORTS"] =
                     String.Format("[{{\"external\": {0}, \"internal\": 8080}}]", externalPort);
+                process.StartInfo.EnvironmentVariables["CF_INSTANCE_IP"] = "127.0.0.1";
 
                 process.Start();
                 processOutputData = process.StandardOutput.ReadToEnd();
@@ -69,19 +70,6 @@ namespace Healthcheck.Tests.Specs
                 {
                     processOutputData.should_be("healthcheck passed\r\n");
                     process.ExitCode.should_be(0);
-                };
-            };
-
-            describe["when the address is listening only on localhost"] = () =>
-            {
-                HttpListener httpListener = null;
-                before = () => httpListener = startServer("127.0.0.1", externalPort);
-                after = () => httpListener.Stop();
-
-                it["exits 1 and logs it failed"] = () =>
-                {
-                    processOutputData.should_contain("healthcheck failed\r\n");
-                    process.ExitCode.should_be(1);
                 };
             };
 

@@ -21,41 +21,38 @@ namespace Healthcheck
 
             var internalPort = args[1];
             var externalPort = getExternalPort(instancePorts, internalPort);
-
-            foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
+            if (externalPort == "")
             {
-                IPInterfaceProperties ipProps = netInterface.GetIPProperties();
-                foreach (UnicastIPAddressInformation addr in ipProps.UnicastAddresses)
+                Console.WriteLine("healthcheck failed, port mapping not found for " + internalPort + " in " +
+                                  instancePorts);
+                Environment.Exit(1);
+            }
+
+            try
+            {
+                var task =
+                    client.GetAsync(String.Format("http://{0}:{1}", Environment.GetEnvironmentVariable("CF_INSTANCE_IP"), externalPort));
+                if (task.Wait(1000))
                 {
-                    if (addr.Address.AddressFamily != AddressFamily.InterNetwork) continue;
-                    if (addr.Address.ToString().StartsWith("127.")) continue;
-                    try
+                    if (task.Result.IsSuccessStatusCode)
                     {
-                        var task =
-                            client.GetAsync(String.Format("http://{0}:{1}", addr.Address, externalPort));
-                        if (task.Wait(1000))
-                        {
-                            if (task.Result.IsSuccessStatusCode)
-                            {
-                                Console.WriteLine("healthcheck passed");
-                                Environment.Exit(0);
-                            }
-                            else
-                            {
-                                Console.Error.WriteLine("Got error response: " +
-                                                  task.Result.Content.ReadAsStringAsync().Result);
-                            }
-                        }
-                        else
-                        {
-                            Console.WriteLine("waiting for process to start up");
-                        }
+                        Console.WriteLine("healthcheck passed");
+                        Environment.Exit(0);
                     }
-                    catch (Exception e)
+                    else
                     {
-                        Console.WriteLine(e.ToString());
+                        Console.Error.WriteLine("Got error response: " +
+                                          task.Result.Content.ReadAsStringAsync().Result);
                     }
                 }
+                else
+                {
+                    Console.WriteLine("waiting for process to start up");
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
             }
 
             Console.WriteLine("healthcheck failed");
@@ -67,7 +64,12 @@ namespace Healthcheck
         {
             var serializer = new JavaScriptSerializer();
             var instancePorts = serializer.Deserialize<List<Dictionary<string, string>>>(jsonInstancePorts);
-            return instancePorts.First(x => x["internal"] == internalPort)["external"];
+            var match = instancePorts.FirstOrDefault(x => x["internal"] == internalPort);
+            if (match == null)
+            {
+                return "";
+            }
+            return match["external"];
         }
     }
 }
