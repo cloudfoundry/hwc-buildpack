@@ -13,8 +13,8 @@ namespace Healthcheck.Tests.Specs
     {
         public void describe_()
         {
-            int port = -1;
-            before = () => port = GetFreeTcpPort();
+            int externalPort = -1;
+            before = () => externalPort = GetFreeTcpPort();
             Process process = null;
             string processOutputData = null;
             string processErrorData = null;
@@ -27,6 +27,7 @@ namespace Healthcheck.Tests.Specs
                     StartInfo =
                     {
                         FileName = Path.Combine(workingDir, "Healthcheck.exe"),
+                        Arguments = "-port 8080",
                         WorkingDirectory = workingDir,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,
@@ -34,7 +35,8 @@ namespace Healthcheck.Tests.Specs
                     }
                 };
 
-                process.StartInfo.EnvironmentVariables["PORT"] = port.ToString();
+                process.StartInfo.EnvironmentVariables["CF_INSTANCE_PORTS"] =
+                    String.Format("[{{\"external\": {0}, \"internal\": 8080}}]", externalPort);
 
                 process.Start();
                 processOutputData = process.StandardOutput.ReadToEnd();
@@ -46,7 +48,7 @@ namespace Healthcheck.Tests.Specs
             {
                 HttpListener httpListener = null;
                 var stacktrace = "BOOOOOOM";
-                before = () => httpListener = startServer("*", port, 500, stacktrace);
+                before = () => httpListener = startServer("*", externalPort, 500, stacktrace);
                 after = () => httpListener.Stop();
 
                 it["exits 1 and logs the stack trace"] = () =>
@@ -60,7 +62,7 @@ namespace Healthcheck.Tests.Specs
             describe["when the address is listening"] = () =>
             {
                 HttpListener httpListener = null;
-                before = () => httpListener = startServer("*", port);
+                before = () => httpListener = startServer("*", externalPort);
                 after = () => httpListener.Stop();
 
                 it["exits 0 and logs it succeeded"] = () =>
@@ -73,7 +75,7 @@ namespace Healthcheck.Tests.Specs
             describe["when the address is listening only on localhost"] = () =>
             {
                 HttpListener httpListener = null;
-                before = () => httpListener = startServer("127.0.0.1", port);
+                before = () => httpListener = startServer("127.0.0.1", externalPort);
                 after = () => httpListener.Stop();
 
                 it["exits 1 and logs it failed"] = () =>

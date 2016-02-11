@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
+using System.Threading;
+using System.Web.Script.Serialization;
 
 
 namespace Healthcheck
@@ -11,9 +15,12 @@ namespace Healthcheck
         private static void Main(string[] args)
         {
             var client = new HttpClient();
-            var port = Environment.GetEnvironmentVariable("PORT");
-            if (port == null)
-                throw new Exception("PORT is not defined");
+            var instancePorts = Environment.GetEnvironmentVariable("CF_INSTANCE_PORTS");
+            if (instancePorts == null)
+                throw new Exception("CF_INSTANCE_PORTS is not defined");
+
+            var internalPort = args[1];
+            var externalPort = getExternalPort(instancePorts, internalPort);
 
             foreach (NetworkInterface netInterface in NetworkInterface.GetAllNetworkInterfaces())
             {
@@ -25,7 +32,7 @@ namespace Healthcheck
                     try
                     {
                         var task =
-                            client.GetAsync(String.Format("http://{0}:{1}", addr.Address.ToString(), port));
+                            client.GetAsync(String.Format("http://{0}:{1}", addr.Address, externalPort));
                         if (task.Wait(1000))
                         {
                             if (task.Result.IsSuccessStatusCode)
@@ -54,6 +61,13 @@ namespace Healthcheck
             Console.WriteLine("healthcheck failed");
 
             Environment.Exit(1);
+        }
+
+        private static string getExternalPort(string jsonInstancePorts, string internalPort)
+        {
+            var serializer = new JavaScriptSerializer();
+            var instancePorts = serializer.Deserialize<List<Dictionary<string, string>>>(jsonInstancePorts);
+            return instancePorts.First(x => x["internal"] == internalPort)["external"];
         }
     }
 }

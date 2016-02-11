@@ -29,6 +29,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAppServer.Tests", "WebAppServer.Tests\WebAppServer.Tests.csproj", "{74217BBF-73AF-4F95-9116-FA86C9830718}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Healthcheck.Tests", "Healthcheck.Tests\Healthcheck.Tests.csproj", "{7D4C21BC-161A-4C46-A2AD-2ABFDFEB048C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3726B016-605C-4ACA-A282-052CA1AD9AAD} = {3726B016-605C-4ACA-A282-052CA1AD9AAD}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
