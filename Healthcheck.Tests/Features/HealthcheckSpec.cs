@@ -27,7 +27,7 @@ namespace Healthcheck.Tests.Specs
                     StartInfo =
                     {
                         FileName = Path.Combine(workingDir, "Healthcheck.exe"),
-                        Arguments = "-port 8080",
+                        Arguments = "-port=8080",
                         WorkingDirectory = workingDir,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,

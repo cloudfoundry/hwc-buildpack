@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using System.Threading;
 using System.Web.Script.Serialization;
 
 
@@ -19,7 +16,7 @@ namespace Healthcheck
             if (instancePorts == null)
                 throw new Exception("CF_INSTANCE_PORTS is not defined");
 
-            var internalPort = args[1];
+            var internalPort = args[0].Split('=')[1];
             var externalPort = getExternalPort(instancePorts, internalPort);
             if (externalPort == "")
             {

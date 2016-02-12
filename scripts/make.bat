@@ -20,7 +20,7 @@ SET PATH=%GOBIN%;%PATH%
 pushd %GOPATH%\src\github.com\cloudfoundry-incubator\diego-ssh
       go get github.com/Sirupsen/logrus
       go install github.com/onsi/ginkgo/ginkgo
-      ginkgo -r -noColor . || exit /b 1
+      ginkgo -r -noColor -skipPackage="ssh-proxy" . || exit /b 1
 popd
 go build -o diego-sshd.exe github.com/cloudfoundry-incubator/diego-ssh/cmd/sshd || exit /b 1
 
