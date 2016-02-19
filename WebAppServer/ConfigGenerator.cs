@@ -76,14 +76,8 @@ namespace WebAppServer
             appHostConfig.AddToElement(Constants.ConfigXPath.AppPools,
                 BuildApplicationPool(appPoolName, runtimeVersion, pipelineMode, clrConfigPath, userName, password));
 
-            // logging paths
-            var iisLogDir = Path.Combine(logsRootPath, "IIS");
-            appHostConfig.SetValue(Constants.ConfigXPath.SiteDefaults + "/logFile", "directory", iisLogDir);
-            EnsureDirectory(iisLogDir);
-
-            var traceLogDir = Path.Combine(logsRootPath, "TraceLogFiles");
-            appHostConfig.SetValue(Constants.ConfigXPath.SiteDefaults + "/traceFailedRequestsLogging", "directory", traceLogDir);
-            EnsureDirectory(traceLogDir);
+            // disable http logging
+            appHostConfig.SetValue(Constants.ConfigXPath.WebServer + "/httpLogging", "dontLog", true);
 
             // add the site and settings to the app host config
             appHostConfig.AddToElement(Constants.ConfigXPath.Sites, BuildSiteElement("IronFoundrySite", webRootPath, appPoolName, port));
