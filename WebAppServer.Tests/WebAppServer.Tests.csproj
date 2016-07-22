@@ -45,11 +45,13 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Features\WebAppServerHostsNetAppSpec.cs" />
     <Compile Include="DebuggerShim.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Specs\WebConfigTest.cs" />
     <Compile Include="Specs\OptionsTest.cs" />
     <Compile Include="Specs\ProgramTest.cs" />
   </ItemGroup>

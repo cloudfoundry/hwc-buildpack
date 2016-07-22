@@ -51,6 +51,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="WebConfig.cs" />
     <Compile Include="WebCoreActivationException.cs" />
     <Compile Include="WebServer.cs" />
     <Compile Include="XmlExtensions.cs" />

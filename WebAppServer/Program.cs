@@ -65,9 +65,11 @@ namespace WebAppServer
                 log.Info("Webroot:{0}", options.WebRoot);
 
                 var configGenerator = new ConfigGenerator(options.WebRoot);
+                var webConfig = WebConfig.Create(Environment.ExpandEnvironmentVariables(Constants.FrameworkPaths.FourDotZeroWebConfig),
+                    AppDomain.CurrentDomain.BaseDirectory);
                 var settings = configGenerator.Create(
                     options.Port,
-                    Constants.FrameworkPaths.FourDotZeroWebConfig,
+                    webConfig,
                     Constants.RuntimeVersion.VersionFourDotZero,
                     Constants.PipelineMode.Integrated, 
                     null, 
