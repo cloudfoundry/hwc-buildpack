@@ -1,35 +1,41 @@
-windows app lifecycle 
-=====================
+hwc-buildpack
+=============
 
-The windows application lifecycle implements the traditional Cloud Foundry deployment
-strategy.
+A Cloud Foundry [buildpack](http://docs.cloudfoundry.org/buildpacks/) for
+Windows applications.
 
-The **Builder** downloads buildpacks and app bits, and produces a droplet.
-
-The **Launcher** runs the start command using a standard rootfs and
-environment.
-
-The **Healthcheck** runs a tcp port check, defaulting to port 8080.
-
-The **WebAppServer** runs a HostableWebCore server to host the user's app.
-
-Read about the app lifecycle spec here: https://github.com/cloudfoundry-incubator/diego-design-notes#app-lifecycles
+Additional information can be found at
+[CloudFoundry.org](http://docs.cloudfoundry.org/buildpacks/).
 
 ## Dependencies
 - 64 bit version of Windows (tested with Windows Server 2012 R2 Standard)
 - msbuild in PATH
 - Administrator access
 
-building on the command line
-============================
-
-1. Run make.bat in cmd.
-
-building in Visual Studio
+Building in Visual Studio
 ========================
 
 1. Install https://visualstudiogallery.msdn.microsoft.com/7a52473f-9e1a-40f3-8bd8-6c00ab163609 (nspec test runner)
 
 1. Open Visual Studio as Administrator.
-![opening as admin](https://github.com/pivotal-cf-experimental/containerizer/blob/master/README_images/open_as_admin.png)
-![visual studio running as admin](https://github.com/pivotal-cf-experimental/containerizer/blob/master/README_images/showing_vs_running_as_admin.png)
+
+1. Use in Cloud Foundry
+
+Upload the buildpack to your Cloud Foundry and optionally specify it by name.
+
+```
+cf create-buildpack hwc-buildpack hwc-buildpack.zip 10
+cf push my_app -b hwc-buildpack -s windows2012R2
+```
+
+Help and Support
+================
+
+Join the #greenhouse channel in our [Slack
+community](http://slack.cloudfoundry.org/) if you need any further assistance.
+
+Active Development
+=================
+
+The project backlog is on [Pivotal
+Tracker](https://www.pivotaltracker.com/n/projects/1156164).
