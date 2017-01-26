@@ -5,7 +5,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Security.Principal;
-using System.Threading;
 using System.Linq;
 
 namespace WebAppServer.Tests
