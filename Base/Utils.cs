@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -12,28 +11,12 @@ namespace Base
             return files.Any(x => Path.GetFileName(x).ToLower() == "web.config");
         }
 
-        public static IEnumerable<string> ExeFiles(IList<string> files)
-        {
-            return  files.Where(x => x.EndsWith(".exe", true, CultureInfo.InvariantCulture));
-        }
-
         public static string GetStartCommand(IList<string> files)
         {
             string startCommand = null;
-            var executables = ExeFiles(files).ToList();
             if (HasWebConfig(files))
             {
                 startCommand = @"WebAppServer\WebAppServer.exe";
-            }
-            else if (executables.Any())
-            {
-                if (executables.Count() > 1)
-                {
-                    return null;
-                    // throw new Exception("Directory contains more than 1 executable file.");
-                }
-
-                startCommand = Path.GetFileName(executables.First());
             }
 
             return startCommand;

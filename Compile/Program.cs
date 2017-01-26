@@ -26,10 +26,6 @@ namespace Compile
                 Directory.CreateDirectory(Path.Combine(buildPath, "WebAppServer", "bin"));
                 Utils.CopyDirectory(Path.Combine(binDirectory.Parent.FullName, "WebAppServer", "bin"), Path.Combine(buildPath, "WebAppServer"));
             }
-            if (Utils.ExeFiles(files).Count() == 1)
-            {
-                // Nothing to do.
-            }
 
             Environment.Exit(0);
         }

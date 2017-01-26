@@ -23,11 +23,6 @@ namespace Detect
                 Console.Out.Write("WebAppServer");
                 Environment.Exit(0);
             }
-            if (Utils.ExeFiles(files).Count() == 1)
-            {
-                Console.Out.Write("Exe");
-                Environment.Exit(0);
-            }
 
             Environment.Exit(1);
         }
