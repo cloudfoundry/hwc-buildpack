@@ -1,10 +1,7 @@
 ﻿using Base;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Compile
 {
@@ -28,7 +25,6 @@ namespace Compile
             {
                 Directory.CreateDirectory(Path.Combine(buildPath, "WebAppServer", "bin"));
                 Utils.CopyDirectory(Path.Combine(binDirectory.Parent.FullName, "WebAppServer", "bin"), Path.Combine(buildPath, "WebAppServer"));
-                Utils.SetConnectionStrings(files);
             }
             if (Utils.ExeFiles(files).Count() == 1)
             {

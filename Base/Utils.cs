@@ -1,13 +1,7 @@
-﻿using Base.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace Base
 {
@@ -65,70 +59,6 @@ namespace Base
 
                 return releaseInfoYaml.ToString();
             }
-        }
-
-        public static void SetConnectionStrings(IList<string> files)
-        {
-            var webConfig = files.FirstOrDefault(x => Path.GetFileName(x).ToLower() == "web.config");
-            var vcapServices = Environment.GetEnvironmentVariable("VCAP_SERVICES");
-            if (webConfig == null || vcapServices == null)
-            {
-                return;
-            }
-            var services = JsonConvert.DeserializeObject<Services>(vcapServices);
-            var doc = new XmlDocument();
-            doc.Load(webConfig);
-            SetConnectionStrings(doc, services);
-            doc.Save(webConfig);
-        }
-
-        public static void SetConnectionStrings(XmlDocument doc, Services services)
-        {
-            if (services.UserProvided.Count == 0)
-            {
-                return;
-            }
-
-            var xmlNode = doc.SelectSingleNode("//configuration/connectionStrings");
-            if (xmlNode == null)
-            {
-                xmlNode = doc.SelectSingleNode("//configuration");
-                if (xmlNode == null)
-                {
-                    throw new Exception("invalid webconfig");
-                }
-                var connectionStrings = doc.CreateElement("connectionStrings", null);
-                xmlNode.AppendChild(connectionStrings);
-                xmlNode = connectionStrings;
-            }
-            xmlNode.RemoveAll();
-
-            foreach (var service in services.UserProvided)
-            {
-                var addNode = doc.CreateElement("add", null);
-                string name;
-                service.Credentials.TryGetValue("name", out name);
-                string connectionString;
-                service.Credentials.TryGetValue("connectionString", out connectionString);
-                string providerName;
-                service.Credentials.TryGetValue("providerName", out providerName);
-                if (name == null || connectionString == null || providerName == null)
-                {
-                    continue;
-                }
-                AddAttribute(addNode, "name", name);
-                AddAttribute(addNode, "connectionString", connectionString);
-                AddAttribute(addNode, "providerName", providerName);
-                xmlNode.AppendChild(addNode);
-            }
-        }
-
-        private static void AddAttribute(XmlElement elem, string name, string value)
-        {
-            var doc = elem.OwnerDocument;
-            var attr = doc.CreateAttribute(name);
-            attr.Value = value;
-            elem.Attributes.Append(attr);
         }
 
         static public void CopyDirectory(string sourcePath, string destiationPath)
