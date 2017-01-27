@@ -23,8 +23,9 @@ namespace Compile
             var files = Directory.EnumerateFiles(buildPath).ToList();
             if (Utils.HasWebConfig(files))
             {
-                Directory.CreateDirectory(Path.Combine(buildPath, "WebAppServer", "bin"));
-                Utils.CopyDirectory(Path.Combine(binDirectory.Parent.FullName, "WebAppServer", "bin"), Path.Combine(buildPath, "WebAppServer"));
+                var webAppServerDestination = Path.Combine(buildPath, ".cloudfoundry", "WebAppServer");
+                Directory.CreateDirectory(webAppServerDestination);
+                Utils.CopyDirectory(Path.Combine(binDirectory.Parent.FullName, "WebAppServer", "bin"), webAppServerDestination);
             }
 
             Environment.Exit(0);

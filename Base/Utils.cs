@@ -16,7 +16,7 @@ namespace Base
             string startCommand = null;
             if (HasWebConfig(files))
             {
-                startCommand = @"WebAppServer\WebAppServer.exe";
+                startCommand = Path.Combine(".cloudfoundry", "WebAppServer", "WebAppServer.exe");
             }
 
             return startCommand;
