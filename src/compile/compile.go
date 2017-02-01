@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	. "github.com/greenhouse-org/hwc-buildpack/common"
+	. "common"
 )
 
 func main() {

@@ -14,7 +14,7 @@ import (
 
 	"github.com/docker/distribution/uuid"
 
-	. "github.com/greenhouse-org/hwc-buildpack/common"
+	. "common"
 )
 
 var appRootPath string
