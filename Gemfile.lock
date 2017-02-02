@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/cloudfoundry/buildpack-packager
-  revision: 6ea1f1146e0990503e4d60b5ac6a68bbc204aae3
+  revision: b07f676d7a6cf6cf5822692b3269e13358c2853e
   branch: windows-support
   specs:
     buildpack-packager (2.3.5)
