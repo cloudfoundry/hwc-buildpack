@@ -13,6 +13,8 @@ exclude_files:
   - hwc_buildpack-*v*.zip
   - scripts/
   - src/
+  - cf.Gemfile
+  - cf.Gemfile.lock
 
 url_to_dependency_map: []
 

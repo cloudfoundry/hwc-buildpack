@@ -25,3 +25,5 @@ _testmain.go
 
 # Buildpack zip files
 *buildpack*.zip
+
+log/
