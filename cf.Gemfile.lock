@@ -46,6 +46,8 @@ GEM
     rspec-expectations (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
+    rspec-instafail (1.0.0)
+      rspec
     rspec-mocks (3.5.0)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.5.0)
@@ -64,6 +66,7 @@ DEPENDENCIES
   buildpack-packager!
   machete!
   rspec
+  rspec-instafail
 
 RUBY VERSION
    ruby 2.3.1p112
