@@ -43,7 +43,14 @@ func Compile(args []string, bpRoot string) error {
 		return err
 	}
 
-	err = manifest.FetchDependency(defaultHWC, "/tmp/hwc.zip")
+	tmpDir, err := ioutil.TempDir("", "hwc")
+	if err != nil {
+		return err
+	}
+
+	hwcZipFile := filepath.Join(tmpDir, "hwc.zip")
+
+	err = manifest.FetchDependency(defaultHWC, hwcZipFile)
 	if err != nil {
 		return err
 	}
@@ -54,7 +61,7 @@ func Compile(args []string, bpRoot string) error {
 		return err
 	}
 
-	err = bp.ExtractZip("/tmp/hwc.zip", hwcDir)
+	err = bp.ExtractZip(hwcZipFile, hwcDir)
 	if err != nil {
 		return err
 	}
