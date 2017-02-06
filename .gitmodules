@@ -1,12 +1,12 @@
 [submodule "src/vendor/gopkg.in/yaml.v2"]
 	path = src/vendor/gopkg.in/yaml.v2
-	url = git@github.com:go-yaml/yaml.git
+	url = https://github.com/go-yaml/yaml.git
 [submodule "src/vendor/github.com/onsi/ginkgo"]
 	path = src/vendor/github.com/onsi/ginkgo
-	url = git@github.com:onsi/ginkgo.git
+	url = https://github.com/onsi/ginkgo.git
 [submodule "src/vendor/github.com/onsi/gomega"]
 	path = src/vendor/github.com/onsi/gomega
-	url = git@github.com:onsi/gomega.git
+	url = https://github.com/onsi/gomega.git
 [submodule "src/vendor/github.com/cloudfoundry/libbuildpack"]
 	path = src/vendor/github.com/cloudfoundry/libbuildpack
-	url = git@github.com:cloudfoundry/libbuildpack.git
+	url = https://github.com/cloudfoundry/libbuildpack.git
