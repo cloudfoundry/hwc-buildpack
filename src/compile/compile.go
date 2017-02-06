@@ -12,31 +12,54 @@ import (
 )
 
 func main() {
-	buildDir, _, err := parseArgs(os.Args[1:])
-	checkErr(err)
-
-	checkWebConfig(buildDir)
 
 	bpRoot, err := filepath.Abs(filepath.Join(filepath.Dir(os.Args[0]), ".."))
 	checkErr(err)
 
-	manifest, err := bp.NewManifest(filepath.Join(bpRoot, "manifest.yml"))
-	checkErr(err)
-
-	defaultHWC, err := manifest.DefaultVersion("hwc")
-	checkErr(err)
-
-	err = manifest.FetchDependency(defaultHWC, "/tmp/hwc.zip")
-	checkErr(err)
-
-	hwcDir := filepath.Join(buildDir, ".cloudfoundry")
-	err = os.MkdirAll(hwcDir, 0700)
-	checkErr(err)
-
-	err = bp.ExtractZip("/tmp/hwc.zip", hwcDir)
+	err = Compile(os.Args[1:], bpRoot)
 	checkErr(err)
 
 	os.Exit(0)
+}
+
+func Compile(args []string, bpRoot string) error {
+	buildDir, _, err := parseArgs(args)
+	if err != nil {
+		return err
+	}
+
+	err = checkWebConfig(buildDir)
+	if err != nil {
+		return err
+	}
+
+	manifest, err := bp.NewManifest(filepath.Join(bpRoot, "manifest.yml"))
+	if err != nil {
+		return err
+	}
+
+	defaultHWC, err := manifest.DefaultVersion("hwc")
+	if err != nil {
+		return err
+	}
+
+	err = manifest.FetchDependency(defaultHWC, "/tmp/hwc.zip")
+	if err != nil {
+		return err
+	}
+
+	hwcDir := filepath.Join(buildDir, ".cloudfoundry")
+	err = os.MkdirAll(hwcDir, 0700)
+	if err != nil {
+		return err
+	}
+
+	err = bp.ExtractZip("/tmp/hwc.zip", hwcDir)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func parseArgs(args []string) (string, string, error) {
@@ -63,15 +86,15 @@ func checkErr(err error) {
 	}
 }
 
-func checkWebConfig(buildDir string) {
+func checkWebConfig(buildDir string) error {
 	_, err := os.Stat(buildDir)
 	if err != nil {
-		fail(errInvalidBuildDir)
+		return errInvalidBuildDir
 	}
 
 	files, err := ioutil.ReadDir(buildDir)
 	if err != nil {
-		fail(errInvalidBuildDir)
+		return errInvalidBuildDir
 	}
 
 	var webConfigExists bool
@@ -83,6 +106,7 @@ func checkWebConfig(buildDir string) {
 	}
 
 	if !webConfigExists {
-		fail(errMissingWebConfig)
+		return errMissingWebConfig
 	}
+	return nil
 }
