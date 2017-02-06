@@ -7,16 +7,28 @@ describe 'CF HWC Buildpack' do
 
   describe 'deploying an hwc app' do
     let(:app_name) { 'windows_app' }
+    let(:app)      { Machete.deploy_app(app_name, buildpack: 'hwc-test-buildpack') }
+    let(:browser)  { Machete::Browser.new(app) }
 
-    let(:app) { Machete.deploy_app(app_name, buildpack: 'hwc-test-buildpack') }
-    let(:browser) { Machete::Browser.new(app) }
+    context 'with a cached buildpack', :cached do
+      it 'deploys without hitting the internet' do
+        expect(app).to be_running
+        expect(app).not_to have_internet_traffic
 
-    it 'deploys successfully' do
-      expect(app).to be_running
+        browser.visit_path('/')
 
-      browser.visit_path('/')
+        expect(browser.body).to include('hello i am nora')
+      end
+    end
 
-      expect(browser.body).to include('hello i am nora')
+    context 'with an uncached buildpack', :uncached do
+      it 'deploys successfully' do
+        expect(app).to be_running
+
+        browser.visit_path('/')
+
+        expect(browser.body).to include('hello i am nora')
+      end
     end
   end
 end
