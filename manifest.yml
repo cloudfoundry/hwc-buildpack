@@ -25,7 +25,7 @@ default_versions:
 dependencies:
 - name: hwc
   version: 1.0.0
-  uri: https://github.com/greenhouse-org/hwc/releases/download/v1.0.0/hwc.zip
+  uri: https://github.com/cloudfoundry-incubator/hwc/releases/download/v1.0.0/hwc.zip
   md5: 1e6064089cc07aab676e5e8e36f1ccee
   cf_stacks:
   - windows2012R2
