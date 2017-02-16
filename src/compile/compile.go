@@ -33,7 +33,7 @@ func Compile(args []string, bpRoot string) error {
 		return err
 	}
 
-	manifest, err := bp.NewManifest(filepath.Join(bpRoot, "manifest.yml"))
+	manifest, err := bp.NewManifest(bpRoot)
 	if err != nil {
 		return err
 	}
