@@ -16,6 +16,8 @@ describe 'CF HWC Buildpack' do
 
         # skip until moved into buildpacks-ci
         # expect(app).not_to have_internet_traffic
+        expect(app).not_to have_logged(/Download \[/)
+        expect(app).to have_logged(/Copy \[/)
 
         browser.visit_path('/')
 
@@ -26,6 +28,7 @@ describe 'CF HWC Buildpack' do
     context 'with an uncached buildpack', :uncached do
       it 'deploys successfully' do
         expect(app).to be_running
+        expect(app).to have_logged(/Download \[/)
 
         browser.visit_path('/')
 

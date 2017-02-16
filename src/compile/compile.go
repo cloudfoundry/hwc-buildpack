@@ -27,21 +27,38 @@ func Compile(args []string, bpRoot string) error {
 	if err != nil {
 		return err
 	}
+	manifest, err := bp.NewManifest(bpRoot)
+	if err != nil {
+		return err
+	}
+
+	version, err := manifest.Version()
+	if err != nil {
+		bp.Log.Error("Could not determine buildpack version: %s", err.Error())
+		return err
+	}
+
+	bp.Log.BeginStep("HWC Buildpack version %s", version)
+
+	err = manifest.CheckStackSupport()
+	if err != nil {
+		bp.Log.Error("Stack not supported by buildpack: %s", err.Error())
+		return err
+	}
 
 	err = checkWebConfig(buildDir)
 	if err != nil {
 		return err
 	}
 
-	manifest, err := bp.NewManifest(bpRoot)
-	if err != nil {
-		return err
-	}
+	bp.Log.BeginStep("Installing HWC")
 
 	defaultHWC, err := manifest.DefaultVersion("hwc")
 	if err != nil {
 		return err
 	}
+
+	bp.Log.BeginStep("HWC version %s", defaultHWC.Version)
 
 	tmpDir, err := ioutil.TempDir("", "hwc")
 	if err != nil {
