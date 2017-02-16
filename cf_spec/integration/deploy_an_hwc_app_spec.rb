@@ -36,28 +36,5 @@ describe 'CF HWC Buildpack' do
         expect(browser.body).to include('hello i am nora')
       end
     end
-
-    context 'ginkgo specs' do
-      before do
-        @old_gopath = ENV['GOPATH']
-        ENV['GOPATH'] = Dir.pwd
-      end
-
-      after do
-        ENV['GOPATH'] = @old_gopath
-      end
-
-      it 'passes all tests' do
-        _, stdout, stderr, wait_thr = Open3.popen3('ginkgo -r')
-        exit_status = wait_thr.value
-        unless exit_status.success?
-          puts "gingko stdout:"
-          puts stdout.read
-          puts "ginkgo stderr:"
-          puts stderr.read
-        end
-        expect(wait_thr.value).to eq(0)
-      end
-    end
   end
 end
