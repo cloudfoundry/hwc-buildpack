@@ -14,11 +14,12 @@ import (
 
 var _ = Describe("Compile", func() {
 	var (
-		err      error
-		buildDir string
-		bpRoot   string
-		cwd      string
-		args     []string
+		err        error
+		buildDir   string
+		bpRoot     string
+		cwd        string
+		args       []string
+		oldCfStack string
 	)
 
 	BeforeEach(func() {
@@ -27,9 +28,18 @@ var _ = Describe("Compile", func() {
 
 		buildDir, err = ioutil.TempDir("", "")
 		Expect(err).ToNot(HaveOccurred())
+
+		oldCfStack = os.Getenv("CF_STACK")
+
+		err = os.Setenv("CF_STACK", "windows2012R2")
+		Expect(err).To(BeNil())
+
 	})
 
 	AfterEach(func() {
+		err = os.Setenv("CF_STACK", oldCfStack)
+		Expect(err).To(BeNil())
+
 		os.RemoveAll(buildDir)
 		CleanupBuildArtifacts()
 	})
