@@ -5,8 +5,17 @@
 			"importpath": "github.com/cloudfoundry/libbuildpack",
 			"repository": "https://github.com/cloudfoundry/libbuildpack",
 			"vcs": "git",
-			"revision": "51683a16e75c03ad0aad7457ce998efdcd3a6f17",
+			"revision": "78176a01c932c2e6f6c11b0edcc2defe945d1511",
 			"branch": "master",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/golang/mock/gomock",
+			"repository": "https://github.com/golang/mock",
+			"vcs": "git",
+			"revision": "bd3c8e81be01eef76d4b503f5e687d2d1354d2d9",
+			"branch": "master",
+			"path": "/gomock",
 			"notests": true
 		},
 		{

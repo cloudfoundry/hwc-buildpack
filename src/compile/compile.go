@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,87 +10,48 @@ import (
 	bp "github.com/cloudfoundry/libbuildpack"
 )
 
-func main() {
-
-	bpRoot, err := filepath.Abs(filepath.Join(filepath.Dir(os.Args[0]), ".."))
-	checkErr(err)
-
-	err = Compile(os.Args[1:], bpRoot)
-	checkErr(err)
-
-	os.Exit(0)
+type HWCCompiler struct {
+	Compiler *bp.Compiler
 }
 
-func Compile(args []string, bpRoot string) error {
-	buildDir, _, err := parseArgs(args)
-	if err != nil {
-		return err
-	}
-	manifest, err := bp.NewManifest(bpRoot)
-	if err != nil {
-		return err
-	}
+func main() {
+	buildDir := os.Args[1]
+	cacheDir := os.Args[2]
 
-	version, err := manifest.Version()
+	logger := bp.NewLogger()
+
+	compiler, err := bp.NewCompiler(buildDir, cacheDir, logger)
+	err = compiler.CheckBuildpackValid()
 	if err != nil {
-		bp.Log.Error("Could not determine buildpack version: %s", err.Error())
-		return err
+		panic(err)
 	}
 
-	bp.Log.BeginStep("HWC Buildpack version %s", version)
-
-	err = manifest.CheckStackSupport()
-	if err != nil {
-		bp.Log.Error("Stack not supported by buildpack: %s", err.Error())
-		return err
+	hc := HWCCompiler{
+		Compiler: compiler,
 	}
 
-	err = checkWebConfig(buildDir)
+	err = hc.Compile()
 	if err != nil {
-		return err
+		panic(err)
 	}
 
-	bp.Log.BeginStep("Installing HWC")
+	compiler.StagingComplete()
+}
 
-	defaultHWC, err := manifest.DefaultVersion("hwc")
+func (c *HWCCompiler) Compile() error {
+	err := c.CheckWebConfig()
 	if err != nil {
+		c.Compiler.Log.Error("Unable to locate web.config: %s", err.Error())
 		return err
 	}
 
-	bp.Log.BeginStep("HWC version %s", defaultHWC.Version)
-
-	tmpDir, err := ioutil.TempDir("", "hwc")
+	err = c.InstallHWC()
 	if err != nil {
-		return err
-	}
-
-	hwcZipFile := filepath.Join(tmpDir, "hwc.zip")
-
-	err = manifest.FetchDependency(defaultHWC, hwcZipFile)
-	if err != nil {
-		return err
-	}
-
-	hwcDir := filepath.Join(buildDir, ".cloudfoundry")
-	err = os.MkdirAll(hwcDir, 0700)
-	if err != nil {
-		return err
-	}
-
-	err = bp.ExtractZip(hwcZipFile, hwcDir)
-	if err != nil {
+		c.Compiler.Log.Error("Unable to install HWC: %s", err.Error())
 		return err
 	}
 
 	return nil
-}
-
-func parseArgs(args []string) (string, string, error) {
-	if len(args) != 2 {
-		return "", "", errors.New("Invalid usage. Expected: compile.exe <build_dir> <cache_dir>")
-	}
-
-	return args[0], args[1], nil
 }
 
 var (
@@ -99,24 +59,13 @@ var (
 	errMissingWebConfig = errors.New("Missing Web.config")
 )
 
-func fail(err error) {
-	fmt.Fprintf(os.Stderr, "\n%s\n", err)
-	os.Exit(1)
-}
-
-func checkErr(err error) {
-	if err != nil {
-		fail(err)
-	}
-}
-
-func checkWebConfig(buildDir string) error {
-	_, err := os.Stat(buildDir)
+func (c *HWCCompiler) CheckWebConfig() error {
+	_, err := os.Stat(c.Compiler.BuildDir)
 	if err != nil {
 		return errInvalidBuildDir
 	}
 
-	files, err := ioutil.ReadDir(buildDir)
+	files, err := ioutil.ReadDir(c.Compiler.BuildDir)
 	if err != nil {
 		return errInvalidBuildDir
 	}
@@ -133,4 +82,23 @@ func checkWebConfig(buildDir string) error {
 		return errMissingWebConfig
 	}
 	return nil
+}
+
+func (c *HWCCompiler) InstallHWC() error {
+	c.Compiler.Log.BeginStep("Installing HWC")
+
+	defaultHWC, err := c.Compiler.Manifest.DefaultVersion("hwc")
+	if err != nil {
+		return err
+	}
+
+	c.Compiler.Log.Info("HWC version %s", defaultHWC.Version)
+
+	hwcDir := filepath.Join(c.Compiler.BuildDir, ".cloudfoundry")
+	err = os.MkdirAll(hwcDir, 0700)
+	if err != nil {
+		return err
+	}
+
+	return c.Compiler.Manifest.InstallDependency(defaultHWC, hwcDir)
 }

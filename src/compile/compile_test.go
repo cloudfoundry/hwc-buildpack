@@ -1,90 +1,112 @@
 package main_test
 
 import (
+	"bytes"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	compile "compile"
 
+	bp "github.com/cloudfoundry/libbuildpack"
+	"github.com/golang/mock/gomock"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/onsi/gomega/gexec"
 )
 
 var _ = Describe("Compile", func() {
 	var (
-		err        error
-		buildDir   string
-		bpRoot     string
-		cwd        string
-		args       []string
-		oldCfStack string
+		err          error
+		buildDir     string
+		cacheDir     string
+		compiler     compile.HWCCompiler
+		logger       bp.Logger
+		buffer       *bytes.Buffer
+		mockCtrl     *gomock.Controller
+		mockManifest *MockManifest
 	)
 
 	BeforeEach(func() {
-		cwd, err = os.Getwd()
-		bpRoot = filepath.Join(cwd, "fixtures", "spec_manifest")
-
-		buildDir, err = ioutil.TempDir("", "")
-		Expect(err).ToNot(HaveOccurred())
-
-		oldCfStack = os.Getenv("CF_STACK")
-
-		err = os.Setenv("CF_STACK", "windows2012R2")
+		buildDir, err = ioutil.TempDir("", "hwc-buildpack.build.")
 		Expect(err).To(BeNil())
 
+		cacheDir, err = ioutil.TempDir("", "hwc-buildpack.cache.")
+		Expect(err).To(BeNil())
+		buffer = new(bytes.Buffer)
+
+		logger = bp.NewLogger()
+		logger.SetOutput(buffer)
+
+		mockCtrl = gomock.NewController(GinkgoT())
+		mockManifest = NewMockManifest(mockCtrl)
 	})
 
 	AfterEach(func() {
-		err = os.Setenv("CF_STACK", oldCfStack)
+		err = os.RemoveAll(buildDir)
 		Expect(err).To(BeNil())
 
-		os.RemoveAll(buildDir)
-		CleanupBuildArtifacts()
+		err = os.RemoveAll(cacheDir)
+		Expect(err).To(BeNil())
 	})
 
-	It("places the web app server in <build_dir>/.cloudfoundry", func() {
+	JustBeforeEach(func() {
+		bpc := bp.Compiler{
+			BuildDir: buildDir,
+			CacheDir: cacheDir,
+			Manifest: mockManifest,
+			Log:      logger,
+		}
 
-		err := ioutil.WriteFile(filepath.Join(buildDir, "Web.config"), []byte("XML"), 0666)
-		Expect(err).ToNot(HaveOccurred())
-
-		hwcDestPath := filepath.Join(buildDir, ".cloudfoundry", "hwc.exe")
-
-		args = []string{buildDir, "cache_dir"}
-		compile.Compile(args, bpRoot)
-
-		_, err = os.Stat(hwcDestPath)
-		Expect(err).ToNot(HaveOccurred())
+		compiler = compile.HWCCompiler{Compiler: &bpc}
 	})
 
-	Context("when not provided any arguments", func() {
-		It("fails", func() {
-			args = []string{}
-			err = compile.Compile(args, bpRoot)
-			Expect(err).ToNot(BeNil())
+	Describe("InstallHWC", func() {})
 
-			Expect(err.Error()).To(Equal("Invalid usage. Expected: compile.exe <build_dir> <cache_dir>"))
+	Describe("CheckWebConfig", func() {
+		Context("build dir does not exist", func() {
+			BeforeEach(func() {
+				buildDir = "not/a/directory"
+			})
+
+			It("returns an error", func() {
+				err = compiler.CheckWebConfig()
+				Expect(err.Error()).To(Equal("Invalid build directory provided"))
+			})
+		})
+
+		Context("build dir does not contain web.config", func() {
+			It("returns an error", func() {
+				err = compiler.CheckWebConfig()
+				Expect(err.Error()).To(Equal("Missing Web.config"))
+			})
+		})
+
+		Context("build dir contains web.config", func() {
+			BeforeEach(func() {
+				err = ioutil.WriteFile(filepath.Join(buildDir, "Web.ConfiG"), []byte("xx"), 0644)
+				Expect(err).To(BeNil())
+			})
+
+			It("does not return an error", func() {
+				err = compiler.CheckWebConfig()
+				Expect(err).To(BeNil())
+			})
 		})
 	})
 
-	Context("when provided a nonexistent build directory", func() {
-		It("fails", func() {
-			args = []string{"/nonexistent/build_dir", "/cache_dir"}
-			err = compile.Compile(args, bpRoot)
-			Expect(err).ToNot(BeNil())
+	Describe("InstallHWC", func() {
+		It("installs HWC to <build_dir>/.cloudfoundry", func() {
+			dep := bp.Dependency{Name: "hwc", Version: "99.99"}
 
-			Expect(err.Error()).To(Equal("Invalid build directory provided"))
-		})
-	})
+			mockManifest.EXPECT().DefaultVersion("hwc").Return(dep, nil)
+			mockManifest.EXPECT().InstallDependency(dep, filepath.Join(buildDir, ".cloudfoundry"))
 
-	Context("when the app does not include a Web.config", func() {
-		It("fails", func() {
-			args = []string{buildDir, "/cache_dir"}
-			err = compile.Compile(args, bpRoot)
-			Expect(err).ToNot(BeNil())
+			err = compiler.InstallHWC()
+			Expect(err).To(BeNil())
 
-			Expect(err.Error()).To(Equal("Missing Web.config"))
+			Expect(buffer.String()).To(ContainSubstring("-----> Installing HWC"))
+			Expect(buffer.String()).To(ContainSubstring("HWC version 99.99"))
 		})
 	})
 })
