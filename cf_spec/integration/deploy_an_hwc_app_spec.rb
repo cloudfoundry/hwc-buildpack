@@ -8,7 +8,7 @@ describe 'CF HWC Buildpack' do
 
   describe 'deploying an hwc app' do
     let(:app_name) { 'windows_app' }
-    let(:app)      { Machete.deploy_app(app_name, buildpack: 'hwc-test-buildpack') }
+    let(:app)      { Machete.deploy_app(app_name, stack: 'windows2012R2') }
     let(:browser)  { Machete::Browser.new(app) }
 
     context 'with a cached buildpack', :cached do
