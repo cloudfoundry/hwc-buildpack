@@ -1,33 +1,28 @@
 ---
 language: hwc
-
 exclude_files:
-  - .git/
-  - .gitignore
-  - .gitmodules
-  - .rspec
-  - cf_spec/
-  - log/
-  - test/
-  - buildpack-packager/
-  - hwc_buildpack-*v*.zip
-  - scripts/
-  - src/
-  - cf.Gemfile
-  - cf.Gemfile.lock
-
+- ".git/"
+- ".gitignore"
+- ".gitmodules"
+- ".rspec"
+- cf_spec/
+- log/
+- test/
+- buildpack-packager/
+- hwc_buildpack-*v*.zip
+- scripts/
+- src/
+- cf.Gemfile
+- cf.Gemfile.lock
 url_to_dependency_map: []
-
 default_versions:
 - name: hwc
   version: 1.0.1
-
 dependencies:
 - name: hwc
   version: 1.0.1
-  uri: https://github.com/cloudfoundry-incubator/hwc/releases/download/1.0.1/hwc.zip
-  md5: 66e7af0613b7fc1c7b142fd4b5c4452e
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-1.0.1-windows-amd64-2f9df10f.zip
+  md5: 2f9df10f48019253df0882d433749019
   cf_stacks:
   - windows2012R2
-
 pre_package: scripts/build.sh
