@@ -1,3 +1,8 @@
+v2.3.2 Mar 15, 2017
+====================
+
+* Run detect.ps1 with Unrestricted execution policy
+
 v2.3.1 Mar 09, 2017
 ====================
 
