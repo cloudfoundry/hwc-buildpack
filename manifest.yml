@@ -21,8 +21,8 @@ default_versions:
 dependencies:
 - name: hwc
   version: 1.0.1
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-1.0.1-windows-amd64-2f9df10f.zip
-  md5: 2f9df10f48019253df0882d433749019
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-1.0.1-windows-amd64-181d5fa1.zip
+  md5: 181d5fa14010cf50f10c311ce78422ca
   cf_stacks:
   - windows2012R2
 pre_package: scripts/build.sh
