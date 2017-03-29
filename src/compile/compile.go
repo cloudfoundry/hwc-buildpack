@@ -92,10 +92,6 @@ func (c *HWCCompiler) InstallHWC() error {
 	c.Compiler.Log.Info("HWC version %s", defaultHWC.Version)
 
 	hwcDir := filepath.Join(c.Compiler.BuildDir, ".cloudfoundry")
-	err = os.MkdirAll(hwcDir, 0700)
-	if err != nil {
-		return err
-	}
 
 	return c.Compiler.Manifest.InstallDependency(defaultHWC, hwcDir)
 }
