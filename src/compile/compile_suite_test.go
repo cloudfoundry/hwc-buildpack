@@ -9,5 +9,5 @@ import (
 
 func TestCompile(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Stage")
+	RunSpecs(t, "Compile")
 }

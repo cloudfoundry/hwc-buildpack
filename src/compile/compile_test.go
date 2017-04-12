@@ -17,12 +17,12 @@ import (
 
 //go:generate mockgen -source=vendor/github.com/cloudfoundry/libbuildpack/manifest.go --destination=mocks_manifest_test.go --package=main_test --imports=.=github.com/cloudfoundry/libbuildpack
 
-var _ = Describe("Stage", func() {
+var _ = Describe("Compile", func() {
 	var (
 		err          error
 		buildDir     string
 		cacheDir     string
-		stager       compile.HWCStager
+		stager       compile.HWCCompiler
 		logger       bp.Logger
 		buffer       *bytes.Buffer
 		mockCtrl     *gomock.Controller
@@ -60,7 +60,7 @@ var _ = Describe("Stage", func() {
 			Log:      logger,
 		}
 
-		stager = compile.HWCStager{Stager: &bpc}
+		stager = compile.HWCCompiler{Stager: &bpc}
 	})
 
 	Describe("InstallHWC", func() {})

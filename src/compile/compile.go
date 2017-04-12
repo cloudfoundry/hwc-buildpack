@@ -10,7 +10,7 @@ import (
 	bp "github.com/cloudfoundry/libbuildpack"
 )
 
-type HWCStager struct {
+type HWCCompiler struct {
 	Stager *bp.Stager
 }
 
@@ -23,11 +23,11 @@ func main() {
 		panic(err)
 	}
 
-	hc := HWCStager{
+	hc := HWCCompiler{
 		Stager: stager,
 	}
 
-	err = hc.Stage()
+	err = hc.Compile()
 	if err != nil {
 		panic(err)
 	}
@@ -35,7 +35,7 @@ func main() {
 	stager.StagingComplete()
 }
 
-func (c *HWCStager) Stage() error {
+func (c *HWCCompiler) Compile() error {
 	err := c.CheckWebConfig()
 	if err != nil {
 		c.Stager.Log.Error("Unable to locate web.config: %s", err.Error())
@@ -56,7 +56,7 @@ var (
 	errMissingWebConfig = errors.New("Missing Web.config")
 )
 
-func (c *HWCStager) CheckWebConfig() error {
+func (c *HWCCompiler) CheckWebConfig() error {
 	_, err := os.Stat(c.Stager.BuildDir)
 	if err != nil {
 		return errInvalidBuildDir
@@ -81,7 +81,7 @@ func (c *HWCStager) CheckWebConfig() error {
 	return nil
 }
 
-func (c *HWCStager) InstallHWC() error {
+func (c *HWCCompiler) InstallHWC() error {
 	c.Stager.Log.BeginStep("Installing HWC")
 
 	defaultHWC, err := c.Stager.Manifest.DefaultVersion("hwc")
