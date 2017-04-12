@@ -17,12 +17,12 @@ import (
 
 //go:generate mockgen -source=vendor/github.com/cloudfoundry/libbuildpack/manifest.go --destination=mocks_manifest_test.go --package=main_test --imports=.=github.com/cloudfoundry/libbuildpack
 
-var _ = Describe("Compile", func() {
+var _ = Describe("Stage", func() {
 	var (
 		err          error
 		buildDir     string
 		cacheDir     string
-		compiler     compile.HWCCompiler
+		stager       compile.HWCStager
 		logger       bp.Logger
 		buffer       *bytes.Buffer
 		mockCtrl     *gomock.Controller
@@ -53,14 +53,14 @@ var _ = Describe("Compile", func() {
 	})
 
 	JustBeforeEach(func() {
-		bpc := bp.Compiler{
+		bpc := bp.Stager{
 			BuildDir: buildDir,
 			CacheDir: cacheDir,
 			Manifest: mockManifest,
 			Log:      logger,
 		}
 
-		compiler = compile.HWCCompiler{Compiler: &bpc}
+		stager = compile.HWCStager{Stager: &bpc}
 	})
 
 	Describe("InstallHWC", func() {})
@@ -72,14 +72,14 @@ var _ = Describe("Compile", func() {
 			})
 
 			It("returns an error", func() {
-				err = compiler.CheckWebConfig()
+				err = stager.CheckWebConfig()
 				Expect(err.Error()).To(Equal("Invalid build directory provided"))
 			})
 		})
 
 		Context("build dir does not contain web.config", func() {
 			It("returns an error", func() {
-				err = compiler.CheckWebConfig()
+				err = stager.CheckWebConfig()
 				Expect(err.Error()).To(Equal("Missing Web.config"))
 			})
 		})
@@ -91,7 +91,7 @@ var _ = Describe("Compile", func() {
 			})
 
 			It("does not return an error", func() {
-				err = compiler.CheckWebConfig()
+				err = stager.CheckWebConfig()
 				Expect(err).To(BeNil())
 			})
 		})
@@ -104,7 +104,7 @@ var _ = Describe("Compile", func() {
 			mockManifest.EXPECT().DefaultVersion("hwc").Return(dep, nil)
 			mockManifest.EXPECT().InstallDependency(dep, filepath.Join(buildDir, ".cloudfoundry"))
 
-			err = compiler.InstallHWC()
+			err = stager.InstallHWC()
 			Expect(err).To(BeNil())
 
 			Expect(buffer.String()).To(ContainSubstring("-----> Installing HWC"))

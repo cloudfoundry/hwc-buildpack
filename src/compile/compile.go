@@ -10,41 +10,41 @@ import (
 	bp "github.com/cloudfoundry/libbuildpack"
 )
 
-type HWCCompiler struct {
-	Compiler *bp.Compiler
+type HWCStager struct {
+	Stager *bp.Stager
 }
 
 func main() {
 	logger := bp.NewLogger()
 
-	compiler, err := bp.NewCompiler(os.Args[1:], logger)
-	err = compiler.CheckBuildpackValid()
+	stager, err := bp.NewStager(os.Args[1:], logger)
+	err = stager.CheckBuildpackValid()
 	if err != nil {
 		panic(err)
 	}
 
-	hc := HWCCompiler{
-		Compiler: compiler,
+	hc := HWCStager{
+		Stager: stager,
 	}
 
-	err = hc.Compile()
+	err = hc.Stage()
 	if err != nil {
 		panic(err)
 	}
 
-	compiler.StagingComplete()
+	stager.StagingComplete()
 }
 
-func (c *HWCCompiler) Compile() error {
+func (c *HWCStager) Stage() error {
 	err := c.CheckWebConfig()
 	if err != nil {
-		c.Compiler.Log.Error("Unable to locate web.config: %s", err.Error())
+		c.Stager.Log.Error("Unable to locate web.config: %s", err.Error())
 		return err
 	}
 
 	err = c.InstallHWC()
 	if err != nil {
-		c.Compiler.Log.Error("Unable to install HWC: %s", err.Error())
+		c.Stager.Log.Error("Unable to install HWC: %s", err.Error())
 		return err
 	}
 
@@ -56,13 +56,13 @@ var (
 	errMissingWebConfig = errors.New("Missing Web.config")
 )
 
-func (c *HWCCompiler) CheckWebConfig() error {
-	_, err := os.Stat(c.Compiler.BuildDir)
+func (c *HWCStager) CheckWebConfig() error {
+	_, err := os.Stat(c.Stager.BuildDir)
 	if err != nil {
 		return errInvalidBuildDir
 	}
 
-	files, err := ioutil.ReadDir(c.Compiler.BuildDir)
+	files, err := ioutil.ReadDir(c.Stager.BuildDir)
 	if err != nil {
 		return errInvalidBuildDir
 	}
@@ -81,17 +81,17 @@ func (c *HWCCompiler) CheckWebConfig() error {
 	return nil
 }
 
-func (c *HWCCompiler) InstallHWC() error {
-	c.Compiler.Log.BeginStep("Installing HWC")
+func (c *HWCStager) InstallHWC() error {
+	c.Stager.Log.BeginStep("Installing HWC")
 
-	defaultHWC, err := c.Compiler.Manifest.DefaultVersion("hwc")
+	defaultHWC, err := c.Stager.Manifest.DefaultVersion("hwc")
 	if err != nil {
 		return err
 	}
 
-	c.Compiler.Log.Info("HWC version %s", defaultHWC.Version)
+	c.Stager.Log.Info("HWC version %s", defaultHWC.Version)
 
-	hwcDir := filepath.Join(c.Compiler.BuildDir, ".cloudfoundry")
+	hwcDir := filepath.Join(c.Stager.BuildDir, ".cloudfoundry")
 
-	return c.Compiler.Manifest.InstallDependency(defaultHWC, hwcDir)
+	return c.Stager.Manifest.InstallDependency(defaultHWC, hwcDir)
 }
