@@ -17,12 +17,12 @@ exclude_files:
 url_to_dependency_map: []
 default_versions:
 - name: hwc
-  version: 2.0.0
+  version: 3.0.0
 dependencies:
 - name: hwc
-  version: 2.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-2.0.0-windows-amd64-a1764c01.zip
-  md5: a1764c013df69073c0d92980a56dc107
+  version: 3.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-3.0.0-windows-amd64-acb65777.zip
+  md5: acb65777be759df87d7d288146d592f7
   cf_stacks:
   - windows2012R2
 pre_package: scripts/build.sh
