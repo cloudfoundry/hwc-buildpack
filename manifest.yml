@@ -14,7 +14,6 @@ exclude_files:
 - src/
 - cf.Gemfile
 - cf.Gemfile.lock
-url_to_dependency_map: []
 default_versions:
 - name: hwc
   version: 3.0.0
