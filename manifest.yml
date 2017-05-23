@@ -14,6 +14,8 @@ exclude_files:
 - src/
 - cf.Gemfile
 - cf.Gemfile.lock
+- ".envrc"
+- pkg/
 default_versions:
 - name: hwc
   version: 3.0.0
