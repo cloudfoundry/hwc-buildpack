@@ -6,4 +6,4 @@ export GOPATH=$ROOTDIR
 
 set -ex
 
-GOOS=windows go build -o $BINDIR/compile.exe compile
+GOOS=windows go build -o $BINDIR/compile.exe compile/cli
