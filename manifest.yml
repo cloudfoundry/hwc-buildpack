@@ -17,10 +17,10 @@ exclude_files:
 url_to_dependency_map: []
 default_versions:
 - name: hwc
-  version: 3.0.0
+  version: 1.0.0
 dependencies:
 - name: hwc
-  version: 3.0.0
+  version: 1.0.0
   uri: https://github.com/mxplusb/dotnet-hwc/releases/download/1.0/hwc.zip
   md5: 2dc3db0b5dcb8849c103fb78023d81bd
   cf_stacks:
