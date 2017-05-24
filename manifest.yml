@@ -22,7 +22,7 @@ dependencies:
 - name: hwc
   version: 1.1.0
   uri: https://github.com/mxplusb/dotnet-hwc/releases/download/1.1/hwc.zip
-  md5: 50f30c707ae2582bda9edadf6f053711
+  md5: 9b74467ee536550a81ff4eea96af098d
   cf_stacks:
   - windows2012R2
 pre_package: scripts/build.sh
