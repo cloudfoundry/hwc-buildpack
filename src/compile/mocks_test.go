@@ -8,27 +8,30 @@ import (
 	gomock "github.com/golang/mock/gomock"
 )
 
-// Mock of Manifest interface
+// MockManifest is a mock of Manifest interface
 type MockManifest struct {
 	ctrl     *gomock.Controller
-	recorder *_MockManifestRecorder
+	recorder *MockManifestMockRecorder
 }
 
-// Recorder for MockManifest (not exported)
-type _MockManifestRecorder struct {
+// MockManifestMockRecorder is the mock recorder for MockManifest
+type MockManifestMockRecorder struct {
 	mock *MockManifest
 }
 
+// NewMockManifest creates a new mock instance
 func NewMockManifest(ctrl *gomock.Controller) *MockManifest {
 	mock := &MockManifest{ctrl: ctrl}
-	mock.recorder = &_MockManifestRecorder{mock}
+	mock.recorder = &MockManifestMockRecorder{mock}
 	return mock
 }
 
-func (_m *MockManifest) EXPECT() *_MockManifestRecorder {
+// EXPECT returns an object that allows the caller to indicate expected use
+func (_m *MockManifest) EXPECT() *MockManifestMockRecorder {
 	return _m.recorder
 }
 
+// DefaultVersion mocks base method
 func (_m *MockManifest) DefaultVersion(_param0 string) (libbuildpack.Dependency, error) {
 	ret := _m.ctrl.Call(_m, "DefaultVersion", _param0)
 	ret0, _ := ret[0].(libbuildpack.Dependency)
@@ -36,16 +39,19 @@ func (_m *MockManifest) DefaultVersion(_param0 string) (libbuildpack.Dependency,
 	return ret0, ret1
 }
 
-func (_mr *_MockManifestRecorder) DefaultVersion(arg0 interface{}) *gomock.Call {
+// DefaultVersion indicates an expected call of DefaultVersion
+func (_mr *MockManifestMockRecorder) DefaultVersion(arg0 interface{}) *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "DefaultVersion", arg0)
 }
 
+// InstallDependency mocks base method
 func (_m *MockManifest) InstallDependency(_param0 libbuildpack.Dependency, _param1 string) error {
 	ret := _m.ctrl.Call(_m, "InstallDependency", _param0, _param1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-func (_mr *_MockManifestRecorder) InstallDependency(arg0, arg1 interface{}) *gomock.Call {
+// InstallDependency indicates an expected call of InstallDependency
+func (_mr *MockManifestMockRecorder) InstallDependency(arg0, arg1 interface{}) *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "InstallDependency", arg0, arg1)
 }
