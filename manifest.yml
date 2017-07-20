@@ -18,12 +18,12 @@ exclude_files:
 - pkg/
 default_versions:
 - name: hwc
-  version: 3.0.0
+  version: 4.0.0
 dependencies:
 - name: hwc
-  version: 3.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-3.0.0-windows-amd64-acb65777.zip
-  md5: acb65777be759df87d7d288146d592f7
+  version: 4.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-4.0.0-windows-amd64-ab04e5b2.zip
+  md5: ab04e5b20dee0c8d2bec2759333eb1fb
   cf_stacks:
   - windows2012R2
 pre_package: scripts/build.sh
