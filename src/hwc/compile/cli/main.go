@@ -1,7 +1,7 @@
 package main
 
 import (
-	"compile"
+	"hwc/compile"
 	"os"
 	"time"
 
