@@ -22,11 +22,13 @@ import (
 var bpDir string
 var buildpackVersion string
 var packagedBuildpack cutlass.VersionedBuildpackPackage
+var stack string
 
 func init() {
 	flag.StringVar(&buildpackVersion, "version", "", "version to use (builds if empty)")
 	flag.BoolVar(&cutlass.Cached, "cached", true, "cached buildpack")
 	flag.StringVar(&cutlass.DefaultMemory, "memory", "256M", "default memory for pushed apps")
+	flag.StringVar(&stack, "stack", "all", "stack to run tests against")
 	flag.StringVar(&cutlass.DefaultDisk, "disk", "384M", "default disk for pushed apps")
 	flag.Parse()
 }
