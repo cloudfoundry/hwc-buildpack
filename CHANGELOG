@@ -1,3 +1,9 @@
+v2.3.10 Oct 10, 2017
+=====================
+
+* Add hwc 6.0.0, remove hwc 5.0.0
+  (https://www.pivotaltracker.com/story/show/151765259)
+
 v2.3.9 Sep 08, 2017
 ====================
 
