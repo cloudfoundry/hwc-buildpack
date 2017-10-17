@@ -10,6 +10,7 @@ dependencies:
   md5: 4fe11cbfde30244962b07f564bf4aa5d
   cf_stacks:
   - windows2012R2
+  - windows2016
 pre_package: scripts/build.sh
 include_files:
 - CHANGELOG
