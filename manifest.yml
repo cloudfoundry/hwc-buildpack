@@ -7,10 +7,10 @@ dependencies:
 - name: hwc
   version: 6.0.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-6.0.0-windows-amd64-4fe11cbf.zip
-  md5: 4fe11cbfde30244962b07f564bf4aa5d
   cf_stacks:
   - windows2012R2
   - windows2016
+  sha256: cd2e42a231cf5158800601b5ec0fcf942f9ae35cbbb60313541eeac0e102d531
 pre_package: scripts/build.sh
 include_files:
 - CHANGELOG
