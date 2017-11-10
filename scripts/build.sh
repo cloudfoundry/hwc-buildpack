@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
+set -exuo pipefail
 
-ROOTDIR="$( dirname "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )" )"
-BINDIR=$ROOTDIR/bin
-export GOPATH=$ROOTDIR
-
-set -ex
+cd "$( dirname "${BASH_SOURCE[0]}" )/.."
+source .envrc
 
 GOOS=windows go build -o $BINDIR/compile.exe hwc/compile/cli
