@@ -4,4 +4,4 @@ set -exuo pipefail
 cd "$( dirname "${BASH_SOURCE[0]}" )/.."
 source .envrc
 
-GOOS=windows go build -o $BINDIR/compile.exe hwc/compile/cli
+GOOS=windows go build -o bin/compile.exe hwc/compile/cli
