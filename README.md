@@ -1,4 +1,4 @@
-## hwc-buildpack
+# Cloud Foundry HWC Buildpack
 
 A Cloud Foundry [buildpack](http://docs.cloudfoundry.org/buildpacks/) for Windows applications.
 
@@ -9,37 +9,62 @@ Additional information can be found at [CloudFoundry.org](http://docs.cloudfound
 - [Ginkgo](https://onsi.github.io/ginkgo/)
 - [Hostable Web Core](https://github.com/cloudfoundry-incubator/hwc)
 
-### Building
+### Building the Buildpack
 
-```
-./scripts/build.sh
+To build this buildpack, run the following command from the buildpack's directory:
 
-```
+1. Source the .envrc file in the buildpack directory.
 
-### Test
+   ```bash
+   source .envrc
+   ```
+   To simplify the process in the future, install [direnv](https://direnv.net/) which will automatically source .envrc when you change directories.
 
-Unit Tests:
+1. Install buildpack-packager
 
-```
-cd src/compile
-ginkgo -r -race
-```
+    ```bash
+    ./scripts/install_tools.sh
+    ```
 
-Integration Tests (must be run against a Cloud Foundry deployment with Windows cells):
+1. Build the buildpack
 
-```
-BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-build
-```
+    ```bash
+    buildpack-packager [ --cached | --uncached ]
+    ```
 
-### Use in Cloud Foundry
+1. Use in Cloud Foundry
 
-Upload the buildpack to your Cloud Foundry and optionally specify it by name.
+   Upload the buildpack to your Cloud Foundry and optionally specify it by name
 
-```
-BUNDLE_GEMFILE=cf.Gemfile bundle exec buildpack-packager --{cached | uncached}
-cf create-buildpack hwc_buildpack hwc_buildpack-<cache/version info>.zip 10
-cf push my_app -b hwc_buildpack -s windows2012R2
-```
+    ```bash
+    cf create-buildpack [BUILDPACK_NAME] [BUILDPACK_ZIP_FILE_PATH] 1
+    cf push my_app -b [BUILDPACK_NAME] -s windows2012R2
+    ```
+
+### Testing
+
+Buildpacks use the [Cutlass](https://github.com/cloudfoundry/libbuildpack/tree/master/cutlass) framework for running integration tests.
+
+To test this buildpack, run the following command from the buildpack's directory (must be run against a Cloud Foundry deployment with Windows cells):
+
+1. Source the .envrc file in the buildpack directory.
+
+   ```bash
+   source .envrc
+   ```
+   To simplify the process in the future, install [direnv](https://direnv.net/) which will automatically source .envrc when you change directories.
+
+1. Run unit tests
+
+    ```bash
+    ./scripts/unit.sh
+    ```
+
+1. Run integration tests
+
+    ```bash
+    ./scripts/integration.sh
+    ```
 
 ### Help and Support
 
