@@ -1,3 +1,16 @@
+v2.3.12 Jan 09, 2018
+=====================
+
+* Change checksums from MD5 to SHA256
+  (https://www.pivotaltracker.com/story/show/151913767)
+
+* Update README to reflect new build/test instructions
+  (https://www.pivotaltracker.com/story/show/153527401)
+
+* Simplify build/test scripts to make easier to run
+  Unify scripts across all buildpacks
+  (https://www.pivotaltracker.com/story/show/151293706)
+
 v2.3.11 Oct 17, 2017
 =====================
 
