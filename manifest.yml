@@ -2,15 +2,15 @@
 language: hwc
 default_versions:
 - name: hwc
-  version: 6.0.0
+  version: 8.0.0
 dependencies:
 - name: hwc
-  version: 6.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-6.0.0-windows-amd64-4fe11cbf.zip
+  version: 8.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-8.0.0-windows-amd64-22ad2fd3.zip
+  sha256: 22ad2fd3340d153b23443a42ce528f9c4cb353df29df792c177d5708813c7926
   cf_stacks:
   - windows2012R2
   - windows2016
-  sha256: cd2e42a231cf5158800601b5ec0fcf942f9ae35cbbb60313541eeac0e102d531
 pre_package: scripts/build.sh
 include_files:
 - CHANGELOG
