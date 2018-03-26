@@ -35,6 +35,9 @@ func init() {
 
 var _ = SynchronizedBeforeSuite(func() []byte {
 	// Run once
+
+	Expect([]string{"windows2016", "windows2012R2", "all"}).To(ContainElement(stack))
+
 	if buildpackVersion == "" {
 		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack()
 		Expect(err).NotTo(HaveOccurred())
