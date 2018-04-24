@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -103,6 +104,52 @@ var _ = Describe("CF HWC Buildpack", func() {
 				Expect(compressedLength).To(BeNumerically("<", uncompressedLength))
 			})
 		})
+	})
+
+	// To run this test add the cryptoki.dll and Pkcs11Interop.dll to fixtures/luna_windows_app/Bin/
+	// and add a ups.json file to fixtures/luna_windows_app/ with the Luna User Provided Service JSON
+	// credentials/configuration.
+	Describe("deploying a Luna hwc app", func() {
+
+		var (
+			upsJsonFile string
+			appPath     string
+		)
+
+		Context("windows2012R2", func() {
+			BeforeEach(func() {
+				checkStack("windows2012R2")
+				appPath = filepath.Join(bpDir, "fixtures", "luna_windows_app")
+				app = cutlass.New(appPath)
+				app.Stack = "windows2012R2"
+				app.Buildpacks = []string{"hwc_buildpack"}
+				checkFileExists := func(filePath string) {
+					if _, err := os.Stat(filePath); err != nil {
+						if os.IsNotExist(err) {
+							Skip(fmt.Sprintf("To run the Luna test you need to add: %s", filePath))
+						}
+					}
+				}
+				upsJsonFile = filepath.Join(appPath, "ups.json")
+				checkFileExists(filepath.Join(appPath, "Bin", "cryptoki.dll"))
+				checkFileExists(filepath.Join(appPath, "Bin", "Pkcs11Interop.dll"))
+				checkFileExists(upsJsonFile)
+			})
+
+			AfterEach(func() {
+				app = DestroyApp(app)
+				DeleteService("hwc-luna-ups")
+			})
+
+			It("deploys successfully", func() {
+				credentials, _ := ioutil.ReadFile(upsJsonFile)
+				Expect(CreateUserProvidedService("hwc-luna-ups", string(credentials))).To(Succeed())
+				PushAppAndConfirm(app)
+				encrypted, _ := app.GetBody("/?command=encrypt&iv=00112233445566778899AABBCCDDEEFF&data=encrypted_with_luna_hsm")
+				Expect(app.GetBody("/?command=decrypt&iv=00112233445566778899AABBCCDDEEFF&data=" + encrypted)).To(ContainSubstring("encrypted_with_luna_hsm"))
+			})
+		})
+
 	})
 })
 

@@ -174,3 +174,21 @@ func AssertNoInternetTraffic(fixtureName string) {
 		Expect(traffic).To(BeEmpty())
 	})
 }
+
+func CreateUserProvidedService(service, jsonString string) error {
+	command := exec.Command("cf", "create-user-provided-service", service, "-p", jsonString)
+	if data, err := command.CombinedOutput(); err != nil {
+		fmt.Println(string(data))
+		return err
+	}
+	return nil
+}
+
+func DeleteService(service string) error {
+	command := exec.Command("cf", "delete-service", service, "-f")
+	if data, err := command.CombinedOutput(); err != nil {
+		fmt.Println(string(data))
+		return err
+	}
+	return nil
+}

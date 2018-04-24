@@ -1,0 +1,6 @@
+---
+applications:
+- name: hwc-luna
+  instances: 1
+  services:
+  - hwc-luna-ups
