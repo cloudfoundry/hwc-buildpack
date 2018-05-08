@@ -1,3 +1,9 @@
+v2.3.16 May 08, 2018
+=====================
+
+* Add hwc 10.0.0, remove hwc 9.0.0
+  (https://www.pivotaltracker.com/story/show/157199824)
+
 v2.3.15 Apr 09, 2018
 =====================
 * Fail integration tests if inappropriate stack provided
