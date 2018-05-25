@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
@@ -18,7 +19,7 @@ var _ = Describe("CF HWC Buildpack", func() {
 
 	BeforeEach(func() {
 		checkStack = func(s string) {
-			if s != stack && s != "all" {
+			if !(s == os.Getenv("CF_STACK") || os.Getenv("CF_STACK") == "") {
 				Skip(fmt.Sprintf("Only runs against %s or all stacks", s))
 			}
 		}
