@@ -19,13 +19,14 @@ import (
 
 var _ = Describe("Compile", func() {
 	var (
-		err          error
-		buildDir     string
-		compiler     compile.Compiler
-		logger       *libbuildpack.Logger
-		buffer       *bytes.Buffer
-		mockCtrl     *gomock.Controller
-		mockManifest *MockManifest
+		err           error
+		buildDir      string
+		compiler      compile.Compiler
+		logger        *libbuildpack.Logger
+		buffer        *bytes.Buffer
+		mockCtrl      *gomock.Controller
+		mockManifest  *MockManifest
+		mockInstaller *MockInstaller
 	)
 
 	BeforeEach(func() {
@@ -37,11 +38,13 @@ var _ = Describe("Compile", func() {
 
 		mockCtrl = gomock.NewController(GinkgoT())
 		mockManifest = NewMockManifest(mockCtrl)
+		mockInstaller = NewMockInstaller(mockCtrl)
 
 		compiler = compile.Compiler{
-			BuildDir: buildDir,
-			Manifest: mockManifest,
-			Log:      logger,
+			BuildDir:  buildDir,
+			Manifest:  mockManifest,
+			Installer: mockInstaller,
+			Log:       logger,
 		}
 	})
 
@@ -89,7 +92,7 @@ var _ = Describe("Compile", func() {
 			dep := libbuildpack.Dependency{Name: "hwc", Version: "99.99"}
 
 			mockManifest.EXPECT().DefaultVersion("hwc").Return(dep, nil)
-			mockManifest.EXPECT().InstallDependency(dep, filepath.Join(buildDir, ".cloudfoundry"))
+			mockInstaller.EXPECT().InstallDependency(dep, filepath.Join(buildDir, ".cloudfoundry"))
 
 			err = compiler.InstallHWC()
 			Expect(err).To(BeNil())

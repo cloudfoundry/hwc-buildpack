@@ -12,13 +12,17 @@ import (
 
 type Manifest interface {
 	DefaultVersion(string) (libbuildpack.Dependency, error)
+}
+
+type Installer interface {
 	InstallDependency(libbuildpack.Dependency, string) error
 }
 
 type Compiler struct {
-	BuildDir string
-	Manifest Manifest
-	Log      *libbuildpack.Logger
+	BuildDir  string
+	Manifest  Manifest
+	Installer Installer
+	Log       *libbuildpack.Logger
 }
 
 func (c *Compiler) Compile() error {
@@ -79,5 +83,5 @@ func (c *Compiler) InstallHWC() error {
 
 	hwcDir := filepath.Join(c.BuildDir, ".cloudfoundry")
 
-	return c.Manifest.InstallDependency(defaultHWC, hwcDir)
+	return c.Installer.InstallDependency(defaultHWC, hwcDir)
 }

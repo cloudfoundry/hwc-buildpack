@@ -22,6 +22,7 @@ func main() {
 		logger.Error("Unable to load buildpack manifest: %s", err.Error())
 		os.Exit(10)
 	}
+	installer := libbuildpack.NewInstaller(manifest)
 
 	stager := libbuildpack.NewStager(os.Args[1:], logger, manifest)
 	err = stager.CheckBuildpackValid()
@@ -30,9 +31,10 @@ func main() {
 	}
 
 	hc := compile.Compiler{
-		BuildDir: stager.BuildDir(),
-		Manifest: manifest,
-		Log:      logger,
+		BuildDir:  stager.BuildDir(),
+		Manifest:  manifest,
+		Installer: installer,
+		Log:       logger,
 	}
 
 	err = hc.Compile()
