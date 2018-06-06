@@ -1,3 +1,12 @@
+v2.3.17 Jun 05, 2018
+=====================
+
+* Support packaging with associated stacks
+  (https://www.pivotaltracker.com/story/show/153256959)
+
+* Add hwc 11.0.0, remove hwc 10.0.0
+  (https://www.pivotaltracker.com/story/show/157951238)
+
 v2.3.16 May 08, 2018
 =====================
 
