@@ -9,7 +9,8 @@ dependencies:
   uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-11.0.0-windows-amd64-a2dcb2d2.zip
   sha256: a2dcb2d2f035571277ae6076496cf2d560aae954d02df72d8687e3f34755c83c
   cf_stacks:
-  - cflinuxfs2
+  - windows2012R2
+  - windows2016
 pre_package: scripts/build.sh
 include_files:
 - CHANGELOG
