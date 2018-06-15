@@ -13,6 +13,7 @@ import (
 
 type Luna struct {
 	Log                    *libbuildpack.Logger
+	BuildDir               string
 	LunaDir                string
 	credentials            *LunaCredentials
 	ClientPrivateKeyPath   string
@@ -41,13 +42,14 @@ type LunaCredentials struct {
 	Groups  []Group
 }
 
-func NewLuna(log *libbuildpack.Logger, lunaDir string) *Luna {
+func NewLuna(log *libbuildpack.Logger, buildDir string) *Luna {
 	l := new(Luna)
 	l.Log = log
-	l.LunaDir = lunaDir
-	l.ClientPrivateKeyPath = filepath.Join(lunaDir, "clientPrivateKey.pem")
-	l.ClientCertificatePath = filepath.Join(lunaDir, "clientCertificate.pem")
-	l.ServerCertificatesPath = filepath.Join(lunaDir, "serverCertificates.pem")
+	l.BuildDir = buildDir
+	l.LunaDir = filepath.Join(l.BuildDir, ".cloudfoundry", ".luna")
+	l.ClientPrivateKeyPath = filepath.Join(l.LunaDir, "clientPrivateKey.pem")
+	l.ClientCertificatePath = filepath.Join(l.LunaDir, "clientCertificate.pem")
+	l.ServerCertificatesPath = filepath.Join(l.LunaDir, "serverCertificates.pem")
 	return l
 }
 
@@ -197,6 +199,16 @@ AutoReconnectInterval=60
 	return err
 }
 
+func (l *Luna) writeProfileD() error {
+	profileD := filepath.Join(l.BuildDir, ".profile.d")
+	err := os.MkdirAll(profileD, 0755)
+	if err != nil {
+		return err
+	}
+	lunaBatch := "set ChrystokiConfigurationPath=.cloudfoundry\\.luna\r\n"
+	return ioutil.WriteFile(filepath.Join(profileD, "000_luna.bat"), []byte(lunaBatch), 0644)
+}
+
 func (l *Luna) InstallLuna() error {
 	l.Log.Info("Installing luna to %s", l.LunaDir)
 	l.parseVCAPServices()
@@ -213,6 +225,10 @@ func (l *Luna) InstallLuna() error {
 		return err
 	}
 	err = l.writeCrystokiIni()
+	if err != nil {
+		return err
+	}
+	err = l.writeProfileD()
 	if err != nil {
 		return err
 	}

@@ -170,7 +170,7 @@ clientPrivateKey
 		Context("Should configure luna client", func() {
 			It("Should make .luna directory and write ntls credentials and crytoki.ini files", func() {
 				os.Setenv("VCAP_SERVICES", VCAP_SERVICES)
-				luna := luna.NewLuna(logger, lunaDir)
+				luna := luna.NewLuna(logger, buildDir)
 				err := luna.InstallLuna()
 				Expect(err).To(BeNil())
 				clientCertActual, err := ioutil.ReadFile(filepath.Join(lunaDir, "clientCertificate.pem"))

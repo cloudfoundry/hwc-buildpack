@@ -90,31 +90,11 @@ func (c *Compiler) InstallHWC() error {
 
 	hwcDir := filepath.Join(c.BuildDir, ".cloudfoundry")
 
-	err = c.Installer.InstallDependency(defaultHWC, hwcDir)
-	if err != nil {
-		return err
-	}
-
-	return c.WriteHWCBatchFile(hwcDir)
-}
-
-func (c *Compiler) WriteHWCBatchFile(hwcDir string) error {
-	hwcBatch := `IF EXIST .cloudfoundry\.luna (
-set ChrystokiConfigurationPath=.cloudfoundry\.luna
-)
-.cloudfoundry\hwc.exe
-`
-	hwcBatch = strings.Replace(hwcBatch, "\n", "\r\n", -1)
-	err := os.MkdirAll(hwcDir, 0755)
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(filepath.Join(hwcDir, "hwc.bat"), []byte(hwcBatch), 0644)
+	return c.Installer.InstallDependency(defaultHWC, hwcDir)
 }
 
 func (c *Compiler) InstallLuna() error {
 	c.Log.BeginStep("Installing Luna")
-	lunaDir := filepath.Join(c.BuildDir, ".cloudfoundry", ".luna")
-	luna := luna.NewLuna(c.Log, lunaDir)
+	luna := luna.NewLuna(c.Log, c.BuildDir)
 	return luna.InstallLuna()
 }
