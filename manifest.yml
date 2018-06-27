@@ -11,6 +11,13 @@ dependencies:
   cf_stacks:
   - windows2012R2
   - windows2016
+- name: newrelic
+  version: latest
+  uri: http://download.newrelic.com/dot_net_agent/previous_releases/8.2.216.0/newrelic-agent-win-x64-8.2.216.0.zip
+  sha256: 09315cf71379245f800d509440eacae149281076cf6f8f5a8353538252e59c01
+  cf_stacks:
+  - windows2012R2
+  - windows2016
 pre_package: scripts/build.sh
 include_files:
 - CHANGELOG
@@ -25,3 +32,5 @@ include_files:
 - bin/detect.ps1
 - bin/release.bat
 - manifest.yml
+- newrelic.config
+- Procfile

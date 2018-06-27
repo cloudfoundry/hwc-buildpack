@@ -25,6 +25,7 @@ type Compiler struct {
 	Log       *libbuildpack.Logger
 }
 
+
 func (c *Compiler) Compile() error {
 	err := c.CheckWebConfig()
 	if err != nil {
@@ -35,6 +36,13 @@ func (c *Compiler) Compile() error {
 	err = c.InstallHWC()
 	if err != nil {
 		c.Log.Error("Unable to install HWC: %s", err.Error())
+		return err
+	}
+
+	// install new relic agent if required
+	err = c.InstallNewRelic()
+	if err != nil {
+		c.Log.Error("Unable to install New Relic: %s", err.Error())
 		return err
 	}
 
