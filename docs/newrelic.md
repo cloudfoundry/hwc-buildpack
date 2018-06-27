@@ -65,7 +65,7 @@ You need to specify a New Relic account **license key** in one of the following 
 
 	- A copy of the 'newrelic.config' file is provided with the buildpack. If you need to add any agent features such as proxy settings, or change any other agent settings such as logging behavior, copy **newrelic.config** file from the agent folder into the application folder, and edit as required. The following are some examplles you can use:
 
-		- add your New Relic license key:
+		- **new relic license key:** add your New Relic license key:
 			```
 			  <service licenseKey="9999999999999999999999999999999999999999">
 			```
@@ -73,7 +73,7 @@ You need to specify a New Relic account **license key** in one of the following 
 			alternatively you can add the license key to application's 'manifest.yml' file as an environment variable "NEW_RELIC_LICENSE_KEY" in the "env" section
 
 
-		- add the New Relic application name as you'd like it to appear in New Relic
+		- **new relic app name:** add the New Relic application name as you'd like it to appear in New Relic
 			```
 			  <application>
 			    <name>My Application</name>
@@ -83,19 +83,19 @@ You need to specify a New Relic account **license key** in one of the following 
 			alternatively you can add the New Relic app name to application's 'manifest.yml' file as an environment variable "NEW_RELIC_APP_NAME" in the "env" section
 
 
-	    - add proxy settings to the "service" element as a sub-element. example:
+	    - **proxy setting:** add proxy settings to the "service" element as a sub-element. example:
 			```
 	    	  <service licenseKey="9999999999999999999999999999999999999999">
 	    	    <proxy host="my_proxy_server.com" port="9090" />
 	    	  </service>
 			```
 
-	    - change agent logging level and destination
+	    - **logging level:** change agent logging level and destination
 			```
 	    	  <log level="info" console="true" />
 			```
 
-	    - as 'hwc.exe' is the executable running your application, make sure 'newrelic.config' contains the following tag:
+	    - **non-IIS executable instrumentation:** as 'hwc.exe' is the executable running your application, make sure 'newrelic.config' contains the following tag:
 			```
 			  <instrumentation>
 			    <applications>
