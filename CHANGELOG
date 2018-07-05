@@ -1,3 +1,9 @@
+v2.3.18 Jul 05, 2018
+=====================
+
+* Update libbuildpack to get temp directory fix for Windows2012R2
+  (https://www.pivotaltracker.com/story/show/158693647)
+
 v2.3.17 Jun 05, 2018
 =====================
 
