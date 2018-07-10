@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -73,6 +74,19 @@ func validateCredentials(credentials *LunaCredentials) bool {
 	return true
 }
 
+func checkServiceName(service map[string]interface{}) bool {
+	nameInterface, ok := service["name"]
+	if !ok {
+		return false
+	}
+	name, ok := nameInterface.(string)
+	if !ok {
+		return false
+	}
+	name = strings.ToLower(name)
+	return strings.Contains(name, "luna") || strings.Contains(name, "hsm")
+}
+
 func (l *Luna) parseVCAPServices() {
 	vcapServices := os.Getenv("VCAP_SERVICES")
 	var f map[string]interface{}
@@ -83,15 +97,21 @@ func (l *Luna) parseVCAPServices() {
 			continue
 		}
 		for _, v1 := range services {
-			creds1, ok := v1.(map[string]interface{})
+
+			service, ok := v1.(map[string]interface{})
 			if !ok {
 				continue
 			}
-			creds2, ok := creds1["credentials"]
+
+			if !checkServiceName(service) {
+				continue
+			}
+
+			credsInterface, ok := service["credentials"]
 			if !ok {
 				continue
 			}
-			credentialsJson, err := json.Marshal(creds2)
+			credentialsJson, err := json.Marshal(credsInterface)
 			if err != nil {
 				continue
 			}
@@ -133,70 +153,69 @@ func (l *Luna) writeNTLSCredentials() error {
 	return err
 }
 
+type Section struct {
+	Name     string
+	Settings []Setting
+}
+
+type Setting struct {
+	Name  string
+	Value string
+}
+
 func (l *Luna) writeCrystokiIni() error {
-	var conf string
-	conf = ""
-	lunaSection := `[Luna]
-PEDTimeout1=100000
-PEDTimeout2=200000
-CommandTimeoutPedSet=720000
-KeypairGenTimeOut=2700000
-CloningCommandTimeOut=300000
-PEDTimeout3=10000
-DefaultTimeOut=500000
-`
 
-	conf += lunaSection
+	sections := []Section{}
 
-	client := `[LunaSA Client]
-ReceiveTimeout=20000
-TCPKeepAlive=1
-NetClient=1
-`
-	client += "ServerCAFile=.cloudfoundry\\.luna\\serverCertificates.pem\n"
-	client += "ClientCertFile=.cloudfoundry\\.luna\\clientCertificate.pem\n"
-	client += "ClientPrivKeyFile=.cloudfoundry\\.luna\\clientPrivateKey.pem\n"
+	luna := []Setting{{"PEDTimeout1", "100000"}, {"PEDTimeout2", "200000"},
+		{"CommandTimeoutPedSet", "720000"}, {"KeypairGenTimeOut", "2700000"}, {"CloningCommandTimeOut", "300000"},
+		{"PEDTimeout3", "10000"}, {"DefaultTimeOut", "500000"}}
+
+	sections = append(sections, Section{"Luna", luna})
+
+	lunaSAClient := []Setting{{"ReceiveTimeout", "20000"}, {"TCPKeepAlive", "1"}, {"NetClient", "1"},
+		{"ServerCAFile", ".cloudfoundry\\.luna\\serverCertificates.pem"}, {"ClientCertFile", ".cloudfoundry\\.luna\\clientCertificate.pem"},
+		{"ClientPrivKeyFile", ".cloudfoundry\\.luna\\clientPrivateKey.pem"}}
 
 	for index, server := range l.credentials.Servers {
-		client += fmt.Sprintf("ServerName%02d=", index) + server.Name + "\n"
-		client += fmt.Sprintf("ServerPort%02d=1792", index) + "\n"
-		client += fmt.Sprintf("ServerHtl%02d=0", index) + "\n"
+		lunaSAClient = append(lunaSAClient, Setting{fmt.Sprintf("ServerName%02d", index), server.Name})
+		lunaSAClient = append(lunaSAClient, Setting{fmt.Sprintf("ServerPort%02d", index), "1792"})
+		lunaSAClient = append(lunaSAClient, Setting{fmt.Sprintf("ServerHtl%02d", index), "0"})
 	}
 
-	conf += client
+	sections = append(sections, Section{"LunaSA Client", lunaSAClient})
 
-	misc := `[Misc]
-PE1746Enabled=0
-`
+	sections = append(sections, Section{"Misc", []Setting{{"PE1746Enabled", "0"}}})
 
-	conf += misc
-
-	conf += "[HASynchronize]\n"
+	haSynchronize := []Setting{}
 	for _, group := range l.credentials.Groups {
-		conf += group.Label + "=1\n"
+		haSynchronize = append(haSynchronize, Setting{group.Label, "1"})
 	}
+	sections = append(sections, Section{"HASynchronize", haSynchronize})
 
-	haconf := `[HAConfiguration]
-HAOnly=1
-reconnAtt=-1
-AutoReconnectInterval=60
-`
-	conf += haconf
-	conf += "[VirtualToken]\n"
+	sections = append(sections, Section{"HAConfiguration", []Setting{{"HAOnly", "1"}, {"reconnAtt", "-1"}, {"AutoReconnectInterval", "60"}}})
+
+	virtualToken := []Setting{}
 	for index, group := range l.credentials.Groups {
-		conf += fmt.Sprintf("VirtualToken%02dLabel=%s\n", index, group.Label)
-		conf += fmt.Sprintf("VirtualToken%02dSN=1%s\n", index, group.Members[0])
-		members := strings.Join(group.Members, ",")
-		conf += fmt.Sprintf("VirtualToken%02dMembers=%s\n", index, members)
+		virtualToken = append(virtualToken, Setting{fmt.Sprintf("VirtualToken%02dLabel", index), group.Label})
+		virtualToken = append(virtualToken, Setting{fmt.Sprintf("VirtualToken%02dSN", index), "1" + group.Members[0]})
+		virtualToken = append(virtualToken, Setting{fmt.Sprintf("VirtualToken%02dMembers", index), strings.Join(group.Members, ",")})
 	}
+	sections = append(sections, Section{"VirtualToken", virtualToken})
 
-	filepath.Join(l.LunaDir, "crystoki.ini")
-	conf = strings.Replace(conf, "\n", "\r\n", -1)
-	err := ioutil.WriteFile(filepath.Join(l.LunaDir, "crystoki.ini"), []byte(conf), 0666)
+	f, err := os.Create(filepath.Join(l.LunaDir, "crystoki.ini"))
 	if err != nil {
 		return err
 	}
-	return err
+	defer f.Close()
+
+	var iniTemplate = "{{range $index, $section := .}}[{{.Name}}]\r\n{{range $index2, $setting := $section.Settings}}{{.Name}}={{.Value}}\r\n{{end}}{{end}}"
+	t := template.New("ini")
+	t, err = t.Parse(iniTemplate)
+	if err != nil {
+		return err
+	}
+	return t.Execute(f, sections)
 }
 
 func (l *Luna) writeProfileD() error {
@@ -210,12 +229,12 @@ func (l *Luna) writeProfileD() error {
 }
 
 func (l *Luna) InstallLuna() error {
-	l.Log.Info("Installing luna to %s", l.LunaDir)
 	l.parseVCAPServices()
 	if l.credentials == nil {
-		l.Log.Info("No Luna Service found in VCAP_SERVICES")
+		l.Log.Info("No Luna Service found: not installing Luna")
 		return nil
 	}
+	l.Log.Info("Installing Luna to %s", l.LunaDir)
 	err := l.createLunaDirectory()
 	if err != nil {
 		return err

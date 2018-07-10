@@ -106,8 +106,8 @@ var _ = Describe("CF HWC Buildpack", func() {
 		})
 	})
 
-	// To run this test add the cryptoki.dll and Pkcs11Interop.dll to fixtures/luna_windows_app/Bin/
-	// and add a ups.json file to fixtures/luna_windows_app/ with the Luna User Provided Service JSON
+	// To run this test add the cryptoki.dll to fixtures/luna_windows_app/Bin/
+	// and add a ups.json file to fixtures/luna_windows_app/ that contain the Luna User Provided Service JSON
 	// credentials/configuration.
 	Describe("deploying a Luna hwc app", func() {
 
