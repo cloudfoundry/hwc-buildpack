@@ -6,11 +6,10 @@ default_versions:
 dependencies:
 - name: hwc
   version: 11.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-11.0.0-windows-amd64-a2dcb2d2.zip
-  sha256: a2dcb2d2f035571277ae6076496cf2d560aae954d02df72d8687e3f34755c83c
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-11.0.0-windows-amd64-bc1adcdf.zip
+  sha256: bc1adcdfe5d0949076436e0818f8481a161da1d2293977af23d2241c6ea86651
   cf_stacks:
-  - windows2012R2
-  - windows2016
+  - builds-new/hwc/11.0.0-cflinuxfs3
 pre_package: scripts/build.sh
 include_files:
 - CHANGELOG
