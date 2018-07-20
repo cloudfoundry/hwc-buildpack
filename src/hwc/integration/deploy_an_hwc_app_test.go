@@ -2,8 +2,11 @@ package integration_test
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 
@@ -65,9 +68,66 @@ var _ = Describe("CF HWC Buildpack", func() {
 					Expect(app.Stdout.String()).To(ContainSubstring("Download ["))
 					Expect(app.Stdout.String()).ToNot(ContainSubstring("Copy ["))
 				}
-
 				Expect(app.GetBody("/rewrite")).To(ContainSubstring("hello i am nora"))
+			})
+		})
+
+		Context("http compression", func() {
+			BeforeEach(func() {
+				app = cutlass.New(filepath.Join(bpDir, "fixtures", "windows_app"))
+				app.Stack = os.Getenv("CF_STACK")
+			})
+			It("gzip the response", func() {
+				PushAppAndConfirm(app)
+				//start the static cache
+				app.GetBody("/Content/Site.css")
+
+				url, err := app.GetUrl("/Content/Site.css")
+				Expect(err).NotTo(HaveOccurred())
+
+				_, headersUncompressed, err := GetWithDisableCompression(url, map[string]string{})
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(headersUncompressed["Content-Encoding"]).NotTo(Equal([]string{"gzip"}))
+				Expect(headersUncompressed["Content-Length"]).NotTo(BeEmpty())
+				uncompressedLength, err := strconv.Atoi(headersUncompressed["Content-Length"][0])
+				Expect(err).NotTo(HaveOccurred())
+
+				_, headersCompressed, err := GetWithDisableCompression(url, map[string]string{"Accept-Encoding": "gzip"})
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(headersCompressed["Content-Encoding"]).To(Equal([]string{"gzip"}))
+				Expect(headersCompressed["Content-Length"]).NotTo(BeEmpty())
+				compressedLength, err := strconv.Atoi(headersCompressed["Content-Length"][0])
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(compressedLength).To(BeNumerically("<", uncompressedLength))
 			})
 		})
 	})
 })
+
+func GetWithDisableCompression(url string, headers map[string]string) (string, map[string][]string, error) {
+	tr := &http.Transport{
+		DisableCompression: true,
+	}
+	client := &http.Client{Transport: tr}
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return "", nil, err
+	}
+	for k, v := range headers {
+		req.Header.Add(k, v)
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", nil, err
+	}
+	defer resp.Body.Close()
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", nil, err
+	}
+	resp.Header["StatusCode"] = []string{strconv.Itoa(resp.StatusCode)}
+	return string(data), resp.Header, err
+}
