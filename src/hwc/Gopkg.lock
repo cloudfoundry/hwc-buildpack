@@ -11,15 +11,15 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:fd5c06f1035401b3ff7c98a4c1019874eed6e861f4131b3637b00f83b644f3a9"
+  digest = "1:fc23c20f2c5605ac834fba802dcf5232cbcf432451add27421dc7542f46088b1"
   name = "github.com/blang/semver"
   packages = ["."]
   pruneopts = ""
-  revision = "c5e971dbed7850a93c23aa6ff69db5771d8e23b3"
+  revision = "3c1074078d32d767e08ab2c8564867292da86926"
 
 [[projects]]
   branch = "master"
-  digest = "1:3b60537b6750dc1f7030a46819d580691297e972b173b4beabbe2e672b211a4b"
+  digest = "1:def83d9c6d4a5bc0d305978ce633c95ce7ef78ed98bb18623c184577031380da"
   name = "github.com/cloudfoundry/libbuildpack"
   packages = [
     ".",
@@ -27,7 +27,7 @@
     "packager",
   ]
   pruneopts = ""
-  revision = "048e51be42bad9742036f25a04b1ec60bc008db9"
+  revision = "cad4ce2c47b7de59badd2a4682ca2e66fc6daa18"
 
 [[projects]]
   digest = "1:bcb408d07b887ca45c733664904934a833e7e3aa101d654d8f0274858335540e"
