@@ -34,7 +34,7 @@ func init() {
 var _ = SynchronizedBeforeSuite(func() []byte {
 	// Run once
 	if buildpackVersion == "" {
-		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack(os.Getenv("CF_STACK"))
+		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack(os.Getenv("CF_STACK"), ApiHasStackAssociation())
 		Expect(err).NotTo(HaveOccurred())
 
 		data, err := json.Marshal(packagedBuildpack)
@@ -93,6 +93,12 @@ func ApiHasTask() bool {
 	apiHasTask, err := semver.ParseRange(">= 2.75.0")
 	Expect(err).To(BeNil())
 	return apiHasTask(apiVersion)
+}
+
+func ApiHasStackAssociation() bool {
+	supported, err := cutlass.ApiGreaterThan("2.113.0")
+	Expect(err).NotTo(HaveOccurred())
+	return supported
 }
 
 func SkipUnlessUncached() {
