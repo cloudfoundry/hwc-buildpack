@@ -2,7 +2,6 @@ package integration_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -85,7 +84,7 @@ var _ = Describe("CF HWC Buildpack", func() {
 				url, err := app.GetUrl("/Content/Site.css")
 				Expect(err).NotTo(HaveOccurred())
 
-				_, headersUncompressed, err := GetWithDisableCompression(url, map[string]string{})
+				headersUncompressed, err := GetResponseHeaders(url, map[string]string{})
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(headersUncompressed["Content-Encoding"]).NotTo(Equal([]string{"gzip"}))
@@ -93,7 +92,7 @@ var _ = Describe("CF HWC Buildpack", func() {
 				uncompressedLength, err := strconv.Atoi(headersUncompressed["Content-Length"][0])
 				Expect(err).NotTo(HaveOccurred())
 
-				_, headersCompressed, err := GetWithDisableCompression(url, map[string]string{"Accept-Encoding": "gzip"})
+				headersCompressed, err := GetResponseHeaders(url, map[string]string{"Accept-Encoding": "gzip"})
 				Expect(err).NotTo(HaveOccurred())
 
 				Expect(headersCompressed["Content-Encoding"]).To(Equal([]string{"gzip"}))
@@ -107,27 +106,22 @@ var _ = Describe("CF HWC Buildpack", func() {
 	})
 })
 
-func GetWithDisableCompression(url string, headers map[string]string) (string, map[string][]string, error) {
+func GetResponseHeaders(url string, headers map[string]string) (map[string][]string, error) {
 	tr := &http.Transport{
 		DisableCompression: true,
 	}
 	client := &http.Client{Transport: tr}
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 	for k, v := range headers {
 		req.Header.Add(k, v)
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", nil, err
-	}
-	resp.Header["StatusCode"] = []string{strconv.Itoa(resp.StatusCode)}
-	return string(data), resp.Header, err
+	return resp.Header, nil
 }
