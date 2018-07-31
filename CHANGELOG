@@ -1,3 +1,9 @@
+v2.3.19 Jul 30, 2018
+=====================
+
+* Add hwc 12.0.0, remove hwc 11.0.0
+  (https://www.pivotaltracker.com/story/show/159146378)
+
 v2.3.18 Jul 05, 2018
 =====================
 
