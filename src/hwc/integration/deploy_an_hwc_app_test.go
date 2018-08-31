@@ -71,6 +71,47 @@ var _ = Describe("CF HWC Buildpack", func() {
 			})
 		})
 
+		Context("with an extension buildpack", func() {
+			BeforeEach(func() {
+				if !ApiHasMultiBuildpack() {
+					Skip("API does not have multi buildpack support")
+				}
+
+				// re-use the suite-built hwc_buildpack as an extension buildpack
+				// this prevents having to fixture an entire buildpack to test
+				otherHwcBuildpackFile := packagedBuildpack
+				err := cutlass.CreateOrUpdateBuildpack("extension", otherHwcBuildpackFile.File, "")
+				Expect(err).NotTo(HaveOccurred())
+
+				app = cutlass.New(filepath.Join(bpDir, "fixtures", "windows_app"))
+				app.Buildpacks = []string{"extension_buildpack", "hwc_buildpack"}
+				app.Stack = os.Getenv("CF_STACK")
+			})
+
+			AfterEach(func() {
+				Expect(cutlass.DeleteBuildpack("extension")).To(Succeed())
+			})
+
+			It("deploys successfully", func() {
+				PushAppAndConfirm(app)
+				if cutlass.Cached {
+					Expect(app.Stdout.String()).ToNot(ContainSubstring("Download ["))
+
+					// Expect "Copy [" twice
+					Expect(app.Stdout.String()).To(MatchRegexp(`(?s)(?:Copy \[.*){2}`))
+				} else {
+					Expect(app.Stdout.String()).ToNot(ContainSubstring("Copy ["))
+
+					// Expect "Download [" twice
+					Expect(app.Stdout.String()).To(MatchRegexp(`(?s)(?:Download \[.*){2}`))
+				}
+				env, err := app.GetBody("/env")
+				Expect(err).NotTo(HaveOccurred())
+				Expect(env).To(ContainSubstring(`\\deps\\1\\bin`))
+				Expect(env).To(ContainSubstring(`\\deps\\0\\bin`))
+			})
+		})
+
 		Context("http compression", func() {
 			BeforeEach(func() {
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "windows_app"))

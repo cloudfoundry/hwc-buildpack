@@ -34,7 +34,7 @@ func init() {
 var _ = SynchronizedBeforeSuite(func() []byte {
 	// Run once
 	if buildpackVersion == "" {
-		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack(os.Getenv("CF_STACK"), ApiHasStackAssociation())
+		packagedBuildpack, err := cutlass.PackageUniquelyVersionedBuildpack("", ApiHasStackAssociation())
 		Expect(err).NotTo(HaveOccurred())
 
 		data, err := json.Marshal(packagedBuildpack)
@@ -74,9 +74,10 @@ func TestIntegration(t *testing.T) {
 }
 
 func PushAppAndConfirm(app *cutlass.App) {
-	Expect(app.Push()).To(Succeed())
+	err := app.Push()
+	ExpectWithOffset(1, err).ToNot(HaveOccurred())
 	Eventually(func() ([]string, error) { return app.InstanceStates() }, 20*time.Second).Should(Equal([]string{"RUNNING"}))
-	Expect(app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
+	ExpectWithOffset(1, app.ConfirmBuildpack(buildpackVersion)).To(Succeed())
 }
 
 func Restart(app *cutlass.App) {
@@ -92,6 +93,12 @@ func ApiHasTask() bool {
 	apiHasTask, err := semver.ParseRange(">= 2.75.0")
 	Expect(err).To(BeNil())
 	return apiHasTask(apiVersion)
+}
+
+func ApiHasMultiBuildpack() bool {
+	supported, err := cutlass.ApiGreaterThan("2.90.0")
+	Expect(err).NotTo(HaveOccurred())
+	return supported
 }
 
 func ApiHasStackAssociation() bool {
