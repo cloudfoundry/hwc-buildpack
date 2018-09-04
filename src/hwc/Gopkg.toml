@@ -3,26 +3,22 @@
 
 required = ["github.com/google/subcommands"]
 
-[[constraint]]
-  name = "github.com/cloudfoundry/libbuildpack"
-  branch = "master"
+[[override]]
+  source = "https://github.com/fsnotify/fsnotify/archive/v1.4.7.tar.gz"
+  name = "gopkg.in/fsnotify.v1"
 
 [[constraint]]
-  name = "github.com/blang/semver"
-  branch = "master"
+name = "github.com/cloudfoundry/libbuildpack"
+branch = "master"
 
 [[constraint]]
-  name = "github.com/golang/mock"
-  branch = "master"
+name = "github.com/onsi/ginkgo"
+branch = "master"
 
 [[constraint]]
-  name = "github.com/onsi/ginkgo"
-  revision = "v1.5.0"
-
-[[constraint]]
-  name = "github.com/onsi/gomega"
-  branch = "master"
+name = "github.com/onsi/gomega"
+branch = "master"
 
 [[override]]
-  name = "github.com/elazarl/goproxy"
-  revision = "aacba83f36a55ac31cbb71c06547a328c0cd1604"
+name = "github.com/elazarl/goproxy"
+revision = "aacba83f36a55ac31cbb71c06547a328c0cd1604"
