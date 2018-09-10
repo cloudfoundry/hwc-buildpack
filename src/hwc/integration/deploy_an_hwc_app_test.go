@@ -73,12 +73,16 @@ var _ = Describe("CF HWC Buildpack", func() {
 
 		Context("with an extension buildpack", func() {
 			var (
-				extensionBuildpack cutlass.VersionedBuildpackPackage
+				extensionBuildpack                         cutlass.VersionedBuildpackPackage
 				extensionBuildpackName, finalBuildpackName string
-				err error
+				err                                        error
 			)
 
 			BeforeEach(func() {
+				if !ApiHasCAPIFixForMultiBP() {
+					Skip("API does not have CAPI Fix for multi-buidpack. see #160325184")
+				}
+
 				if !ApiHasMultiBuildpack() {
 					Skip("API does not have multi buildpack support")
 				}

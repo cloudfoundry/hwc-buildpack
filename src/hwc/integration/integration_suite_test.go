@@ -107,6 +107,12 @@ func ApiHasStackAssociation() bool {
 	return supported
 }
 
+func ApiHasCAPIFixForMultiBP() bool {
+	supported, err := cutlass.ApiGreaterThan("2.999.0")
+	Expect(err).NotTo(HaveOccurred())
+	return supported
+}
+
 func SkipUnlessUncached() {
 	if cutlass.Cached {
 		Skip("Running cached tests")
