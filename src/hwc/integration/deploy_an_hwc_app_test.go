@@ -73,40 +73,26 @@ var _ = Describe("CF HWC Buildpack", func() {
 
 		Context("with an extension buildpack", func() {
 			var (
-				extensionBuildpack                         cutlass.VersionedBuildpackPackage
-				extensionBuildpackName, finalBuildpackName string
-				err                                        error
+				extensionBuildpackName string
 			)
 
 			BeforeEach(func() {
-				if !ApiHasCAPIFixForMultiBP() {
-					Skip("API does not have CAPI Fix for multi-buidpack. see #160325184")
-				}
-
 				if !ApiHasMultiBuildpack() {
 					Skip("API does not have multi buildpack support")
 				}
 
-				// re-use the suite-built hwc_buildpack as an extension buildpack
-				// this prevents having to fixture an entire buildpack to test
-				finalBuildpackName = "final" + cutlass.RandStringRunes(20)
+				otherHwcBuildpackFile := packagedBuildpack
 				extensionBuildpackName = "extension" + cutlass.RandStringRunes(20)
-
-				extensionBuildpack, err = cutlass.PackageUniquelyVersionedBuildpackExtra(extensionBuildpackName, packagedBuildpack.Version, "", cutlass.Cached, ApiHasStackAssociation())
-				Expect(err).NotTo(HaveOccurred())
-
-				err = cutlass.CreateOrUpdateBuildpack(finalBuildpackName, extensionBuildpack.File, "")
+				err := cutlass.CreateOrUpdateBuildpack(extensionBuildpackName, otherHwcBuildpackFile.File, os.Getenv("CF_STACK"))
 				Expect(err).NotTo(HaveOccurred())
 
 				app = cutlass.New(filepath.Join(bpDir, "fixtures", "windows_app"))
-				app.Buildpacks = []string{extensionBuildpackName + "_buildpack", finalBuildpackName + "_buildpack"}
+				app.Buildpacks = []string{extensionBuildpackName + "_buildpack", "hwc_buildpack"}
 				app.Stack = os.Getenv("CF_STACK")
 			})
 
 			AfterEach(func() {
 				Expect(cutlass.DeleteBuildpack(extensionBuildpackName)).To(Succeed())
-				Expect(cutlass.DeleteBuildpack(finalBuildpackName)).To(Succeed())
-				Expect(cutlass.RemovePackagedBuildpack(extensionBuildpack)).To(Succeed())
 			})
 
 			It("deploys successfully", func() {
