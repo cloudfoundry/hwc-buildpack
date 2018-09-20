@@ -1,3 +1,11 @@
+v3.0.2 Sep 20, 2018
+====================
+
+* Releasing to only install windows2012R2/windows2016 buildpack on foundations
+  with windows2012R2/windows2016 stacks
+
+* No feature changes
+
 v3.0.1 Sep 19, 2018
 ====================
 
