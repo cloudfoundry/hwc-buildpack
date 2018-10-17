@@ -1,3 +1,11 @@
+v3.0.3 Oct 17, 2018
+====================
+
+* Releasing to fix bug during installation for certain CC api versions on foundations
+  (https://www.pivotaltracker.com/story/show/161095478)
+
+* No feature changes
+
 v3.0.2 Sep 20, 2018
 ====================
 
