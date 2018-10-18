@@ -148,10 +148,10 @@ func (h AppdynamicsHook) ParseVcapApplication() (VcapApplication, error) {
 
 func (h AppdynamicsHook) WriteEnvFile(stager *libbuildpack.Stager) error {
 
-	/*controllerConfig, err := h.ParseAppDynamicsVcapService()
+	controllerConfig, err := h.ParseAppDynamicsVcapService()
 	if err != nil {
 		return err
-	} */
+	}
 
 	applicationConfig, err := h.ParseVcapApplication()
 	if err != nil {
@@ -172,7 +172,7 @@ func (h AppdynamicsHook) WriteEnvFile(stager *libbuildpack.Stager) error {
 			return err
 		}
 
-		if appdEnv, err = h.CreateMockEnv(applicationConfig); err != nil {
+		if appdEnv, err = h.CreateEnv(controllerConfig, applicationConfig); err != nil {
 			return err
 		}
 	} else {
