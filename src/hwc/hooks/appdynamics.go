@@ -75,7 +75,7 @@ func (h AppdynamicsHook) CreateEnv(controllerConfig Credential, applicationConfi
 	appdEnv := map[string]string{
 		"COR_ENABLE_PROFILING":               "1",
 		"COR_PROFILER":                       "{39AEABC1-56A5-405F-B8E7-C3668490DB4A}",
-		"COR_PROFILER_PATH_64":               `%HOME\.appdynamics\AppDynamics.Profiler_x64.dll`,
+		"COR_PROFILER_PATH_64":               `%HOME%\.appdynamics\AppDynamics.Profiler_x64.dll`,
 		"appdynamics.controller.hostName":    controllerConfig.ControllerHost,
 		"appdynamics.agent.accountAccessKey": controllerConfig.AccountAccessKey,
 		"appdynamics.agent.accountName":      controllerConfig.AccountName,
@@ -91,7 +91,7 @@ func (h AppdynamicsHook) CreateDefaultEnv(applicationConfig VcapApplication) (ma
 	appdEnv := map[string]string{
 		"COR_ENABLE_PROFILING": "1",
 		"COR_PROFILER":         "{39AEABC1-56A5-405F-B8E7-C3668490DB4A}",
-		"COR_PROFILER_PATH_64": `%HOME\.appdynamics\AppDynamics.Profiler_x64.dll`,
+		"COR_PROFILER_PATH_64": `%HOME%\.appdynamics\AppDynamics.Profiler_x64.dll`,
 	}
 	return appdEnv, nil
 }
