@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 type AppdynamicsHook struct {
@@ -71,7 +72,6 @@ func (h AppdynamicsHook) CopyAppDynamicsAgentFromVendor(stager *libbuildpack.Sta
 }
 
 func (h AppdynamicsHook) CreateEnv(controllerConfig Credential, applicationConfig VcapApplication) (map[string]string, error) {
-
 	appdEnv := map[string]string{
 		"COR_ENABLE_PROFILING":               "1",
 		"COR_PROFILER":                       "{39AEABC1-56A5-405F-B8E7-C3668490DB4A}",
@@ -79,31 +79,11 @@ func (h AppdynamicsHook) CreateEnv(controllerConfig Credential, applicationConfi
 		"appdynamics.controller.hostName":    controllerConfig.ControllerHost,
 		"appdynamics.agent.accountAccessKey": controllerConfig.AccountAccessKey,
 		"appdynamics.agent.accountName":      controllerConfig.AccountName,
-		"appdynamics.controller.ssl.enabled": "true",
+		"appdynamics.controller.ssl.enabled": strconv.FormatBool(controllerConfig.SslEnabled),
 		"APPDYNAMICS_AGENT_APPLICATION_NAME": h.getEnv("APPDYNAMICS_AGENT_APPLICATION_NAME", applicationConfig.ApplicationName),
 		"APPDYNAMICS_AGENT_TIER_NAME":        h.getEnv("APPDYNAMICS_AGENT_TIER_NAME", applicationConfig.ApplicationSpace),
 		"APPDYNAMICS_AGENT_NODE_NAME":        h.getEnv("APPDYNAMICS_AGENT_NODE_NAME", applicationConfig.ApplicationSpace),
 	}
-
-	return appdEnv, nil
-}
-
-func (h AppdynamicsHook) CreateMockEnv(applicationConfig VcapApplication) (map[string]string, error) {
-
-	appdEnv := map[string]string{
-		"COR_ENABLE_PROFILING":               "1",
-		"COR_PROFILER":                       "{39AEABC1-56A5-405F-B8E7-C3668490DB4A}",
-		"COR_PROFILER_PATH_64":               `%HOME\.appdynamics\AppDynamics.Profiler_x64.dll`,
-		"appdynamics.controller.hostName":    "ec2-52-204-78-49.compute-1.amazonaws.com",
-		"appdynamics.controller.port":        "8112",
-		"appdynamics.agent.accountAccessKey": "SJ5b2m7d1$354",
-		"appdynamics.agent.accountName":      "customer1",
-		"appdynamics.controller.ssl.enabled": "true",
-		"APPDYNAMICS_AGENT_APPLICATION_NAME": h.getEnv("APPDYNAMICS_AGENT_APPLICATION_NAME", applicationConfig.ApplicationName),
-		"APPDYNAMICS_AGENT_TIER_NAME":        h.getEnv("APPDYNAMICS_AGENT_TIER_NAME", applicationConfig.ApplicationSpace),
-		"APPDYNAMICS_AGENT_NODE_NAME":        h.getEnv("APPDYNAMICS_AGENT_NODE_NAME", applicationConfig.ApplicationSpace),
-	}
-
 	return appdEnv, nil
 }
 
@@ -117,10 +97,9 @@ func (h AppdynamicsHook) CreateDefaultEnv(applicationConfig VcapApplication) (ma
 }
 
 func (h AppdynamicsHook) ParseAppDynamicsVcapService() (Credential, error) {
-
 	vcapServices := os.Getenv("VCAP_SERVICES")
-	services := make(map[string][]Plan)
 
+	services := make(map[string][]Plan)
 	if err := json.Unmarshal([]byte(vcapServices), &services); err != nil {
 		h.Log.Debug("Could not unmarshal VCAP_SERVICES JSON exiting")
 		return Credential{}, err
@@ -131,7 +110,6 @@ func (h AppdynamicsHook) ParseAppDynamicsVcapService() (Credential, error) {
 		h.Log.Debug("Not bound to AppDynamics")
 		return Credential{}, errors.New("service appdynamics not present")
 	}
-
 	return val[0].Credentials, nil
 }
 
@@ -142,12 +120,10 @@ func (h AppdynamicsHook) ParseVcapApplication() (VcapApplication, error) {
 		h.Log.Debug("Could not unmarshal VCAP_APPLICATION JSON")
 		return VcapApplication{}, err
 	}
-
 	return application, nil
 }
 
 func (h AppdynamicsHook) WriteEnvFile(stager *libbuildpack.Stager) error {
-
 	controllerConfig, err := h.ParseAppDynamicsVcapService()
 	if err != nil {
 		return err
@@ -165,9 +141,8 @@ func (h AppdynamicsHook) WriteEnvFile(stager *libbuildpack.Stager) error {
 
 	if _, err := os.Stat(jsonConfigFile); os.IsNotExist(err) {
 
-		h.Log.BeginStep("Writing AppDynamics Configuration\n")
-		h.Log.BeginStep("Copying %v to %v\n", defaultJsonConfigFile, jsonConfigFile)
-
+		h.Log.BeginStep("Writing AppDynamics Configuration")
+		h.Log.BeginStep("Copying %v to %v", defaultJsonConfigFile, jsonConfigFile)
 		if _, err = copy(defaultJsonConfigFile, jsonConfigFile); err != nil {
 			return err
 		}
@@ -182,7 +157,7 @@ func (h AppdynamicsHook) WriteEnvFile(stager *libbuildpack.Stager) error {
 		}
 	}
 
-	scriptContents := "echo Creating AppDynamics Environment"
+	scriptContents := "echo [AppDynamics]Creating AppDynamics Environment"
 
 	for envKey, envVal := range appdEnv {
 		envStr := fmt.Sprintf("set %s=%s", envKey, envVal)
@@ -197,7 +172,6 @@ func (h AppdynamicsHook) WriteEnvFile(stager *libbuildpack.Stager) error {
 }
 
 func (h AppdynamicsHook) BeforeCompile(stager *libbuildpack.Stager) error {
-
 	h.Log.BeginStep("Setting up AppDynamics")
 
 	if err := h.CopyAppDynamicsAgentFromVendor(stager); err != nil {
