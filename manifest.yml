@@ -2,12 +2,12 @@
 language: hwc
 default_versions:
 - name: hwc
-  version: 12.0.0
+  version: 13.0.0
 dependencies:
 - name: hwc
-  version: 12.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-12.0.0-windows-amd64-251116b1.zip
-  sha256: 251116b1e209a6f42d0256af8d88797fdb1df13bfafc1017e059632e3244ee14
+  version: 13.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-13.0.0-windows-amd64-634f6424.zip
+  sha256: 634f642428bb102968279a563b2a9c3f93843878a68db7d6d1a6e518a554cb12
   cf_stacks:
   - windows2012R2
   - windows2016
