@@ -3,8 +3,9 @@ package supply_test
 import (
 	"bytes"
 	"errors"
-	"hwc/supply"
 	"path/filepath"
+
+	"github.com/cloudfoundry/hwc-buildpack/src/hwc/supply"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/golang/mock/gomock"
@@ -57,7 +58,8 @@ var _ = Describe("Supply", func() {
 		BeforeEach(func() {
 			depDir = "some-dep-dir"
 			mockStager.EXPECT().DepDir().Return(depDir)
-			expectedDep = libbuildpack.Dependency{Name: "hwc", Version: "13.0.0"}
+			expectedDep = libbuildpack.Dependency{Name: "hwc", Version: "12.0.0"}
+			mockManifest.EXPECT().DefaultVersion("hwc").Return(libbuildpack.Dependency{Name: "hwc", Version: "12.0.0"}, nil)
 			expectedDir = filepath.Join(depDir, "hwc")
 		})
 

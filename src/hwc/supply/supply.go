@@ -45,7 +45,11 @@ type Supplier struct {
 func (s *Supplier) Run() error {
 	s.Log.BeginStep("Supplying hwc")
 
-	dep := libbuildpack.Dependency{Name: "hwc", Version: "13.0.0"}
+	dep, err := s.Manifest.DefaultVersion("hwc")
+	if err != nil {
+		return err
+	}
+
 	depDir := filepath.Join(s.Stager.DepDir(), "hwc")
 	if err := s.Installer.InstallDependency(dep, depDir); err != nil {
 		return err

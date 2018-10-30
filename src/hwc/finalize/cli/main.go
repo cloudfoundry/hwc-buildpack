@@ -1,10 +1,11 @@
 package main
 
 import (
-	"hwc/finalize"
-	_ "hwc/hooks"
 	"os"
 	"time"
+
+	"github.com/cloudfoundry/hwc-buildpack/src/hwc/finalize"
+	_ "github.com/cloudfoundry/hwc-buildpack/src/hwc/hooks"
 
 	"github.com/cloudfoundry/libbuildpack"
 )

@@ -1,11 +1,12 @@
 package main
 
 import (
-	_ "hwc/hooks"
-	"hwc/supply"
 	"os"
 	"path/filepath"
 	"time"
+
+	_ "github.com/cloudfoundry/hwc-buildpack/src/hwc/hooks"
+	"github.com/cloudfoundry/hwc-buildpack/src/hwc/supply"
 
 	"github.com/cloudfoundry/libbuildpack"
 )
@@ -61,11 +62,11 @@ func main() {
 	}
 
 	s := supply.Supplier{
-		Manifest: manifest,
+		Manifest:  manifest,
 		Installer: installer,
-		Stager:   stager,
-		Command:  &libbuildpack.Command{},
-		Log:      logger,
+		Stager:    stager,
+		Command:   &libbuildpack.Command{},
+		Log:       logger,
 	}
 
 	err = s.Run()

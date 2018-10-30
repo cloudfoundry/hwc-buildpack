@@ -4,9 +4,10 @@ package finalize_test
 import (
 	"bytes"
 	"errors"
-	"hwc/finalize"
 	"io/ioutil"
 	"os"
+
+	"github.com/cloudfoundry/hwc-buildpack/src/hwc/finalize"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/golang/mock/gomock"

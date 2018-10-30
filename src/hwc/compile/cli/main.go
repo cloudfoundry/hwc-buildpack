@@ -1,9 +1,10 @@
 package main
 
 import (
-	"hwc/compile"
 	"os"
 	"time"
+
+	"github.com/cloudfoundry/hwc-buildpack/src/hwc/compile"
 
 	"github.com/cloudfoundry/libbuildpack"
 )

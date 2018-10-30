@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"hwc/compile"
+	"github.com/cloudfoundry/hwc-buildpack/src/hwc/compile"
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/golang/mock/gomock"

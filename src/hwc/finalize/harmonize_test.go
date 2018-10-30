@@ -2,10 +2,11 @@ package finalize_test
 
 import (
 	"bytes"
-	"hwc/finalize"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+
+	"github.com/cloudfoundry/hwc-buildpack/src/hwc/finalize"
 
 	"github.com/cloudfoundry/libbuildpack"
 	. "github.com/onsi/ginkgo"
