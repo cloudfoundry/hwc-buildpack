@@ -57,7 +57,7 @@ var _ = Describe("Supply", func() {
 		BeforeEach(func() {
 			depDir = "some-dep-dir"
 			mockStager.EXPECT().DepDir().Return(depDir)
-			expectedDep = libbuildpack.Dependency{Name: "hwc", Version: "12.0.0"}
+			expectedDep = libbuildpack.Dependency{Name: "hwc", Version: "13.0.0"}
 			expectedDir = filepath.Join(depDir, "hwc")
 		})
 
