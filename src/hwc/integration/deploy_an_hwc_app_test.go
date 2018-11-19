@@ -71,6 +71,26 @@ var _ = Describe("CF HWC Buildpack", func() {
 			})
 		})
 
+		Context("windows", func() {
+			BeforeEach(func() {
+				checkStack("windows")
+				app = cutlass.New(filepath.Join(bpDir, "fixtures", "windows_app_with_rewrite"))
+				app.Stack = "windows"
+			})
+
+			It("deploys successfully with a rewrite rule", func() {
+				PushAppAndConfirm(app)
+				if cutlass.Cached {
+					Expect(app.Stdout.String()).ToNot(ContainSubstring("Download ["))
+					Expect(app.Stdout.String()).To(ContainSubstring("Copy ["))
+				} else {
+					Expect(app.Stdout.String()).To(ContainSubstring("Download ["))
+					Expect(app.Stdout.String()).ToNot(ContainSubstring("Copy ["))
+				}
+				Expect(app.GetBody("/rewrite")).To(ContainSubstring("hello i am nora"))
+			})
+		})
+
 		Context("with an extension buildpack", func() {
 			var (
 				extensionBuildpackName string

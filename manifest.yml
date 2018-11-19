@@ -11,6 +11,7 @@ dependencies:
   cf_stacks:
   - windows2012R2
   - windows2016
+  - windows
 include_files:
 - CHANGELOG
 - LICENSE
