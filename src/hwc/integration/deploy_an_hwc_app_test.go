@@ -21,6 +21,9 @@ var _ = Describe("CF HWC Buildpack", func() {
 
 	Context("deploying an hwc app with a rewrite rule", func() {
 		BeforeEach(func() {
+			if os.Getenv("CF_STACK") == "windows2012R2" {
+				Skip("rewrite rule not supported on windows2012R2")
+			}
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "windows_app_with_rewrite"))
 		})
 
