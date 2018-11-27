@@ -3,7 +3,7 @@ module github.com/cloudfoundry/hwc-buildpack
 require (
 	github.com/Masterminds/semver v1.4.2
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/cloudfoundry/libbuildpack v0.0.0-20181127213214-ebbc4b766dc4
+	github.com/cloudfoundry/libbuildpack v0.0.0-20181127225432-4b8f54af5ba6
 	github.com/elazarl/goproxy v0.0.0-20181003060214-f58a169a71a5 // indirect
 	github.com/golang/mock v1.1.1
 	github.com/google/subcommands v0.0.0-20181012225330-46f0354f6315 // indirect
