@@ -5,14 +5,6 @@ default_versions:
   version: 14.0.0
 dependencies:
 - name: hwc
-  version: 13.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-13.0.0-windows-amd64-634f6424.zip
-  sha256: 634f642428bb102968279a563b2a9c3f93843878a68db7d6d1a6e518a554cb12
-  cf_stacks:
-  - windows2012R2
-  - windows2016
-  - windows
-- name: hwc
   version: 14.0.0
   uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-14.0.0-windows-amd64-921d0b32.zip
   sha256: 921d0b32aaff3470962c4d14ff5e5619d645d4a9c204c504c65b7ebfc78ea987
