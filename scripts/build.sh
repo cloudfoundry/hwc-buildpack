@@ -6,6 +6,6 @@ source .envrc
 
 
 
-GOOS=windows go build -o bin/compile.exe ./src/hwc/compile/cli
-GOOS=windows go build -o bin/supply.exe ./src/hwc/supply/cli
-GOOS=windows go build -o bin/finalize.exe ./src/hwc/finalize/cli
+GOOS=windows go build -mod=vendor -o bin/compile.exe ./src/hwc/compile/cli
+GOOS=windows go build -mod=vendor -o bin/supply.exe ./src/hwc/supply/cli
+GOOS=windows go build -mod=vendor -o bin/finalize.exe ./src/hwc/finalize/cli
