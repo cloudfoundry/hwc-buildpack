@@ -1,3 +1,10 @@
+v3.1.5 Feb 20, 2019
+====================
+
+* Add source_sha256 for source code dependencies
+  (https://www.pivotaltracker.com/story/show/163711928)
+
+
 v3.1.4 Jan 17, 2019
 ====================
 
