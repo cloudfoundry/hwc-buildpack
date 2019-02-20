@@ -13,6 +13,7 @@ dependencies:
   - windows2016
   - windows
   source: https://github.com/cloudfoundry/hwc/archive/14.0.0.tar.gz
+  source_sha256: c11d7c6cd2933d3ac5283feb0628ecc0801f00fb2ca6847c88f3af1014a731d6
 include_files:
 - CHANGELOG
 - LICENSE
