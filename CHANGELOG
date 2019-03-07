@@ -1,3 +1,10 @@
+v3.1.6 Mar 07, 2019
+====================
+
+* Add hwc 15.0.0, remove hwc 14.0.0
+  for stack(s) windows2012R2, windows2016, windows
+  (https://www.pivotaltracker.com/story/show/164465548)
+
 v3.1.5 Feb 20, 2019
 ====================
 
