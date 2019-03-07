@@ -2,18 +2,18 @@
 language: hwc
 default_versions:
 - name: hwc
-  version: 14.0.0
+  version: 15.0.0
 dependencies:
 - name: hwc
-  version: 14.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-14.0.0-windows-amd64-921d0b32.zip
-  sha256: 921d0b32aaff3470962c4d14ff5e5619d645d4a9c204c504c65b7ebfc78ea987
+  version: 15.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-15.0.0-windows-amd64-85ebc213.zip
+  sha256: 85ebc21326d5c197027b62e300b6fe0bed03268cc11d651a80a0c2f7caffde8b
   cf_stacks:
   - windows2012R2
   - windows2016
   - windows
-  source: https://github.com/cloudfoundry/hwc/archive/14.0.0.tar.gz
-  source_sha256: c11d7c6cd2933d3ac5283feb0628ecc0801f00fb2ca6847c88f3af1014a731d6
+  source: https://github.com/cloudfoundry/hwc/archive/15.0.0.tar.gz
+  source_sha256: 8a09d20a316edc12e2f63cb6e6c2a5846378ee080f7c7f5011ff5c3c1d048c8d
 include_files:
 - CHANGELOG
 - LICENSE
