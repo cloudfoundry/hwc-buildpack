@@ -14,4 +14,4 @@ export CF_STACK=${CF_STACK:-windows2016}
 cd src/*/brats
 
 echo "Run Buildpack Runtime Acceptance Tests"
-ginkgo -r --flakeAttempts=$GINKGO_ATTEMPTS -nodes $GINKGO_NODES
+ginkgo -mod vendor -r --flakeAttempts=$GINKGO_ATTEMPTS -nodes $GINKGO_NODES

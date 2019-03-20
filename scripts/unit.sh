@@ -8,4 +8,4 @@ source .envrc
 ./scripts/install_tools.sh
 
 cd src/*/integration/..
-ginkgo -r -skipPackage=brats,integration
+ginkgo -mod vendor -r -skipPackage=brats,integration
