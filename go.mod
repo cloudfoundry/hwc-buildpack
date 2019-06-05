@@ -1,5 +1,5 @@
 module github.com/cloudfoundry/hwc-buildpack
-
+ 
 require (
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cloudfoundry/libbuildpack v0.0.0-20190528004455-15191cf91ae2
