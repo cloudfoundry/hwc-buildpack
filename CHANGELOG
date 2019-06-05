@@ -1,9 +1,3 @@
-v3.1.9 Jun 05, 2019
-====================
-
-* Update go to 1.12.4 for install_go
-  (https://www.pivotaltracker.com/story/show/163701450)
-
 v3.1.8 Apr 30, 2019
 ====================
 
