@@ -9,7 +9,7 @@ source .envrc
 
 GINKGO_NODES=${GINKGO_NODES:-3}
 GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-1}
-export CF_STACK=${CF_STACK:-windows2016}
+export CF_STACK=${CF_STACK:-windows}
 
 cd src/*/brats
 
