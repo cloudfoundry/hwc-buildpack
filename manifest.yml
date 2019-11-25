@@ -5,15 +5,15 @@ default_versions:
   version: 17.0.0
 dependencies:
 - name: hwc
-  version: 17.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-17.0.0-windows-amd64-968fe3e6.zip
-  sha256: 968fe3e663afa9da22914d48aa683553a4067480a0dd64b9d57941c89503989f
+  version: 18.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-18.0.0-windows-amd64-f08875ff.zip
+  sha256: f08875ffa92995c6c58b27bc3069e0d22f4115d92bfa042a2c1e5321ad0cff7c
   cf_stacks:
   - windows2012R2
   - windows2016
   - windows
-  source: https://github.com/cloudfoundry/hwc/archive/17.0.0.tar.gz
-  source_sha256: b7ba44b12c99aa5f3f725360eddef1d05025f22b04be12e5a7fe149b3529b438
+  source: https://github.com/cloudfoundry/hwc/archive/18.0.0.tar.gz
+  source_sha256: 4a21d0157fa757112c8a134125af4bf469760c7b42d6cf2b163aea337463b55b
 include_files:
 - CHANGELOG
 - LICENSE
@@ -30,4 +30,3 @@ include_files:
 - bin/finalize.exe
 - manifest.yml
 pre_package: scripts/build.sh
-
