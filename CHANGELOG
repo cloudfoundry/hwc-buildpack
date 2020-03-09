@@ -1,3 +1,14 @@
+v3.1.14 Mar 09, 2020
+=====================
+
+* Bump default version to 19.0.0
+  (https://www.pivotaltracker.com/story/show/171606461)
+
+* Add hwc 19.0.0, remove hwc 18.0.0
+  for stack(s) windows2012R2, windows2016, windows
+  (https://www.pivotaltracker.com/story/show/171606461)
+
+
 v3.1.13 Dec 03, 2019
 =====================
 
