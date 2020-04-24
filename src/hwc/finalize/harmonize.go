@@ -53,21 +53,23 @@ func (h *HarmonizerImpl) CheckWebConfig() error {
 }
 
 func (h *HarmonizerImpl) LinkLegacyHwc() error {
-	sourceHwcPath := filepath.Join(h.DepDir, "hwc", "hwc.exe")
-	if _, err := os.Stat(sourceHwcPath); err != nil {
-		return errMissingDepHwc
-	}
+	for _, executable := range []string{"hwc.exe", "hwc_x86.exe"} {
 
-	legacyHwcDir := filepath.Join(h.BuildDir, ".cloudfoundry")
-	if err := os.MkdirAll(legacyHwcDir, 0777); err != nil {
-		return err
-	}
+		sourceHwcPath := filepath.Join(h.DepDir, "hwc", executable)
+		if _, err := os.Stat(sourceHwcPath); err != nil {
+			return errMissingDepHwc
+		}
 
-	legacyHwcPath := filepath.Join(legacyHwcDir, "hwc.exe")
+		legacyHwcDir := filepath.Join(h.BuildDir, ".cloudfoundry")
+		if err := os.MkdirAll(legacyHwcDir, 0777); err != nil {
+			return err
+		}
 
-	if err := os.Link(sourceHwcPath, legacyHwcPath); err != nil {
-		h.Log.Error("Unable to install HWC: %s", err.Error())
-		return err
+		legacyHwcPath := filepath.Join(legacyHwcDir, executable)
+		if err := os.Link(sourceHwcPath, legacyHwcPath); err != nil {
+			h.Log.Error("Unable to install HWC: %s", err.Error())
+			return err
+		}
 	}
 
 	return nil
