@@ -33,23 +33,15 @@ func BuildStagingDockerfile(logger lager.Logger, fixturePath, buildpackPath stri
 	for _, env := range envs {
 		instructions = append(instructions, NewDockerfileENV(env))
 	}
-	// HACK around https://github.com/dotcloud/docker/issues/5490
-	instructions = append(instructions, NewDockerfileRUN("mv /usr/sbin/tcpdump /usr/bin/tcpdump"))
 
-	instructions = append(instructions, NewDockerfileRUN("chmod o+rwx /tmp"))
-	instructions = append(instructions, NewDockerfileRUN("chown vcap /tmp/ -R"))
-	instructions = append(instructions, NewDockerfileRUN("mkdir /vcap-home"))
-	instructions = append(instructions, NewDockerfileRUN("chown vcap /vcap-home -R"))
-	instructions = append(instructions, NewDockerfileRUN("chown vcap /home/vcap -R"))
-	//instructions = append(instructions, NewDockerfileUSER("vcap"))
 	instructions = append(instructions, NewDockerfileADD(fmt.Sprintf("%s /tmp/staged/", fixturePath)))
-	instructions = append(instructions, NewDockerfileRUN("chown vcap /tmp/staged -R"))
 	instructions = append(instructions, NewDockerfileADD(fmt.Sprintf("%s /tmp/", buildpackPath)))
 	instructions = append(instructions, NewDockerfileRUN("mkdir -p /buildpack/0"))
-	instructions = append(instructions, NewDockerfileRUN("chown vcap /buildpack -R"))
+	instructions = append(instructions, NewDockerfileRUN("mkdir -p /tmp/cache"))
 	instructions = append(instructions, NewDockerfileRUN(fmt.Sprintf("unzip /tmp/%s -d /buildpack", filepath.Base(buildpackPath))))
-	instructions = append(instructions, NewDockerfileRUN("chown vcap /buildpack -R"))
-	instructions = append(instructions, NewDockerfileRUN("usermod -d /vcap-home vcap"))
+
+	// HACK around https://github.com/dotcloud/docker/issues/5490
+	instructions = append(instructions, NewDockerfileRUN("mv /usr/sbin/tcpdump /usr/bin/tcpdump"))
 
 	return NewDockerfile(baseImage, instructions...)
 }
@@ -61,7 +53,6 @@ const (
 	DockerfileInstructionTypeADD  DockerfileInstructionType = "ADD"
 	DockerfileInstructionTypeRUN  DockerfileInstructionType = "RUN"
 	DockerfileInstructionTypeENV  DockerfileInstructionType = "ENV"
-	DockerfileInstructionTypeUSER DockerfileInstructionType = "USER"
 )
 
 type DockerfileInstruction struct {
@@ -86,13 +77,6 @@ func NewDockerfileENV(content string) DockerfileInstruction {
 func NewDockerfileADD(content string) DockerfileInstruction {
 	return DockerfileInstruction{
 		Type:    DockerfileInstructionTypeADD,
-		Content: content,
-	}
-}
-
-func NewDockerfileUSER(content string) DockerfileInstruction {
-	return DockerfileInstruction{
-		Type:    DockerfileInstructionTypeUSER,
 		Content: content,
 	}
 }
