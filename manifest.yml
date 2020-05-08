@@ -5,15 +5,15 @@ default_versions:
   version: 19.0.0
 dependencies:
 - name: hwc
-  version: 19.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc-19.0.0-windows-amd64-ff159d73.zip
-  sha256: ff159d730a9eb7b87301adca4451091f7ff53ca3cbe734ed578624bf2e31c190
+  version: 20.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc_20.0.0_windows_x86-64_any-stack_ef69ecbb.zip
+  sha256: ef69ecbb2225d31f11325ab3a02ce0afdff5375949115c29b31c86cf59eb0546
   cf_stacks:
   - windows2012R2
   - windows2016
   - windows
-  source: https://github.com/cloudfoundry/hwc/archive/19.0.0.tar.gz
-  source_sha256: 592c9456ed7991d4fa374618c4dc3bf5caa2689fdabf8616cbe3c65e279d7031
+  source: https://github.com/cloudfoundry/hwc/archive/20.0.0.tar.gz
+  source_sha256: 643fd1225881bd6206eec205ba818cf60be00bd3a1029c86b0e5bf74a3a978ab
 include_files:
 - CHANGELOG
 - LICENSE
