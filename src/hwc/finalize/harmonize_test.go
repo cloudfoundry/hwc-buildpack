@@ -84,18 +84,24 @@ var _ = Describe("Hamonizer", func() {
 		Context("dep dir contains hwc/hwc.exe", func() {
 			BeforeEach(func() {
 				hwcDepPath := filepath.Join(depDir, "hwc", "hwc.exe")
+				hwc32DepPath := filepath.Join(depDir, "hwc", "hwc_x86.exe")
 
 				err := os.MkdirAll(filepath.Dir(hwcDepPath), 0777)
 				Expect(err).To(BeNil())
 
 				err = ioutil.WriteFile(hwcDepPath, []byte("exe"), 0744)
 				Expect(err).To(BeNil())
+
+				err = ioutil.WriteFile(hwc32DepPath, []byte("exe"), 0744)
+				Expect(err).To(BeNil())
 			})
 
 			It("links the file to build dir .cloudfoundry/hwc.exe", func() {
 				err = hwc.LinkLegacyHwc()
 				Expect(err).To(BeNil())
+
 				Expect(filepath.Join(buildDir, ".cloudfoundry", "hwc.exe")).To(BeARegularFile())
+				Expect(filepath.Join(buildDir, ".cloudfoundry", "hwc_x86.exe")).To(BeARegularFile())
 			})
 		})
 
