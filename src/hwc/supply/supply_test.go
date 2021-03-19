@@ -66,7 +66,6 @@ var _ = Describe("Supply", func() {
 		Context("the installer succeeds", func() {
 			It("installs the hwc dependency to <dep-dir>/hwc", func() {
 				mockInstaller.EXPECT().InstallDependency(expectedDep, expectedDir).Return(nil)
-				Expect(false).To(Equal(true))
 				Expect(supplier.Run()).To(Succeed())
 			})
 		})
