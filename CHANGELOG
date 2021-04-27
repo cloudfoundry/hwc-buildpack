@@ -1,3 +1,12 @@
+v3.1.16 Apr 27, 2021
+=====================
+
+* Remove windows2012R2 from list of supported stacks
+  (https://www.pivotaltracker.com/story/show/173038165)
+
+* Update libbuildpack
+
+
 v3.1.15 May 26, 2020
 =====================
 * Add hwc 20.0.0, remove hwc 19.0.0
