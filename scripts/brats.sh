@@ -1,17 +1,39 @@
 #!/usr/bin/env bash
-# Test that the compiled binaries of the buildpacks are working as expected
 
-set -euo pipefail
+set -e
+set -u
+set -o pipefail
 
-cd "$( dirname "${BASH_SOURCE[0]}" )/.."
-source .envrc
-./scripts/install_tools.sh
+ROOTDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+readonly ROOTDIR
 
-GINKGO_NODES=${GINKGO_NODES:-3}
-GINKGO_ATTEMPTS=${GINKGO_ATTEMPTS:-1}
-export CF_STACK=${CF_STACK:-windows2016}
+# shellcheck source=SCRIPTDIR/.util/tools.sh
+source "${ROOTDIR}/scripts/.util/tools.sh"
 
-cd src/*/brats
+function main() {
+  local src
+  src="$(find "${ROOTDIR}/src" -mindepth 1 -maxdepth 1 -type d )"
 
-echo "Run Buildpack Runtime Acceptance Tests"
-ginkgo -mod vendor -r --flakeAttempts=$GINKGO_ATTEMPTS -nodes $GINKGO_NODES
+  if [[ ! -d "${src}/brats" ]]; then
+    echo "There are no brats tests to run"
+    exit 0
+  fi
+
+  util::tools::ginkgo::install --directory "${ROOTDIR}/.bin"
+  util::tools::buildpack-packager::install --directory "${ROOTDIR}/.bin"
+  util::tools::jq::install --directory "${ROOTDIR}/.bin"
+
+  local stack
+  stack="$(jq -r -S .stack "${ROOTDIR}/config.json")"
+
+  echo "Run Buildpack Runtime Acceptance Tests"
+  CF_STACK="${CF_STACK:-"${stack}"}" \
+    ginkgo \
+      -r \
+      -mod vendor \
+      --flakeAttempts "${GINKGO_ATTEMPTS:-2}" \
+      -nodes "${GINKGO_NODES:-3}" \
+        "${src}/brats"
+}
+
+main "${@:-}"
