@@ -1,3 +1,10 @@
+v3.1.17 Jun 11, 2021
+=====================
+
+* Update libbuildpack
+
+* Bootstraps with github-config
+
 v3.1.16 Apr 27, 2021
 =====================
 
