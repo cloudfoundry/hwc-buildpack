@@ -2,7 +2,7 @@ module github.com/cloudfoundry/hwc-buildpack
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/cloudfoundry/libbuildpack v0.0.0-20221031220135-8f5ee8c4444a
+	github.com/cloudfoundry/libbuildpack v0.0.0-20221115221325-f9d1b0cc562f
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.24.2
