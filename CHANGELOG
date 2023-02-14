@@ -1,3 +1,10 @@
+v3.1.28 Feb 14, 2023
+=====================
+
+* Updates github-config (#104)
+
+* Bump github.com/onsi/gomega from 1.24.2 to 1.26.0
+
 v3.1.27 Nov 16, 2022
 =====================
 
