@@ -1,3 +1,13 @@
+v3.1.29 Mar 15, 2023
+=====================
+
+* Add hwc 23.0.0, remove hwc 21.0.0
+  for stack(s) windows2016, windows
+  (https://www.pivotaltracker.com/story/show/184616166)
+
+* Buildpack dependencies are built with go 1.20
+  (See https://github.com/cloudfoundry/binary-builder/pull/68)
+
 v3.1.28 Feb 14, 2023
 =====================
 
