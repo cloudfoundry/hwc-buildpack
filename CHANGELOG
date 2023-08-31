@@ -1,3 +1,11 @@
+v3.1.32 Aug 31, 2023
+=====================
+
+* Add hwc 26.0.0, remove hwc 23.0.0 (#136)
+  for stack(s) windows2016, windows
+  (https://www.pivotaltracker.com/story/show/185693627)
+
+
 v3.1.31 May 19, 2023
 =====================
 
