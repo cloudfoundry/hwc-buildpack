@@ -2,7 +2,7 @@
 language: hwc
 default_versions:
 - name: hwc
-  version: 23.0.0
+  version: 26.0.0
 dependencies:
 - name: hwc
   version: 26.0.0
