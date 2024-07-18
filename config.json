@@ -1,5 +1,5 @@
 {
-  "stack": "windows2016",
+  "stack": "windows",
   "oses": [
     "windows"
   ],
