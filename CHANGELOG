@@ -1,3 +1,12 @@
+v3.1.38 Jul 19, 2024
+=====================
+
+* remove references to the windows2016 stack
+  This stack is identical to the windows stack and windows2016
+  has been unsupported in CF for a long time now.
+  https://docs.cloudfoundry.org/devguide/deploy-apps/windows-stacks.html#-available-stacks
+
+
 v3.1.37 Jun 26, 2024
 =====================
 
