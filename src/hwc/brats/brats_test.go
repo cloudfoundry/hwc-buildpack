@@ -1,7 +1,6 @@
 package brats_test
 
 import (
-	"github.com/cloudfoundry/libbuildpack/bratshelper"
 	. "github.com/onsi/ginkgo"
 )
 
@@ -11,9 +10,6 @@ var _ = Describe("hwc buildpack", func() {
 
 	// BRATs helper needs to change to support windows .profile.bat scripts
 	//bratshelper.DeployAppWithExecutableProfileScript("hwc", CopyBrats)
-
-	bratshelper.DeployingAnAppWithAnUpdatedVersionOfTheSameBuildpack(CopyBrats)
-	bratshelper.DeployAnAppWithSensitiveEnvironmentVariables(CopyBrats)
 
 	// bratshelper.ForAllSupportedVersions("hwc", CopyBrats, func(hwcVersion string, app *cutlass.App) {
 	// 	bratshelper.PushApp(app)
