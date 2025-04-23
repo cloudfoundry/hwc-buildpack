@@ -5,13 +5,13 @@ default_versions:
   version: 47.0.0
 dependencies:
 - name: hwc
-  version: 63.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc_63.0.0_windows_x86-64_any-stack_576c02ab.zip
-  sha256: 576c02ab5b99211abc8249c39d2fcb550b7137e2bb298fb1199d5be527c7a578
+  version: 64.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc_64.0.0_windows_x86-64_any-stack_5e6f4e1e.zip
+  sha256: 5e6f4e1e681ddd8062d48b42f9212a8eb2929280b2c5023479b01dfd6fd6e3cf
   cf_stacks:
   - windows
-  source: https://github.com/cloudfoundry/hwc/archive/63.0.0.tar.gz
-  source_sha256: 333269708c06352d57489c19d4328e0724f1792ba215ab5ca5839b432696b5db
+  source: https://github.com/cloudfoundry/hwc/archive/64.0.0.tar.gz
+  source_sha256: 197087fde554a2c9127105ca04a04e0259c8f006c44af43d2aa1db5ba5476868
 include_files:
 - CHANGELOG
 - LICENSE
