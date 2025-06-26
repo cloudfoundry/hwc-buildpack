@@ -6,6 +6,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo v1.16.5
 	github.com/onsi/gomega v1.30.0
+	github.com/Dynatrace/libbuildpack-dynatrace v1.7.0
 )
 
 require (
