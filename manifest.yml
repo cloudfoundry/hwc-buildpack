@@ -2,16 +2,16 @@
 language: hwc
 default_versions:
 - name: hwc
-  version: 75.0.0
+  version: 86.0.0
 dependencies:
 - name: hwc
-  version: 75.0.0
-  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc_75.0.0_windows_x86-64_any-stack_034ec5de.zip
-  sha256: 034ec5de731192553111fba455b5038c0f0bc2872793d3e6f96fbe6c27ee9892
+  version: 86.0.0
+  uri: https://buildpacks.cloudfoundry.org/dependencies/hwc/hwc_86.0.0_windows_x86-64_any-stack_d4444504.zip
+  sha256: d4444504d6e9ec18d409210be530eeb74e4456df157679e3f8c3dd98520fab1e
   cf_stacks:
   - windows
-  source: https://github.com/cloudfoundry/hwc/archive/75.0.0.tar.gz
-  source_sha256: 9e19f527077f0586d90d8186d0dbd66b6ae99fe8d66ae64aea3923afcd9e2d17
+  source: https://github.com/cloudfoundry/hwc/archive/86.0.0.tar.gz
+  source_sha256: 681f858fe9cce5ff5413c33af8da6e77b4bc36d979597562b64869702a0e8c6a
 include_files:
 - CHANGELOG
 - LICENSE
