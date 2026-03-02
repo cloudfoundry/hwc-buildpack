@@ -31,6 +31,7 @@ var _ = Describe("Compile", func() {
 	BeforeEach(func() {
 		buildDir, err = os.MkdirTemp("", "hwc-buildpack.build.")
 		Expect(err).To(BeNil())
+		DeferCleanup(os.RemoveAll, buildDir)
 
 		buffer = new(bytes.Buffer)
 		logger = libbuildpack.NewLogger(buffer)
@@ -45,13 +46,6 @@ var _ = Describe("Compile", func() {
 			Installer: mockInstaller,
 			Log:       logger,
 		}
-	})
-
-	AfterEach(func() {
-		mockCtrl.Finish()
-
-		err = os.RemoveAll(buildDir)
-		Expect(err).To(BeNil())
 	})
 
 	Describe("CheckWebConfig", func() {

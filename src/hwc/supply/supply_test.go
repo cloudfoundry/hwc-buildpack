@@ -44,10 +44,6 @@ var _ = Describe("Supply", func() {
 		}
 	})
 
-	AfterEach(func() {
-		mockCtrl.Finish()
-	})
-
 	Describe("Run", func() {
 		var (
 			depDir      string
