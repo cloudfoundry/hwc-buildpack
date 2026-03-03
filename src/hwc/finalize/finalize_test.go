@@ -4,7 +4,6 @@ package finalize_test
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
 	"os"
 
 	"github.com/cloudfoundry/hwc-buildpack/src/hwc/finalize"
@@ -28,7 +27,7 @@ var _ = Describe("Finalize", func() {
 	)
 
 	BeforeEach(func() {
-		buildDir, err = ioutil.TempDir("", "hwc-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "hwc-buildpack.build.")
 		buffer := new(bytes.Buffer)
 		logger := libbuildpack.NewLogger(buffer)
 

@@ -2,7 +2,6 @@ package finalize
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -33,7 +32,7 @@ func (h *HarmonizerImpl) CheckWebConfig() error {
 		return errInvalidBuildDir
 	}
 
-	files, err := ioutil.ReadDir(h.BuildDir)
+	files, err := os.ReadDir(h.BuildDir)
 	if err != nil {
 		return errInvalidBuildDir
 	}

@@ -2,7 +2,6 @@ package compile
 
 import (
 	"errors"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -52,7 +51,7 @@ func (c *Compiler) CheckWebConfig() error {
 		return errInvalidBuildDir
 	}
 
-	files, err := ioutil.ReadDir(c.BuildDir)
+	files, err := os.ReadDir(c.BuildDir)
 	if err != nil {
 		return errInvalidBuildDir
 	}

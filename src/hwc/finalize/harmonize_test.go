@@ -2,7 +2,6 @@ package finalize_test
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -23,12 +22,12 @@ var _ = Describe("Hamonizer", func() {
 	)
 
 	BeforeEach(func() {
-		buildDirParent, err := ioutil.TempDir("", "hwc-buildpack.build.")
+		buildDirParent, err := os.MkdirTemp("", "hwc-buildpack.build.")
 		Expect(err).ToNot(HaveOccurred())
 
 		buildDir = filepath.Join(buildDirParent, "eventual-build-dir")
 
-		depsDir, err := ioutil.TempDir("", "hwc-buildpack.deps.")
+		depsDir, err := os.MkdirTemp("", "hwc-buildpack.deps.")
 		Expect(err).ToNot(HaveOccurred())
 
 		depDir = filepath.Join(depsDir, "0")
@@ -68,7 +67,7 @@ var _ = Describe("Hamonizer", func() {
 
 			Context("build dir contains web.config", func() {
 				BeforeEach(func() {
-					err = ioutil.WriteFile(filepath.Join(buildDir, "Web.ConfiG"), []byte("xx"), 0644)
+					err = os.WriteFile(filepath.Join(buildDir, "Web.ConfiG"), []byte("xx"), 0644)
 					Expect(err).To(BeNil())
 				})
 
@@ -89,10 +88,10 @@ var _ = Describe("Hamonizer", func() {
 				err := os.MkdirAll(filepath.Dir(hwcDepPath), 0777)
 				Expect(err).To(BeNil())
 
-				err = ioutil.WriteFile(hwcDepPath, []byte("exe"), 0744)
+				err = os.WriteFile(hwcDepPath, []byte("exe"), 0744)
 				Expect(err).To(BeNil())
 
-				err = ioutil.WriteFile(hwc32DepPath, []byte("exe"), 0744)
+				err = os.WriteFile(hwc32DepPath, []byte("exe"), 0744)
 				Expect(err).To(BeNil())
 			})
 

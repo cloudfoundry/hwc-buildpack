@@ -2,7 +2,6 @@ package compile_test
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -30,7 +29,7 @@ var _ = Describe("Compile", func() {
 	)
 
 	BeforeEach(func() {
-		buildDir, err = ioutil.TempDir("", "hwc-buildpack.build.")
+		buildDir, err = os.MkdirTemp("", "hwc-buildpack.build.")
 		Expect(err).To(BeNil())
 
 		buffer = new(bytes.Buffer)
@@ -76,7 +75,7 @@ var _ = Describe("Compile", func() {
 
 		Context("build dir contains web.config", func() {
 			BeforeEach(func() {
-				err = ioutil.WriteFile(filepath.Join(buildDir, "Web.ConfiG"), []byte("xx"), 0644)
+				err = os.WriteFile(filepath.Join(buildDir, "Web.ConfiG"), []byte("xx"), 0644)
 				Expect(err).To(BeNil())
 			})
 
