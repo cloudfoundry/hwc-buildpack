@@ -2,7 +2,7 @@ module github.com/cloudfoundry/hwc-buildpack
 
 require (
 	github.com/blang/semver v3.5.1+incompatible
-	github.com/cloudfoundry/libbuildpack v0.0.0-20240717165421-f2ae8069fcba
+	github.com/cloudfoundry/libbuildpack v0.0.0-20260306121953-8ab9253c8181
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo/v2 v2.28.1
 	github.com/onsi/gomega v1.39.0
@@ -33,7 +33,6 @@ require (
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/tools v0.41.0 // indirect
-	gopkg.in/tomb.v1 v1.0.0-20141024135613-dd632973f1e7 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
 
