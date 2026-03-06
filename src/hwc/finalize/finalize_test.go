@@ -10,7 +10,7 @@ import (
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -28,6 +28,7 @@ var _ = Describe("Finalize", func() {
 
 	BeforeEach(func() {
 		buildDir, err = os.MkdirTemp("", "hwc-buildpack.build.")
+		DeferCleanup(os.RemoveAll, buildDir)
 		buffer := new(bytes.Buffer)
 		logger := libbuildpack.NewLogger(buffer)
 
@@ -45,13 +46,6 @@ var _ = Describe("Finalize", func() {
 			Harmonizer: mockHarmonizer,
 			Log:        logger,
 		}
-	})
-
-	AfterEach(func() {
-		mockCtrl.Finish()
-
-		err = os.RemoveAll(buildDir)
-		Expect(err).To(BeNil())
 	})
 
 	Describe("Run", func() {

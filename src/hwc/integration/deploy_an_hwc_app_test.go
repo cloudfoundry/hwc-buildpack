@@ -8,7 +8,7 @@ import (
 
 	"github.com/cloudfoundry/libbuildpack/cutlass"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -17,7 +17,7 @@ var _ = Describe("CF HWC Buildpack", func() {
 		app *cutlass.App
 	)
 
-	AfterEach(func() { app = DestroyApp(app) })
+	DeferCleanup(func() { app = DestroyApp(app) })
 
 	Context("deploying an hwc app with a rewrite rule", func() {
 		BeforeEach(func() {
@@ -54,14 +54,13 @@ var _ = Describe("CF HWC Buildpack", func() {
 			extensionBuildpackName = "extension" + cutlass.RandStringRunes(20)
 			err := cutlass.CreateOrUpdateBuildpack(extensionBuildpackName, otherHwcBuildpackFile.File, os.Getenv("CF_STACK"))
 			Expect(err).NotTo(HaveOccurred())
+			DeferCleanup(func() {
+				Expect(cutlass.DeleteBuildpack(extensionBuildpackName)).To(Succeed())
+			})
 
 			app = cutlass.New(filepath.Join(bpDir, "fixtures", "windows_app"))
 			app.Buildpacks = []string{extensionBuildpackName + "_buildpack", "hwc_buildpack"}
 			app.Stack = os.Getenv("CF_STACK")
-		})
-
-		AfterEach(func() {
-			Expect(cutlass.DeleteBuildpack(extensionBuildpackName)).To(Succeed())
 		})
 
 		It("deploys successfully", func() {

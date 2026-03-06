@@ -9,7 +9,7 @@ import (
 
 	"github.com/cloudfoundry/libbuildpack"
 	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -42,10 +42,6 @@ var _ = Describe("Supply", func() {
 			Command:   mockCommand,
 			Log:       logger,
 		}
-	})
-
-	AfterEach(func() {
-		mockCtrl.Finish()
 	})
 
 	Describe("Run", func() {

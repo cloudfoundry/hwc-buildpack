@@ -8,7 +8,7 @@ import (
 	"github.com/cloudfoundry/hwc-buildpack/src/hwc/finalize"
 
 	"github.com/cloudfoundry/libbuildpack"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
