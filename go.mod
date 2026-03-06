@@ -1,6 +1,7 @@
 module github.com/cloudfoundry/hwc-buildpack
 
 require (
+	github.com/Dynatrace/libbuildpack-dynatrace v1.8.1
 	github.com/blang/semver v3.5.1+incompatible
 	github.com/cloudfoundry/libbuildpack v0.0.0-20240717165421-f2ae8069fcba
 	github.com/golang/mock v1.6.0
