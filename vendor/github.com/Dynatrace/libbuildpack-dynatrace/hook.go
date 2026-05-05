@@ -3,15 +3,16 @@ package dynatrace
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
 	"time"
 
@@ -34,6 +35,7 @@ type credentials struct {
 	SkipErrors        bool
 	NetworkZone       string
 	EnableFIPS        bool
+	AddTechnologies   string
 }
 
 // Hook implements libbuildpack.Hook. It downloads and install the Dynatrace OneAgent.
@@ -64,7 +66,12 @@ func NewHook(technologies ...string) libbuildpack.Hook {
 func (h *Hook) AfterCompile(stager *libbuildpack.Stager) error {
 	// All other methods in this package are called  from here, which
 	// makes it the main entry-point.
+	return h.injectDynatrace(stager, runtime.GOOS)
 
+}
+
+// injectDynatrace is an indirection to get rid of the tight coupling to the underlying operating system 
+func (h *Hook) injectDynatrace(stager *libbuildpack.Stager, operatingSystem string) error {
 	var err error
 
 	h.Log.Debug("Checking for enabled dynatrace service...")
@@ -78,24 +85,41 @@ func (h *Hook) AfterCompile(stager *libbuildpack.Stager) error {
 
 	h.Log.Info("Dynatrace service credentials found. Setting up Dynatrace OneAgent.")
 
-	// Get buildpack version and language
+	installDir := filepath.Join("dynatrace", "oneagent")
 
-	lang := stager.BuildpackLanguage()
-	ver, err := stager.BuildpackVersion()
-	if err != nil {
-		h.Log.Warning("Failed to get buildpack version: %v", err)
-		ver = "unknown"
+	// download installer
+	var installerFilename string
+	if operatingSystem == "linux" {
+		installerFilename = "paasInstaller.sh"
+	} else if operatingSystem == "windows" {
+		installerFilename = "paasInstaller.zip"
+	} else {
+		// This is the only place where we need to return an error.
+		// All following operating system checks are just to determine installation specifics.
+		return errors.New("libbuildpack-dynatrace: Unsupported operating system: " + operatingSystem)
 	}
 
-	installDir := filepath.Join("dynatrace", "oneagent")
-	err = h.downloadAndInstall(creds, ver, lang, installDir, stager)
-	if err != nil {
+	installerFilePath := filepath.Join(os.TempDir(), installerFilename)
+	url := h.getDownloadURL(creds, operatingSystem)
+	err = h.download(url, installerFilePath, stager, creds)
+	if err != nil && creds.SkipErrors {
+		h.Log.Warning("Error during installer download, skipping installation")
+		return nil
+	} else if err != nil {
 		return err
 	}
 
+	// run installer
+	if operatingSystem == "linux" {
+		err = h.runInstallerUnix(installerFilePath, installDir, creds, stager)
+	} else if operatingSystem == "windows" {
+		err = h.runInstallerWindows(installerFilePath, installDir, creds, stager)
+	}
+
+	// update agent config
 	h.Log.Debug("Fetching updated OneAgent configuration from tenant... ")
 	configDir := filepath.Join(stager.BuildDir(), installDir)
-	if err := h.updateAgentConfig(creds, configDir, lang, ver); err != nil {
+	if err := h.updateAgentConfig(creds, configDir, stager); err != nil {
 		if creds.SkipErrors {
 			h.Log.Warning("Error during agent config update, skipping it")
 			return nil
@@ -118,9 +142,45 @@ func (h *Hook) AfterCompile(stager *libbuildpack.Stager) error {
 	return nil
 }
 
+// loadVCAPServicesData returns the raw VCAP_SERVICES JSON data from the appropriate source.
+func (h *Hook) loadVCAPServicesData() []byte {
+	filePath, filePathSet := os.LookupEnv("VCAP_SERVICES_FILE_PATH")
+
+	if filePathSet {
+		if filePath == "" {
+			h.Log.Debug("VCAP_SERVICES_FILE_PATH is set but empty")
+			return nil
+		}
+
+		h.Log.Debug("Loading VCAP services from file: %s", filePath)
+		fileContent, err := os.ReadFile(filePath)
+		if err != nil {
+			h.Log.Error("Failed to read VCAP services file %s: %s", filePath, err)
+			return nil
+		}
+		h.Log.Debug("Successfully read VCAP Service data.")
+		return fileContent
+
+	}
+
+	h.Log.Debug("Loading VCAP services from environment variable VCAP_SERVICES")
+	envData := os.Getenv("VCAP_SERVICES")
+	if envData == "" {
+		h.Log.Debug("Environment variable VCAP_SERVICES is not set or empty")
+		return nil
+	}
+	h.Log.Debug("Successfully read VCAP Service data from environment variable.")
+	return []byte(envData)
+}
+
 // getCredentials returns the configuration from the environment, or nil if not found. The credentials are represented
-// as a JSON object in the VCAP_SERVICES environment variable.
+// as a JSON object loaded via loadVCAPServicesData.
 func (h *Hook) getCredentials() *credentials {
+	data := h.loadVCAPServicesData()
+	if data == nil {
+		return nil
+	}
+
 	// Represent the structure of the JSON object in VCAP_SERVICES for parsing.
 
 	var vcapServices map[string][]struct {
@@ -128,7 +188,7 @@ func (h *Hook) getCredentials() *credentials {
 		Credentials map[string]interface{} `json:"credentials"`
 	}
 
-	if err := json.Unmarshal([]byte(os.Getenv("VCAP_SERVICES")), &vcapServices); err != nil {
+	if err := json.Unmarshal(data, &vcapServices); err != nil {
 		h.Log.Debug("Failed to unmarshal VCAP_SERVICES: %s", err)
 		return nil
 	}
@@ -157,12 +217,13 @@ func (h *Hook) getCredentials() *credentials {
 				SkipErrors:        queryString("skiperrors") == "true",
 				NetworkZone:       queryString("networkzone"),
 				EnableFIPS:        queryString("enablefips") == "true",
+				AddTechnologies:   queryString("addtechnologies"),
 			}
 
 			if (creds.EnvironmentID != "" && creds.APIToken != "") || creds.CustomOneAgentURL != "" {
 				found = append(found, creds)
 			} else if !(creds.EnvironmentID == "" && creds.APIToken == "") { // One of the fields is empty.
-				h.Log.Warning("Incomplete credentials for service: %s, environment ID: %s, API token: %s", creds.ServiceName,
+				h.Log.Error("Incomplete credentials for service: %s, environment ID: %s, API token: %s", creds.ServiceName,
 					creds.EnvironmentID, creds.APIToken)
 			}
 		}
@@ -174,20 +235,23 @@ func (h *Hook) getCredentials() *credentials {
 	}
 
 	if len(found) > 1 {
-		h.Log.Warning("More than one matching service found!")
+		h.Log.Error("More than one matching service found!")
 	}
 
 	return nil
 }
 
 // download gets url, and stores it as filePath, retrying a few more times if the downloads fail.
-func (h *Hook) download(url, filePath string, buildPackVersion string, language string, creds *credentials) error {
-	const baseWaitTime = 3 * time.Second
-
+func (h *Hook) download(url, filePath string, stager *libbuildpack.Stager, creds *credentials) error {
 	client := &http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
 	if creds.CustomOneAgentURL == "" {
-		req.Header.Set("User-Agent", fmt.Sprintf("cf-%s-buildpack/%s", language, buildPackVersion))
+		ver, err := stager.BuildpackVersion()
+		if err != nil {
+			h.Log.Warning("Failed to get buildpack version: %v", err)
+			ver = "unknown"
+		}
+		req.Header.Set("User-Agent", fmt.Sprintf("cf-%s-buildpack/%s", stager.BuildpackLanguage(), ver))
 		req.Header.Set("Authorization", fmt.Sprintf("Api-Token %s", creds.APIToken))
 	}
 
@@ -197,6 +261,7 @@ func (h *Hook) download(url, filePath string, buildPackVersion string, language 
 	}
 	defer out.Close()
 
+	const baseWaitTime = 3 * time.Second
 	for i := 0; ; i++ {
 		resp, err := client.Do(req)
 		if err == nil {
@@ -241,9 +306,20 @@ func (h *Hook) download(url, filePath string, buildPackVersion string, language 
 		h.Log.Warning("Error during installer download, retrying in %v", waitTime)
 		time.Sleep(waitTime)
 	}
+
 }
 
-func (h *Hook) getDownloadURL(c *credentials, osType string, installerType string) string {
+func (h *Hook) getDownloadURL(c *credentials, operatingSystem string) string {
+	var osType, installerType string
+	switch operatingSystem {
+	case "linux":
+		osType = "unix"
+		installerType = "paas-sh"
+	case "windows":
+		osType = "windows"
+		installerType = "paas"
+	}
+
 	if c.CustomOneAgentURL != "" {
 		return c.CustomOneAgentURL
 	}
@@ -266,6 +342,13 @@ func (h *Hook) getDownloadURL(c *credentials, osType string, installerType strin
 	}
 	for _, t := range h.IncludeTechnologies {
 		qv.Add("include", t)
+	}
+	if c.AddTechnologies != "" {
+		// add optionally configured OneAgent code modules
+		for _, t := range strings.Split(c.AddTechnologies, ",") {
+			h.Log.Debug("Adding additional code module to download: %s", t)
+			qv.Add("include", t)
+		}
 	}
 	u.RawQuery = qv.Encode() // Parameters will be sorted by key.
 
@@ -320,7 +403,7 @@ func (h *Hook) findAgentPath(installDir string, technology string, binaryType st
 
 	var manifest Manifest
 
-	if raw, err := ioutil.ReadFile(manifestPath); err != nil {
+	if raw, err := os.ReadFile(manifestPath); err != nil {
 		return "", err
 	} else if err = json.Unmarshal(raw, &manifest); err != nil {
 		return "", err
@@ -339,7 +422,7 @@ func (h *Hook) findAgentPath(installDir string, technology string, binaryType st
 
 // Downloads most recent agent config from configuration API of the tenant
 // and merges it with the local version the standalone installer package brings along.
-func (h *Hook) updateAgentConfig(creds *credentials, installDir, buildPackLanguage, buildPackVersion string) error {
+func (h *Hook) updateAgentConfig(creds *credentials, installDir string, stager *libbuildpack.Stager) error {
 	// agentConfigProperty represents a line of raw data we get from the config api
 	type agentConfigProperty struct {
 		Section string
@@ -363,9 +446,16 @@ func (h *Hook) updateAgentConfig(creds *credentials, installDir, buildPackLangua
 	}
 	agentConfigUrl := apiURL + "/v1/deployment/installer/agent/processmoduleconfig"
 
+	lang := stager.BuildpackLanguage()
+	ver, err := stager.BuildpackVersion()
+	if err != nil {
+		h.Log.Warning("Failed to get buildpack version: %v", err)
+		ver = "unknown"
+	}
+
 	h.Log.Debug("Downloading updated OneAgent config from %s", agentConfigUrl)
 	req, _ := http.NewRequest("GET", agentConfigUrl, nil)
-	req.Header.Set("User-Agent", fmt.Sprintf("cf-%s-buildpack/%s", buildPackLanguage, buildPackVersion))
+	req.Header.Set("User-Agent", fmt.Sprintf("cf-%s-buildpack/%s", lang, ver))
 	req.Header.Set("Authorization", fmt.Sprintf("Api-Token %s", creds.APIToken))
 	client.Do(req)
 	resp, err := client.Do(req)
